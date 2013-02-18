@@ -63,6 +63,7 @@
       </PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalOptions>/D _CRT_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -144,6 +145,7 @@
     <ClCompile Include="Action.cpp" />
     <ClCompile Include="ActionsManager.cpp" />
     <ClCompile Include="AES.cpp" />
+    <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="Conf.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -152,11 +154,13 @@
     <ClCompile Include="Configuration.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="Date.cpp" />
+    <ClCompile Include="Device.cpp" />
     <ClCompile Include="Enable.cpp" />
     <ClCompile Include="Encryption.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="EventsManager.cpp" />
     <ClCompile Include="Execute.cpp" />
+    <ClCompile Include="Explorer.cpp" />
     <ClCompile Include="Hash.cpp" />
     <ClCompile Include="json\JSON.cpp" />
     <ClCompile Include="json\JSONValue.cpp" />
@@ -171,12 +175,14 @@
     <ClCompile Include="ModulesManager.cpp" />
     <ClCompile Include="MornellaMain.cpp" />
     <ClCompile Include="MornellaWp8.cpp" />
+    <ClCompile Include="Rand.cpp" />
     <ClCompile Include="Sha1.cpp" />
     <ClCompile Include="Start.cpp" />
     <ClCompile Include="Status.cpp" />
     <ClCompile Include="SubAction.cpp" />
     <ClCompile Include="Synchronize.cpp" />
     <ClCompile Include="Task.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Transfer.cpp" />
     <ClCompile Include="UberLog.cpp" />
     <ClCompile Include="Uninstall.cpp" />

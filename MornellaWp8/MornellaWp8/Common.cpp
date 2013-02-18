@@ -71,7 +71,8 @@ wstring GetCurrentPath(const PWCHAR pInFile) {
 	strBackdoorPath = backdoorPath;
 	strBackdoorPath.resize(strBackdoorPath.rfind(L"\\"));
 #else
-	strBackdoorPath = L"\\windows";
+	/////strBackdoorPath = L"\\windows";
+	strBackdoorPath = L".\\";
 #endif
 
 	strBackdoorPath += LOG_DIR;
@@ -103,7 +104,7 @@ wstring GetFirstMMCPath(const PWCHAR pInFile) {
 
 	ZeroMemory(&wfd, sizeof(wfd));
 
-	hMmc = FindFirstFlashCard(&wfd);
+	hMmc = __FindFirstFlashCard(&wfd);
 
 	if (hMmc == INVALID_HANDLE_VALUE)
 		return strBackdoorPath;
@@ -129,7 +130,7 @@ wstring GetFirstMMCPath(const PWCHAR pInFile) {
 
 	return strBackdoorPath;
 ***/
-	return NULL;
+	return L".\\"; //ByGIO
 }
 
 // Come la precedente ma torna il path della seconda MMC se presente, NULL

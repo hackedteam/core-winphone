@@ -56,7 +56,7 @@ class Device
 
 	/**
 	 * Database statico dei modelli e funzionalita' supportati.
-	 */
+	 */ 
 	private: wstring strImei, strImsi, strSimId, strInstanceId, strPhoneNumber, strManufacturer, strModel;
 	private: map<UINT, DiskStruct> mDiskInfo; // Indice, DiskStruct
 

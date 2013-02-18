@@ -165,7 +165,7 @@ int mornellaStart(void)
 
 		BTC_Init(0x0);
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(20000));
+		for (;;) std::this_thread::sleep_for(std::chrono::milliseconds(20000));
 
 		return 0;
 	

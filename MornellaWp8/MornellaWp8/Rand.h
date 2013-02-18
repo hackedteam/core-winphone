@@ -1,8 +1,13 @@
+
 #ifndef __RAND_H
 #define __RAND_H
-
+/***
 #include <Winbase.h>
 #include <stdlib.h>
+***/
+
+
+
 
 #define MAX_32BIT_NUM 4294967295 // 2^32-1
 #define MAX_24BIT_NUM 16777215   // 2^24-1
@@ -34,3 +39,5 @@ private:
 };
 
 #endif
+
+

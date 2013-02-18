@@ -67,7 +67,7 @@ modulesManager(NULL), wakeupEvent(NULL), uninstallRequested(FALSE) {
 
 	// Istanziamo qui tutti gli oggetti singleton dopo aver inizializzato le code
 	statusObj = Status::self();
-	///deviceObj = Device::self();
+	deviceObj = Device::self();
 	uberlogObj = UberLog::self();
 	///observerObj = Observer::self();
 	modulesManager = ModulesManager::self();
@@ -82,10 +82,10 @@ modulesManager(NULL), wakeupEvent(NULL), uninstallRequested(FALSE) {
 }
 
 Task::~Task(){
-/***
+
 	if (deviceObj)
 		delete deviceObj;
-***/
+
 	if (statusObj)
 		delete statusObj;
 
@@ -108,17 +108,17 @@ Task::~Task(){
 
 void Task::StartNotification() {
 	
-	///Log logInfo;
+	Log logInfo;
 
-	///logInfo.WriteLogInfo(L"Started");
+	logInfo.WriteLogInfo(L"Started");
 	
 }
 
 BOOL Task::TaskInit() {
-	/***
+	
 	if (deviceObj)
 		deviceObj->RefreshData(); // Inizializza varie cose tra cui g_InstanceId
-***/
+
 	if (confObj) {
 		delete confObj;
 		confObj = NULL;

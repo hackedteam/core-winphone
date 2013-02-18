@@ -70,6 +70,11 @@
     <ClCompile Include="LogInformation.cpp" />
     <ClCompile Include="Kill.cpp" />
     <ClCompile Include="Date.cpp" />
+    <ClCompile Include="Device.cpp" />
+    <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="Buffer.cpp" />
+    <ClCompile Include="Rand.cpp" />
+    <ClCompile Include="Explorer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_new.h" />

