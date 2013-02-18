@@ -27,7 +27,7 @@ Revision History:
 
 #pragma once
 
-#include <winioctl.h>
+///#include <winioctl.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -5,6 +5,9 @@
       <UniqueIdentifier>17b52f90-9b33-4188-8a0e-808582bbabbc</UniqueIdentifier>
       <Extensions>ico;bmp;dlg;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;resw;resjson</Extensions>
     </Filter>
+    <Filter Include="JSON">
+      <UniqueIdentifier>{a30e72b1-c6cb-4e62-a87b-b1866f65afa5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\ApplicationIcon.png">
@@ -43,11 +46,40 @@
     <ClCompile Include="Hash.cpp" />
     <ClCompile Include="Sha1.cpp" />
     <ClCompile Include="Status.cpp" />
+    <ClCompile Include="ModulesManager.cpp" />
+    <ClCompile Include="json\JSON.cpp">
+      <Filter>JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="json\JSONValue.cpp">
+      <Filter>JSON</Filter>
+    </ClCompile>
+    <ClCompile Include="Manager.cpp" />
+    <ClCompile Include="Configuration.cpp" />
+    <ClCompile Include="Module.cpp" />
+    <ClCompile Include="UberLog.cpp" />
+    <ClCompile Include="ActionsManager.cpp" />
+    <ClCompile Include="SubAction.cpp" />
+    <ClCompile Include="Action.cpp" />
+    <ClCompile Include="Synchronize.cpp" />
+    <ClCompile Include="Execute.cpp" />
+    <ClCompile Include="Uninstall.cpp" />
+    <ClCompile Include="Start.cpp" />
+    <ClCompile Include="Enable.cpp" />
+    <ClCompile Include="EventsManager.cpp" />
+    <ClCompile Include="Event.cpp" />
+    <ClCompile Include="LogInformation.cpp" />
+    <ClCompile Include="Kill.cpp" />
+    <ClCompile Include="Date.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Core.h" />
     <ClInclude Include="common_new.h" />
     <ClInclude Include="FunctionFunc.h" />
+    <ClInclude Include="json\JSON.h">
+      <Filter>JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="json\JSONValue.h">
+      <Filter>JSON</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="WMAppManifest.xml" />

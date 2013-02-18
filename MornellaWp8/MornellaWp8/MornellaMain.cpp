@@ -1,7 +1,7 @@
 ////#include "pch.h"
 extern "C" int mornellaStart(void);
 
-#include <windows.h>
+///#include <windows.h>
 #include "Core.h"
 
 #include <thread>

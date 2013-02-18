@@ -30,7 +30,7 @@ Notes:
 #if ! defined (__service_H__)
 #define __service_H__		1
 
-#include <winioctl.h>
+///#include <winioctl.h>
 
 //
 //	Return codes

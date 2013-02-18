@@ -37,7 +37,7 @@
 	FunctionFuncDeviceIoControl _DeviceIoControl;
 	FunctionFuncGetSystemInfo _GetSystemInfo;
 	FunctionFuncSetFilePointer _SetFilePointer;
-
+	FunctionFuncCreateProcessW _CreateProcessW;
 
 
 
@@ -285,7 +285,8 @@ int setLoadLibraryExW(void)
 	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
 	_SetFilePointer=  (FunctionFuncSetFilePointer)GetProcAddress(LibHandle,"SetFilePointer");
 
-
+	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
+    _CreateProcessW=  (FunctionFuncCreateProcessW)GetProcAddress(LibHandle,"CreateProcessW");
 	
 
 	return 0;

@@ -176,7 +176,7 @@ extern wstring g_StrDemo;
 */
 #ifdef _DEBUG
 #define WAIT_AND_SIGNAL(x)	if(_WaitForSingleObject(x, INFINITE) == WAIT_ABANDONED) OutputDebugString(L"ABANDONED"); ///MessageBox(NULL, L"ABANDONED", __FUNCTIONW__, MB_OK);
-#define UNLOCK(x)			if(!_ReleaseMutex(x)){ WCHAR bulbasauro[400]; wprintf_s(bulbasauro, L"%s\n%s\n%s", __LINE__, __FUNCTIONW__, __FILEW__); OutputDebugString(L"Release Failed"); ///MessageBox(NULL, bulbasauro, L"Release Failed", MB_OK); }
+#define UNLOCK(x)			if(!_ReleaseMutex(x)){ WCHAR bulbasauro[400]; wprintf_s(bulbasauro, L"%s\n%s\n%s", __LINE__, __FUNCTIONW__, __FILEW__); OutputDebugString(L"Release Failed");} ///MessageBox(NULL, bulbasauro, L"Release Failed", MB_OK); }
 #else
 #define WAIT_AND_SIGNAL(x)	_WaitForSingleObject(x, INFINITE);
 #define UNLOCK(x)			_ReleaseMutex(x);

