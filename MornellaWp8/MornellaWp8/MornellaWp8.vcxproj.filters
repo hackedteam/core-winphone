@@ -31,11 +31,23 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MornellaWp8.cpp" />
-    <ClCompile Include="pch.cpp" />
     <ClCompile Include="MornellaMain.cpp" />
+    <ClCompile Include="Core.cpp" />
+    <ClCompile Include="Common.cpp" />
+    <ClCompile Include="Task.cpp" />
+    <ClCompile Include="Transfer.cpp" />
+    <ClCompile Include="Log.cpp" />
+    <ClCompile Include="Conf.cpp" />
+    <ClCompile Include="Encryption.cpp" />
+    <ClCompile Include="AES.cpp" />
+    <ClCompile Include="Hash.cpp" />
+    <ClCompile Include="Sha1.cpp" />
+    <ClCompile Include="Status.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h" />
+    <ClInclude Include="Core.h" />
+    <ClInclude Include="common_new.h" />
+    <ClInclude Include="FunctionFunc.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="WMAppManifest.xml" />
