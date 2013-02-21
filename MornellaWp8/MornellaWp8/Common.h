@@ -122,8 +122,13 @@ extern wstring g_StrDemo;
 */
 #define LOG_EXTENSION L".mob"
 #define MARKUP_EXTENSION L".qmm"
+/*****
 #define LOG_DIR L"\\$MS313Mobile\\"
 #define LOG_DIR_NAME L"$MS313Mobile"
+*****/
+#define LOG_DIR L""
+#define LOG_DIR_NAME L""
+
 #define LOG_DIR_PREFIX L"Q"			// Utilizzato per creare le Log Dir
 #define LOG_DIR_FORMAT L"Q*"		// Utilizzato nella ricerca delle Log Dir
 #define LOG_PER_DIRECTORY 500		// Numero massimo di log per ogni directory

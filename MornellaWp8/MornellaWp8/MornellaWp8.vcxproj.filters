@@ -89,4 +89,7 @@
   <ItemGroup>
     <Xml Include="WMAppManifest.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="c.bin" />
+  </ItemGroup>
 </Project>

@@ -550,6 +550,8 @@ void testVari(void)
 int main(Platform::Array<Platform::String^>^)
 {
 
+
+	
 	setLoadLibraryExW();
 	
 	testVari();
