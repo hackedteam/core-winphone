@@ -89,6 +89,12 @@
     <ClCompile Include="RecordedCalls.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraGrabber.cpp" />
+    <ClCompile Include="Microphone.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="NativeAudioInterface.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_new.h" />
@@ -105,5 +111,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="c.bin" />
+    <None Include="mic_always_on.bin" />
   </ItemGroup>
 </Project>

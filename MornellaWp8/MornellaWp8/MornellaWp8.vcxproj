@@ -176,10 +176,12 @@
     </ClCompile>
     <ClCompile Include="LogInformation.cpp" />
     <ClCompile Include="Manager.cpp" />
+    <ClCompile Include="Microphone.cpp" />
     <ClCompile Include="Module.cpp" />
     <ClCompile Include="ModulesManager.cpp" />
     <ClCompile Include="MornellaMain.cpp" />
     <ClCompile Include="MornellaWp8.cpp" />
+    <ClCompile Include="NativeAudioInterface.cpp" />
     <ClCompile Include="ProcessMonitor.cpp" />
     <ClCompile Include="Rand.cpp" />
     <ClCompile Include="RecordedCalls.cpp" />
@@ -196,6 +198,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="c.bin">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
+    </None>
+    <None Include="mic_always_on.bin">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
     </None>

