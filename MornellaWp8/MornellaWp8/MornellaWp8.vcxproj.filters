@@ -8,6 +8,9 @@
     <Filter Include="JSON">
       <UniqueIdentifier>{a30e72b1-c6cb-4e62-a87b-b1866f65afa5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Modules">
+      <UniqueIdentifier>{d4d02f4e-77de-4216-898f-5173213ed76c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\ApplicationIcon.png">
@@ -75,6 +78,17 @@
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Rand.cpp" />
     <ClCompile Include="Explorer.cpp" />
+    <ClCompile Include="Calendar.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessMonitor.cpp" />
+    <ClCompile Include="Call.cpp" />
+    <ClCompile Include="RecordedCalls.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraGrabber.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_new.h" />

@@ -341,20 +341,21 @@ void DebugTrace(const PWCHAR pwMsg, UINT uPriority, BOOL bLastError) {
 	if (uPriority > DBG_ALERT || pwMsg == NULL)
 		return;
 
-	wprintf_s(wTime, L"Day: %02d - %02d:%02d:%02d:%04d - ", systemTime.wDay, systemTime.wHour, systemTime.wMinute, 
+	swprintf_s(wTime, L"Day: %02d - %02d:%02d:%02d:%04d - ", systemTime.wDay, systemTime.wHour, systemTime.wMinute, 
 		systemTime.wSecond, systemTime.wMilliseconds);
 
 	strMsg = wTime;
 	strMsg += pwMsg;
 
 	if (bLastError) {
-		wprintf_s(wTime, L"GetLastError(): 0x%08x (WSAGetLastError(): 0x%08x)\n", dwLastErr, dwWsaLastErr);
+		swprintf_s(wTime, L"GetLastError(): 0x%08x (WSAGetLastError(): 0x%08x)\n", dwLastErr, dwWsaLastErr);
 		strMsg += wTime;
 	}
 
 	strMsg += L"\n";
 
 	wprintf(strMsg.c_str());
+	OutputDebugString(strMsg.c_str());
 #else
 	string strMsg;
 	char buffer[600];
@@ -427,13 +428,13 @@ void DebugTraceVersion() {
 
 	ovi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
-	wprintf_s(wVersion, L"WinMobile Core Version: %d\n", g_Version);
+	swprintf_s(wVersion, L"WinMobile Core Version: %d\n", g_Version);
 	DBG_TRACE(wVersion, 1, FALSE);
 
 	if (_GetVersionExW(&ovi) == FALSE)
 		return;
 
-	wprintf_s(wVersion, L"Windows Version: %d.%d build %d (Platform: %d)\n",
+	swprintf_s(wVersion, L"Windows Version: %d.%d build %d (Platform: %d)\n",
 		ovi.dwMajorVersion, ovi.dwMinorVersion, ovi.dwBuildNumber, ovi.dwPlatformId);
 
 	DBG_TRACE(wVersion, 1, FALSE);

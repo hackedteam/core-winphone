@@ -43,6 +43,19 @@
 	typedef HANDLE   (__stdcall  *FunctionFuncOpenProcess)(DWORD,BOOL,DWORD);
 	extern "C" FunctionFuncOpenProcess   _OpenProcess;
 
+	/*
+	TerminateProcess
+
+	BOOL WINAPI TerminateProcess(
+  _In_  HANDLE hProcess,
+  _In_  UINT uExitCode
+);
+*/
+
+	typedef BOOL   (__stdcall  *FunctionFuncTerminateProcess)(HANDLE,UINT);
+	extern "C" FunctionFuncTerminateProcess  _TerminateProcess;
+
+
     typedef BOOL   (__stdcall  *FunctionFuncCloseToolhelp32Snapshot)(HANDLE);
 	extern "C" FunctionFuncCloseToolhelp32Snapshot   _CloseToolhelp32Snapshot;
 
@@ -291,3 +304,83 @@ HRESULT GetDeviceUniqueID(
 
 	typedef   BOOL    (__stdcall  *FunctionFuncInternetReadFile)(HINTERNET,LPVOID,DWORD,LPDWORD);
 	extern "C" FunctionFuncInternetReadFile _InternetReadFile;
+
+
+	typedef DWORD   (__stdcall  *FunctionFuncGetModuleFileNameW)(HMODULE,LPTSTR,DWORD);
+	extern "C" FunctionFuncGetModuleFileNameW   _GetModuleFileNameW;
+
+
+	/*
+	DWORD WINAPI GetFileVersionInfoSizeEx(
+  _In_   DWORD dwFlags,
+  _In_   LPCTSTR lptstrFilename,
+  _Out_  LPDWORD lpdwHandle
+);
+*/
+
+	typedef DWORD   (__stdcall  *FunctionFuncGetFileVersionInfoSizeExW)(DWORD,LPCTSTR,LPDWORD);
+	extern "C" FunctionFuncGetFileVersionInfoSizeExW  _GetFileVersionInfoSizeExW;
+
+
+	/*
+	BOOL WINAPI GetFileVersionInfoEx(
+  _In_        DWORD dwFlags,
+  _In_        LPCTSTR lptstrFilename,
+  _Reserved_  DWORD dwHandle,
+  _In_        DWORD dwLen,
+  _Out_       LPVOID lpData
+);
+	*/
+
+	typedef BOOL   (__stdcall  *FunctionFuncGetFileVersionInfoExW)(DWORD,LPCTSTR,DWORD,DWORD,LPVOID);
+	extern "C" FunctionFuncGetFileVersionInfoExW  _GetFileVersionInfoExW;
+
+	/*
+	BOOL WINAPI VerQueryValue(
+  _In_   LPCVOID pBlock,
+  _In_   LPCTSTR lpSubBlock,
+  _Out_  LPVOID *lplpBuffer,
+  _Out_  PUINT puLen
+);
+*/
+
+	typedef BOOL   (__stdcall  *FunctionFuncVerQueryValueW)(LPCVOID,LPCTSTR,LPVOID*,PUINT);
+	extern "C" FunctionFuncVerQueryValueW _VerQueryValueW;
+
+
+	typedef BOOL (CALLBACK* WNDENUMPROC)(HWND, LPARAM); 
+		
+	typedef BOOL   (__stdcall  *FunctionFuncEnumWindows)(WNDENUMPROC ,LPARAM);
+	extern "C" FunctionFuncEnumWindows   _EnumWindows;
+
+
+	typedef DWORD   (__stdcall  *FunctionFuncGetWindowTextW)(HWND,LPWSTR,DWORD);
+	extern "C" FunctionFuncGetWindowTextW   _GetWindowTextW;
+
+
+	typedef BOOL   (__stdcall  *FunctionFuncThread32First)(HANDLE,LPTHREADENTRY32);
+	extern "C" FunctionFuncThread32First   _Thread32First;
+
+	/*
+	SuspendThread
+
+	DWORD WINAPI SuspendThread(
+  _In_  HANDLE hThread
+);
+*/
+	typedef DWORD   (__stdcall  *FunctionFuncSuspendThread)(HANDLE);
+	extern "C" FunctionFuncSuspendThread  _SuspendThread;
+
+	/*
+	DWORD WINAPI ResumeThread(
+  _In_  HANDLE hThread
+);
+
+	ResumeThread
+	*/
+
+	typedef DWORD   (__stdcall  *FunctionFuncResumeThread)(HANDLE);
+	extern "C" FunctionFuncResumeThread  _ResumeThread;
+
+    typedef BOOL   (__stdcall  *FunctionFuncThread32Next)(HANDLE,LPTHREADENTRY32);
+	extern "C"  FunctionFuncThread32Next   _Thread32Next;

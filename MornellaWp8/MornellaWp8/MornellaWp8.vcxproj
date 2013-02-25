@@ -145,7 +145,12 @@
     <ClCompile Include="Action.cpp" />
     <ClCompile Include="ActionsManager.cpp" />
     <ClCompile Include="AES.cpp" />
+    <ClCompile Include="Application.cpp" />
     <ClCompile Include="Buffer.cpp" />
+    <ClCompile Include="Calendar.cpp" />
+    <ClCompile Include="Call.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraGrabber.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="Conf.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -175,7 +180,9 @@
     <ClCompile Include="ModulesManager.cpp" />
     <ClCompile Include="MornellaMain.cpp" />
     <ClCompile Include="MornellaWp8.cpp" />
+    <ClCompile Include="ProcessMonitor.cpp" />
     <ClCompile Include="Rand.cpp" />
+    <ClCompile Include="RecordedCalls.cpp" />
     <ClCompile Include="Sha1.cpp" />
     <ClCompile Include="Start.cpp" />
     <ClCompile Include="Status.cpp" />

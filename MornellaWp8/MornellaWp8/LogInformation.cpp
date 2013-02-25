@@ -11,6 +11,8 @@ INT LogInformation::run() {
 
 	try {
 		text = conf->getString(L"text");
+		OutputDebugString(text.c_str());//BYGIO
+		OutputDebugString(L"\n");  
 	} catch (...) {
 		return 0;
 	}

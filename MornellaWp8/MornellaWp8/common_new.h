@@ -99,6 +99,15 @@ typedef struct tagPROCESSENTRY32 {
 #define TH32CS_SNAPTHREAD   0x00000004
 #define TH32CS_SNAPMODULE   0x00000008
 
+#define TH32CS_SNAPHEAPLIST 0x00000001
+#define TH32CS_SNAPPROCESS  0x00000002
+#define TH32CS_SNAPTHREAD   0x00000004
+#define TH32CS_SNAPMODULE   0x00000008
+#define TH32CS_SNAPNOHEAPS  0x40000000	// optimization to not snapshot heaps
+#define TH32CS_SNAPALL	    (TH32CS_SNAPHEAPLIST | TH32CS_SNAPPROCESS | TH32CS_SNAPTHREAD | TH32CS_SNAPMODULE)
+#define TH32CS_GETALLMODS	0x80000000
+
+
 typedef struct tagPROCESSENTRY32W
 {
     DWORD   dwSize;
@@ -240,3 +249,77 @@ typedef struct _PROCESS_MEMORY_COUNTERS {
   SIZE_T PagefileUsage;
   SIZE_T PeakPagefileUsage;
 } PROCESS_MEMORY_COUNTERS, *PPROCESS_MEMORY_COUNTERS;
+
+typedef struct tagTHREADENTRY32
+{
+    DWORD   dwSize;
+    DWORD   cntUsage;
+    DWORD   th32ThreadID;       // this thread
+    DWORD   th32OwnerProcessID; // Process this thread is associated with
+    LONG    tpBasePri;
+    LONG    tpDeltaPri;
+    DWORD   dwFlags;
+} THREADENTRY32;
+typedef THREADENTRY32 *  PTHREADENTRY32;
+typedef THREADENTRY32 *  LPTHREADENTRY32;
+
+
+typedef struct _SHELLEXECUTEINFOW
+{
+        DWORD cbSize;
+        ULONG fMask;
+        HWND hwnd;
+        LPCWSTR  lpVerb;
+        LPCWSTR  lpFile;
+        LPCWSTR  lpParameters;
+        LPCWSTR  lpDirectory;
+        int nShow;
+        HINSTANCE hInstApp;
+        // Optional fields
+        LPVOID lpIDList;
+        LPCWSTR  lpClass;
+        HKEY hkeyClass;
+        DWORD dwHotKey;
+        union {
+        HANDLE hIcon;
+#if (NTDDI_VERSION >= NTDDI_WIN2K)
+        HANDLE hMonitor;
+#endif // (NTDDI_VERSION >= NTDDI_WIN2K)
+        } DUMMYUNIONNAME;
+        HANDLE hProcess;
+} SHELLEXECUTEINFOW, *LPSHELLEXECUTEINFOW;
+
+typedef SHELLEXECUTEINFOW SHELLEXECUTEINFO;
+
+
+#define SEE_MASK_FLAG_NO_UI       0x00000400
+
+
+/* waveform audio data types */
+DECLARE_HANDLE(HWAVE);
+DECLARE_HANDLE(HWAVEIN);
+DECLARE_HANDLE(HWAVEOUT);
+
+typedef struct wavehdr_tag {
+    LPSTR       lpData;                 /* pointer to locked data buffer */
+    DWORD       dwBufferLength;         /* length of data buffer */
+    DWORD       dwBytesRecorded;        /* used for input only */
+    DWORD       dwUser;                 /* for client's use */
+    DWORD       dwFlags;                /* assorted flags (see defines) */
+    DWORD       dwLoops;                /* loop control counter */
+    struct wavehdr_tag FAR *lpNext;     /* reserved for driver */
+    DWORD       reserved;               /* reserved for driver */
+} WAVEHDR, *PWAVEHDR, NEAR *NPWAVEHDR, FAR *LPWAVEHDR;
+
+typedef INT PixelFormat;
+
+class BitmapData
+{
+public:
+    UINT Width;
+    UINT Height;
+    INT Stride;
+    PixelFormat PixelFormat;
+    VOID* Scan0;
+    UINT_PTR Reserved;
+};

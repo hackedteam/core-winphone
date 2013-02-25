@@ -38,7 +38,7 @@ BOOL Log::CreateLog(UINT LogType, BYTE* pByte, UINT uAdditional, UINT uStoreToMM
 	// Il file non dovrebbe esistere, ma nel caso effettuiamo un loop fino a trovare posto
 	for (uStop = 0; uStop < LOG_CREATION_RETRY_LIMIT; uStop++) {
 		// XXX se si cambia questo formato va cambiato anche nel metodo ScanLogs() di UberLog
-		wprintf_s(wLogName, L"%04x%08x%08x", LogType, ft.dwLowDateTime, ft.dwHighDateTime);
+		swprintf_s(wLogName, L"%04x%08x%08x", LogType, ft.dwLowDateTime, ft.dwHighDateTime);
 
 		strLogName = MakeName(wLogName, TRUE, uStoreToMMC);
 
@@ -287,7 +287,7 @@ BOOL Log::WriteMarkup(UINT uAgentId, BYTE *pData, UINT uLen) {
 	}
 
 	ZeroMemory(wMarkupName, sizeof(wMarkupName));
-	wprintf_s(wMarkupName, L"%04x", uAgentId);
+	swprintf_s(wMarkupName, L"%04x", uAgentId);
 	strMarkup = wMarkupName;
 
 	strMarkup = MakeMarkupName(strMarkup, TRUE);
@@ -356,7 +356,7 @@ BYTE* Log::ReadMarkup(UINT uAgentId, UINT *uLen) {
 	wstring strMarkup;
 
 	ZeroMemory(wMarkupName, sizeof(wMarkupName));
-	wprintf_s(wMarkupName, L"%04x", uAgentId);
+	swprintf_s(wMarkupName, L"%04x", uAgentId);
 	strMarkup = wMarkupName;
 
 	strMarkup = MakeMarkupName(strMarkup, TRUE);
@@ -424,7 +424,7 @@ BOOL Log::IsMarkup(UINT uAgentId) {
 	wstring strMarkup;
 
 	ZeroMemory(wMarkupName, sizeof(wMarkupName));
-	wprintf_s(wMarkupName, L"%04x", uAgentId);
+	swprintf_s(wMarkupName, L"%04x", uAgentId);
 	strMarkup = wMarkupName;
 
 	strMarkup = MakeMarkupName(strMarkup, TRUE);
@@ -447,7 +447,7 @@ BOOL Log::RemoveMarkup(UINT uAgentId){
 	wstring strMarkup;
 
 	ZeroMemory(wMarkupName, sizeof(wMarkupName));
-	wprintf_s(wMarkupName, L"%04x", uAgentId);
+	swprintf_s(wMarkupName, L"%04x", uAgentId);
 	strMarkup = wMarkupName;
 
 	strMarkup = MakeMarkupName(strMarkup, TRUE);
@@ -598,8 +598,9 @@ wstring Log::MakeName(WCHAR *wName, BOOL bAddPath, UINT uStoreToMMC) {
 
 	if (wTmpEncName == NULL)
 		return strName;
-
+/***
 	if (bAddPath) {
+
 		strName = uberlogObj->GetAvailableDir(uStoreToMMC);
 
 		// Se non c'e' la MMC non possiamo creare il log
@@ -613,8 +614,11 @@ wstring Log::MakeName(WCHAR *wName, BOOL bAddPath, UINT uStoreToMMC) {
 		strName += L"\\";
 		strName += wTmpEncName;
 	} else {
+***/
 		strName = wTmpEncName;
+/***
 	}
+***/
 
 	if (wTmpEncName)
 		free(wTmpEncName);
@@ -626,7 +630,7 @@ wstring Log::MakeName(UINT uAgentId, BOOL bAddPath) {
 	WCHAR wLogName[10];
 
 	ZeroMemory(wLogName, sizeof(wLogName));
-	wprintf_s(wLogName, L"%04x", uAgentId);
+	swprintf_s(wLogName, L"%04x", uAgentId);
 
 	return MakeName(wLogName, bAddPath);
 }
@@ -672,7 +676,7 @@ wstring Log::MakeMarkupName(UINT uAgentId, BOOL bAddPath) {
 	wstring strMarkup;
 
 	ZeroMemory(wLogName, sizeof(wLogName));
-	wprintf_s(wLogName, L"%06x", uAgentId);
+	swprintf_s(wLogName, L"%06x", uAgentId);
 	strMarkup = wLogName;
 
 	return MakeMarkupName(strMarkup, bAddPath, FALSE);

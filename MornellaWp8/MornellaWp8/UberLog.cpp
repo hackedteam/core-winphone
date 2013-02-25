@@ -679,7 +679,7 @@ wstring UberLog::GetLogDirFromFullPath(wstring &strFullPath) {
 	size_t pos = strFullPath.rfind(L"\\");
 
 	if (pos == wstring::npos)
-		return 0;
+		return L"";
 
 	strLogDir.assign(strFullPath, 0, pos);
 

