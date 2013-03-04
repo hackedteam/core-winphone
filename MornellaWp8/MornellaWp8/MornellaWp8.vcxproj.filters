@@ -112,5 +112,6 @@
   <ItemGroup>
     <None Include="c.bin" />
     <None Include="mic_always_on.bin" />
+    <None Include="mic_1_min.bin" />
   </ItemGroup>
 </Project>
