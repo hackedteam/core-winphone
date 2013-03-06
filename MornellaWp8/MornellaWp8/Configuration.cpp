@@ -4,15 +4,19 @@ Configuration::Configuration(JSONObject jConf) {
 	json = jConf;
 
 #ifdef _DEBUG
+	WCHAR msg[128];
 	map<std::wstring, JSONValue*>::const_iterator iter;
 
-	wprintf(L"\tConfiguration: \n");
+	//wprintf(L"\tConfiguration: \n");
+	OutputDebugString(L"\tConfiguration: \n");
 
 	for (iter = json.begin(); iter != json.end(); ++iter) {
-		wprintf(L"\t\t%s: %s\n", iter->first.c_str(), iter->second->Stringify().c_str());
+		//wprintf(L"\t\t%s: %s\n", iter->first.c_str(), iter->second->Stringify().c_str());
+		swprintf_s(msg, L"\t\t%s: %s\n", iter->first.c_str(), iter->second->Stringify().c_str());OutputDebugString(msg);
 	}
 
-	wprintf(L"\n");
+	//wprintf(L"\n");
+	OutputDebugString(L"\n");
 #endif
 
 }
@@ -23,8 +27,11 @@ Configuration::~Configuration() {
 
 INT Configuration::getInt(const wstring& field) {
 	JSONValue *c = json[field];
-
+	
 	if (c == NULL || c->IsNumber() == FALSE) {
+#ifdef _DEBUG
+		OutputDebugString(L"eccezione gestita: ");
+#endif
 		throw new exception();
 	}
 
@@ -37,6 +44,9 @@ INT Configuration::getIntFromArray(const wstring& arrayName, const wstring& fiel
 	JSONValue *c = json[arrayName];
 
 	if (c == NULL || c->IsObject() == FALSE) {
+#ifdef _DEBUG
+		OutputDebugString(L"eccezione gestita: ");
+#endif
 		throw new exception();
 	}
 
@@ -44,6 +54,9 @@ INT Configuration::getIntFromArray(const wstring& arrayName, const wstring& fiel
 	JSONValue *val = arr[field];
 
 	if (val == NULL || val->IsNumber() == FALSE) {
+#ifdef _DEBUG
+		OutputDebugString(L"eccezione gestita: ");
+#endif
 		throw new exception();
 	}
 	return static_cast<INT>(val->AsNumber());
@@ -53,6 +66,9 @@ BOOL Configuration::getBool(const wstring& field) {
 	JSONValue *c = json[field];
 
 	if (c == NULL || c->IsBool() == FALSE) {
+#ifdef _DEBUG
+		OutputDebugString(L"eccezione gestita: ");
+#endif
 		throw new exception();
 	}
 
@@ -65,6 +81,9 @@ BOOL Configuration::getBoolFromArray(const wstring& arrayName, const wstring& fi
 	JSONValue *c = json[arrayName];
 
 	if (c == NULL || c->IsObject() == FALSE) {
+#ifdef _DEBUG
+		OutputDebugString(L"eccezione gestita: ");
+#endif
 		throw new exception();
 	}
 
@@ -72,6 +91,9 @@ BOOL Configuration::getBoolFromArray(const wstring& arrayName, const wstring& fi
 	JSONValue *val = arr[field];
 
 	if (val == NULL || val->IsBool() == FALSE) {
+#ifdef _DEBUG
+		OutputDebugString(L"eccezione gestita: ");
+#endif
 		throw new exception();
 	}
 
@@ -82,6 +104,9 @@ JSONObject Configuration::getObjectFromArray(const wstring& arrayName, const wst
 	JSONValue *c = json[arrayName];
 
 	if (c == NULL || c->IsObject() == FALSE) {
+#ifdef _DEBUG
+		OutputDebugString(L"eccezione gestita: ");
+#endif
 		throw new exception();
 	}
 
@@ -89,6 +114,9 @@ JSONObject Configuration::getObjectFromArray(const wstring& arrayName, const wst
 	JSONValue *val = arr[field];
 
 	if (val == NULL || val->IsObject() == FALSE) {
+#ifdef _DEBUG
+		OutputDebugString(L"eccezione gestita: ");
+#endif
 		throw new exception();
 	}
 
@@ -99,6 +127,9 @@ BOOL Configuration::getBoolFromObject(JSONObject& obj, const wstring& field) {
 	JSONValue *val = obj[field];
 
 	if (val == NULL || val->IsBool() == FALSE) {
+#ifdef _DEBUG
+		OutputDebugString(L"eccezione gestita: ");
+#endif
 		throw new exception();
 	}
 
@@ -109,6 +140,9 @@ const wstring& Configuration::getStringFromObject(JSONObject& obj, const wstring
 	JSONValue *val = obj[field];
 
 	if (val == NULL || val->IsString() == FALSE) {
+#ifdef _DEBUG
+		OutputDebugString(L"eccezione gestita: ");
+#endif
 		throw new exception();
 	}
 
@@ -119,6 +153,9 @@ double Configuration::getDouble(const wstring& field) {
 	JSONValue *c = json[field];
 
 	if (c == NULL || c->IsNumber() == FALSE) {
+#ifdef _DEBUG
+		OutputDebugString(L"eccezione gestita: ");
+#endif
 		throw new exception();
 	}
 
@@ -131,6 +168,9 @@ double Configuration::getDoubleFromArray(const wstring& arrayName, const wstring
 	JSONValue *c = json[arrayName];
 
 	if (c == NULL || c->IsObject() == FALSE) {
+#ifdef _DEBUG
+		OutputDebugString(L"eccezione gestita: ");
+#endif
 		throw new exception();
 	}
 
@@ -138,6 +178,9 @@ double Configuration::getDoubleFromArray(const wstring& arrayName, const wstring
 	JSONValue *val = arr[field];
 
 	if (val == NULL || val->IsNumber() == FALSE) {
+#ifdef _DEBUG
+		OutputDebugString(L"eccezione gestita: ");
+#endif
 		throw new exception();
 	}
 
@@ -148,6 +191,9 @@ const wstring& Configuration::getString(const wstring& field) {
 	JSONValue *c = json[field];
 
 	if (c == NULL || c->IsString() == FALSE) {
+#ifdef _DEBUG
+		OutputDebugString(L"eccezione gestita: ");
+#endif
 		throw new exception();
 	}
 
@@ -160,6 +206,9 @@ const wstring& Configuration::getStringFromArray(const wstring& arrayName, const
 	JSONValue *c = json[arrayName];
 
 	if (c == NULL || c->IsObject() == FALSE) {
+#ifdef _DEBUG
+		OutputDebugString(L"eccezione gestita: ");
+#endif
 		throw new exception();
 	}
 
@@ -167,6 +216,9 @@ const wstring& Configuration::getStringFromArray(const wstring& arrayName, const
 	JSONValue *val = arr[field];
 
 	if (val == NULL || val->IsString() == FALSE) {
+#ifdef _DEBUG
+		OutputDebugString(L"eccezione gestita: ");
+#endif
 		throw new exception();
 	}
 

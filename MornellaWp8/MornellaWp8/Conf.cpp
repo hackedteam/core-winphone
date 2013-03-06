@@ -50,7 +50,10 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 		wstring moduleName = c->AsString();
 
 #ifdef _DEBUG
-		wprintf(L"Parsing Module: %s\n", moduleName.c_str());
+		//wprintf(L"Parsing Module: %s\n", moduleName.c_str());
+		WCHAR msg[128];
+		swprintf_s(msg, L"Parsing Module: %s\n", moduleName.c_str());OutputDebugString(msg);
+
 #endif
 
 		do {
@@ -162,8 +165,10 @@ BOOL WINAPI Conf::ParseAction(JSONArray js) {
 		}
 
 #ifdef _DEBUG
+		WCHAR msg[128];
 		wstring moduleName = jo[L"desc"]->AsString();
-		wprintf(L"Parsing Action: \"%s\"\n", moduleName.c_str());
+		//wprintf(L"Parsing Action: \"%s\"\n", moduleName.c_str());
+		swprintf_s(msg, L"Parsing Action: \"%s\"\n", moduleName.c_str());OutputDebugString(msg);
 #endif
 
 		actionsManager->add(i, c->AsArray());
@@ -190,7 +195,9 @@ BOOL WINAPI Conf::ParseEvent(JSONArray js) {
 		wstring eventName = c->AsString();
 
 #ifdef _DEBUG
-		wprintf(L"Parsing Event: %s\n", eventName.c_str());
+		WCHAR msg[128];
+		//wprintf(L"Parsing Event: %s\n", eventName.c_str());
+		swprintf_s(msg, L"Parsing Event: %s\n", eventName.c_str());OutputDebugString(msg);
 #endif
 		
 		do {

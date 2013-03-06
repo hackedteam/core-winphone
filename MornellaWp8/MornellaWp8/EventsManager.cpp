@@ -177,14 +177,17 @@ BOOL EventsManager::disable(INT eventIndex) {
 
 #ifdef _DEBUG
 void EventsManager::dumpEvents() {
+	WCHAR msg[128];
 	vector<Event *>::const_iterator iter;
 
 	lock();
 
-	wprintf(L"Dumping Events:\n");
+	//wprintf(L"Dumping Events:\n");
+	OutputDebugString(L"Dumping Events:\n");
 
 	for (iter = eventsList.begin(); iter != eventsList.end(); ++iter) {
-		wprintf(L"%s\n", (*iter)->getName().c_str());
+		//wprintf(L"%s\n", (*iter)->getName().c_str());
+		swprintf_s(msg, L"%s\n", (*iter)->getName().c_str());OutputDebugString(msg);
 	}
 
 	unlock();

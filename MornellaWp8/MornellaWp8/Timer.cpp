@@ -73,8 +73,10 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 	} catch (...) {
 		desc = L"";
 	}
+	WCHAR msg[256];
+	//wprintf(L"Debug - Timer.cpp - Desc: %s, iter: %d, delay: %d\n", desc.c_str(), iterations, delay / 1000);
+	swprintf_s(msg, L"Debug - Timer.cpp - Desc: %s, iter: %d, delay: %d\n", desc.c_str(), iterations, delay / 1000);OutputDebugString(msg);
 
-	wprintf(L"Debug - Timer.cpp - Desc: %s, iter: %d, delay: %d\n", desc.c_str(), iterations, delay / 1000);
 #endif
 
 	if (subType.compare(L"loop") == 0) {

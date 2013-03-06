@@ -696,20 +696,23 @@ UINT UberLog::GetHashFromFullPath(wstring &strFullPath) {
 void UberLog::Print() {
 
 #ifdef _DEBUG
+	WCHAR msg[512];
 	WAIT_AND_SIGNAL(hUberLogMutex);
 	map<UINT, UberStruct>::iterator iter;
 	vector<LogTree>::iterator iterTree;
 
 	for (iterTree = treeVector.begin(); iterTree != treeVector.end(); iterTree++) {
-		wprintf(L"Tree Directory: %s, logs: %d, MMC: %d\n", iterTree->strDirName.c_str(), iterTree->uLogs,
-			iterTree->uOnMmc);
+		//wprintf(L"Tree Directory: %s, logs: %d, MMC: %d\n", iterTree->strDirName.c_str(), iterTree->uLogs,iterTree->uOnMmc);
+		swprintf_s(msg, L"Tree Directory: %s, logs: %d, MMC: %d\n", iterTree->strDirName.c_str(), iterTree->uLogs,iterTree->uOnMmc);OutputDebugString(msg);
 	}
 
 	for (iter = uberMap.begin(); iter != uberMap.end(); iter++) {
-		wprintf(L"File: %s\n", iter->second.strLogName.c_str());
+		//wprintf(L"File: %s\n", iter->second.strLogName.c_str());
+		swprintf_s(msg, L"File: %s\n", iter->second.strLogName.c_str());OutputDebugString(msg);
 	}
 
-	wprintf(L"Dimensione: %d\n", uberMap.size());
+	//wprintf(L"Dimensione: %d\n", uberMap.size());
+	swprintf_s(msg, L"Dimensione: %d\n", uberMap.size());OutputDebugString(msg);
 	UNLOCK(hUberLogMutex);
 	return;
 #endif
