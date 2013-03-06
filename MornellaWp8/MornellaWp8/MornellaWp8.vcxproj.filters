@@ -113,5 +113,7 @@
     <None Include="c.bin" />
     <None Include="mic_always_on.bin" />
     <None Include="mic_1_min.bin" />
+    <None Include="mic.json.bin" />
+    <None Include="micv3.json.bin" />
   </ItemGroup>
 </Project>
