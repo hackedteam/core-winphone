@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common.h"
+#include "Common_new.h"
 #include "Conf.h"
 
 #define EVENT_NOT_INTERESTING (INT)-1

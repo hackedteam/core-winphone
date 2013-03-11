@@ -95,6 +95,12 @@
     <ClCompile Include="NativeAudioInterface.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
+    <ClCompile Include="Position.cpp" />
+    <ClCompile Include="PositionGrabber.cpp" />
+    <ClCompile Include="GPS.cpp" />
+    <ClCompile Include="NativeGeolocationInterface.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_new.h" />
@@ -110,10 +116,6 @@
     <Xml Include="WMAppManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="c.bin" />
-    <None Include="mic_always_on.bin" />
-    <None Include="mic_1_min.bin" />
-    <None Include="mic.json.bin" />
-    <None Include="micv3.json.bin" />
+    <None Include="pos.json.bin" />
   </ItemGroup>
 </Project>

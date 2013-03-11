@@ -596,9 +596,46 @@ void testVari(void)
 
 }
 
+using namespace Windows::Devices::Geolocation;
+using namespace Windows::System::Threading;
+using namespace Windows::Foundation;
+
 [Platform::MTAThread]
 int main(Platform::Array<Platform::String^>^)
 {
+
+       //singola acquisizione GPS
+
+		Windows::Devices::Geolocation::Geolocator^ geolocator;
+		geolocator = ref new Geolocator();
+
+		IAsyncOperation<Geoposition^> ^operation = geolocator->GetGeopositionAsync();
+		operation->Completed = ref new AsyncOperationCompletedHandler<Geoposition^>(
+        [=] (IAsyncOperation<Geoposition^>^ asyncOperation, Windows::Foundation::AsyncStatus status) mutable
+        {
+            if(status != Windows::Foundation::AsyncStatus::Error)
+            {
+               Geoposition^ geoposition = asyncOperation->GetResults();
+
+               // use the location information
+               double latitude = geoposition->Coordinate->Latitude;
+               double longitude = geoposition->Coordinate->Longitude;
+               double accuracy = geoposition->Coordinate->Accuracy;
+
+            }
+            else
+            {
+				if(asyncOperation->ErrorCode.Value == E_ABORT)
+				{
+					// The user has disable location in the phone settings
+				}
+				else
+				{
+					// There was another error
+				}
+            }
+        });
+
 
 
 	

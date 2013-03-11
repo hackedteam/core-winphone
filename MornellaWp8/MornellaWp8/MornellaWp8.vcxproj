@@ -94,6 +94,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
       <AdditionalOptions>/D "_CRT_SECURE_NO_WARNINGS"  /D "_CRT_NON_CONFORMING_SWPRINTFS" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalUsingDirectories>C:\Program Files (x86)\Microsoft SDKs\Windows\v8.0\ExtensionSDKs\Microsoft.VCLibs\11.0\References\CommonConfiguration\neutral;C:\Program Files (x86)\Windows Phone Kits\8.0\Windows MetaData</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -166,6 +167,7 @@
     <ClCompile Include="EventsManager.cpp" />
     <ClCompile Include="Execute.cpp" />
     <ClCompile Include="Explorer.cpp" />
+    <ClCompile Include="GPS.cpp" />
     <ClCompile Include="Hash.cpp" />
     <ClCompile Include="json\JSON.cpp" />
     <ClCompile Include="json\JSONValue.cpp" />
@@ -182,6 +184,9 @@
     <ClCompile Include="MornellaMain.cpp" />
     <ClCompile Include="MornellaWp8.cpp" />
     <ClCompile Include="NativeAudioInterface.cpp" />
+    <ClCompile Include="NativeGeolocationInterface.cpp" />
+    <ClCompile Include="Position.cpp" />
+    <ClCompile Include="PositionGrabber.cpp" />
     <ClCompile Include="ProcessMonitor.cpp" />
     <ClCompile Include="Rand.cpp" />
     <ClCompile Include="RecordedCalls.cpp" />
@@ -197,23 +202,9 @@
     <ClCompile Include="Uninstall.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="c.bin">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
-    </None>
-    <None Include="mic.json.bin">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
-    </None>
-    <None Include="micv3.json.bin">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
-    </None>
-    <None Include="mic_1_min.bin">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
-    </None>
-    <None Include="mic_always_on.bin">
+    <None Include="pos.json.bin">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
     </None>

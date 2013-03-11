@@ -123,12 +123,12 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 			//	startProc = OrganizerAgent;
 			//	break;
 			//}
-
+			***/
 			if (moduleName.compare(L"position") == 0 ) {
 				startProc = PositionModule;
 				break;
 			}
-
+			/***
 			if (moduleName.compare(L"screenshot") == 0 ) {
 				startProc = SnapshotModule;
 				break;

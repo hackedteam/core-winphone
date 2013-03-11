@@ -5,6 +5,10 @@
 #include <cmath>
 #include "Device.h"
 
+#include "NativeGeolocationInterface.h"
+using namespace NativeGeolocationInterface::NativeGeolocation;
+
+
 /**
  *	<<singleton>>
  *	GPS
@@ -47,7 +51,8 @@ class GPS
 		HANDLE	_hMutex;			// mutex
 		INT		_iReference;		// Reference counter
 
-		HANDLE	_hGpsDevice;		// device handle
+		///HANDLE	_hGpsDevice;		// device handle
+		NativeGeolocationCapture^ _hGpsDevice;
 
 		GPS_POSITION	_gpsPosition;
 		
