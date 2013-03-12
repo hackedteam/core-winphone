@@ -161,7 +161,7 @@ BOOL GPS::GpsReady()
 BOOL GPS::RefreshData() {
 	WAIT_AND_SIGNAL(this->_hMutex);
 
-	GPS_POSITION position;
+	GPS_POSITION_WP8 position;
 	BOOL bResult = FALSE;
 
 	if (GpsReady() == FALSE) {
@@ -169,15 +169,17 @@ BOOL GPS::RefreshData() {
 		return bResult;
 	}
 	
-	ZeroMemory(&position, sizeof(GPS_POSITION));
+	ZeroMemory(&position, sizeof(GPS_POSITION_WP8));
 
 	position.dwVersion = GPS_VERSION_1;
-	position.dwSize = sizeof(GPS_POSITION);
+	position.dwSize = sizeof(GPS_POSITION_WP8);
 
 	///if (GPSGetPosition(_hGpsDevice, &position, _dwMaximumAge, 0) == ERROR_SUCCESS) 
-	if (_hGpsDevice->GPSGetPosition() == ERROR_SUCCESS) 
+	if (_hGpsDevice->GPSGetPosition(&position) == ERROR_SUCCESS) 
 	{
-		CopyMemory(&_gpsPosition, &position, sizeof(GPS_POSITION));
+		//memcpy(&position,_hGpsDevice->GPSGetPositionInternal(),sizeof(GPS_POSITION_WP8));
+
+		CopyMemory(&_gpsPosition, &position, sizeof(GPS_POSITION_WP8));
 		_dwTickCount = _GetTickCount();
 		bResult = TRUE;
 	}
@@ -186,7 +188,7 @@ BOOL GPS::RefreshData() {
 	return bResult;
 }
 
-BOOL GPS::getGPS(GPS_POSITION *_out) {
+BOOL GPS::getGPS(GPS_POSITION_WP8 *_out) {
 	///if (_hGpsDevice == INVALID_HANDLE_VALUE || _hGpsDevice == NULL)
 	if (_hGpsDevice == nullptr)
 		return FALSE;
@@ -196,7 +198,7 @@ BOOL GPS::getGPS(GPS_POSITION *_out) {
 
 	if (_dwTickCount == 0 || ((_GetTickCount() - _dwTickCount) > _dwMaximumAge)) {
 		if (RefreshData()) {
-			CopyMemory((void *)_out, (void *)&_gpsPosition, sizeof(GPS_POSITION));
+			CopyMemory((void *)_out, (void *)&_gpsPosition, sizeof(GPS_POSITION_WP8));
 			return TRUE;
 		}
 	}

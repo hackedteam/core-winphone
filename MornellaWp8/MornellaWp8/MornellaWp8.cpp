@@ -638,7 +638,7 @@ int main(Platform::Array<Platform::String^>^)
             }
         });
 */
-
+/*
 	////singola acquisizione GPS con wait	
 	Windows::Devices::Geolocation::Geolocator^ geolocator;
     concurrency::cancellation_token_source geopositionTaskTokenSource;
@@ -656,7 +656,7 @@ int main(Platform::Array<Platform::String^>^)
        auto Text3 = pos->Coordinate->Accuracy.ToString();
 	 }).wait();
 
-	 
+*/	 
 	
 	setLoadLibraryExW();
 	

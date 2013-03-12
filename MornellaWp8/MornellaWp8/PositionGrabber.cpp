@@ -75,7 +75,7 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 		UINT uSize;
 		UINT uVersion;
 		FILETIME ft;
-		GPS_POSITION gps;
+		GPS_POSITION_WP8 gps;
 		DWORD dwDelimiter;
 	} GPSInfo;
 /***
@@ -290,7 +290,11 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 
 				// Logga la coordinata solo se abbiamo latitutine/longitudine valida e fix 3D
 				if ((gpsInfo.gps.dwValidFields & dwFields) == dwFields && gpsInfo.gps.FixType == GPS_FIX_3D)
+				{
+					//senza questa sleep non arriva alla funzione dei log e non si capisce il perche' 
+					_Sleep(1000);
 					break;
+				}
 			}
 
 			_WaitForSingleObject(eventHandle, 30000);
@@ -355,9 +359,14 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 					gpsInfo.ft.dwHighDateTime = ft.dwHighDateTime;
 					gpsInfo.ft.dwLowDateTime = ft.dwLowDateTime;
 					gpsInfo.dwDelimiter = LOG_DELIMITER;
+#ifdef _DEBUG
+					WCHAR msg[128];
+					swprintf_s(msg, L">>> Lat=%f Long=%f\n",gpsInfo.gps.dblLatitude,gpsInfo.gps.dblLongitude);OutputDebugString(msg);
+#endif
 
 					if (logGPS.WriteLog((BYTE *)&gpsInfo, sizeof(gpsInfo)))
 						bGPSEmpty = FALSE;
+
 				}
 			}
 		}

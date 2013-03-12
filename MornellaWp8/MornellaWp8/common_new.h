@@ -323,3 +323,4 @@ public:
     VOID* Scan0;
     UINT_PTR Reserved;
 };
+

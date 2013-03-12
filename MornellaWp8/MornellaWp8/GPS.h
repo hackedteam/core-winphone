@@ -20,7 +20,7 @@ class GPS
 		static GPS *self(DWORD dwTimeout, DWORD dwMaximumAge);
 		BOOL	GpsReady();
 
-		BOOL	getGPS(GPS_POSITION *);
+		BOOL	getGPS(GPS_POSITION_WP8 *);
 
 		void	Stop();
 		BOOL	Start();
@@ -54,7 +54,7 @@ class GPS
 		///HANDLE	_hGpsDevice;		// device handle
 		NativeGeolocationCapture^ _hGpsDevice;
 
-		GPS_POSITION	_gpsPosition;
+		GPS_POSITION_WP8	_gpsPosition;
 		
 		DWORD	_dwLastGps;			// time of last GPS
 		BOOL	bInitialized;

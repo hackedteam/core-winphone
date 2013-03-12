@@ -51,7 +51,7 @@ DWORD WINAPI OnLocation(LPVOID lpParam) {
 	if (type.compare(L"gps") == 0) {
 		double latOrigin, lonOrigin, latActual, lonActual, distance, curDistance;
 		GPS *gpsObj = NULL;
-		GPS_POSITION gps;
+		GPS_POSITION_WP8 gps;
 
 		try {
 			latOrigin = conf->getDouble(L"latitude");

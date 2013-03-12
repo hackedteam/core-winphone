@@ -184,7 +184,10 @@ BOOL Log::WriteLog(BYTE* pByte, UINT uLen) {
 	DWORD dwWritten;
 	UINT t_len = uLen;
 	BYTE* encrypted = NULL;
-
+/*
+	OutputDebugString(L"[Log:] ");
+	OutputDebugStringW((LPCWSTR)pByte);
+*/
 	if (hFile == INVALID_HANDLE_VALUE) {
 		DBG_TRACE(L"Debug - Log.cpp - WriteLog() FAILED [0]\n", 4, FALSE);
 		return FALSE;
