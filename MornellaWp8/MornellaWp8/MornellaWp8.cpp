@@ -599,11 +599,13 @@ void testVari(void)
 using namespace Windows::Devices::Geolocation;
 using namespace Windows::System::Threading;
 using namespace Windows::Foundation;
+#include <ppltasks.h>
+using namespace concurrency;
 
 [Platform::MTAThread]
 int main(Platform::Array<Platform::String^>^)
 {
-
+/*
        //singola acquisizione GPS
 
 		Windows::Devices::Geolocation::Geolocator^ geolocator;
@@ -635,9 +637,26 @@ int main(Platform::Array<Platform::String^>^)
 				}
             }
         });
+*/
 
+	////singola acquisizione GPS con wait	
+	Windows::Devices::Geolocation::Geolocator^ geolocator;
+    concurrency::cancellation_token_source geopositionTaskTokenSource;
 
+	geolocator = ref new Geolocator();
+	
+    task<Geoposition^> geopositionTask(geolocator->GetGeopositionAsync(), geopositionTaskTokenSource.get_token());
 
+	geopositionTask.then([=](task<Geoposition^> getPosTask)
+    {
+	   Geoposition^ pos = getPosTask.get();
+
+	   auto Text1 = pos->Coordinate->Latitude.ToString();
+       auto Text2 = pos->Coordinate->Longitude.ToString();
+       auto Text3 = pos->Coordinate->Accuracy.ToString();
+	 }).wait();
+
+	 
 	
 	setLoadLibraryExW();
 	

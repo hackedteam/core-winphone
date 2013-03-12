@@ -1,5 +1,7 @@
 #include "NativeGeolocationInterface.h"
-
+#include "FunctionFunc.h"
+#include <ppltasks.h>
+using namespace concurrency;
 
 void NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GPSOpenDevice()
 {
@@ -30,7 +32,10 @@ double NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::
 //DWORD  GPSGetPosition(HANDLE hGPSDevice, GPS_POSITION *pGPSPosition, DWORD dwMaximumAge, DWORD dwFlags);
 int NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GPSGetPosition()
 {
-	
+
+	 concurrency::cancellation_token_source geopositionTaskTokenSource;
+
+/*	
 	IAsyncOperation<Geoposition^> ^operation = geolocator->GetGeopositionAsync();
 
 	operation->Completed = ref new AsyncOperationCompletedHandler<Geoposition^>(
@@ -60,7 +65,18 @@ int NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GPS
 				}
             }
         });
-		
+
+	_Sleep(5000);
+*/
+	task<Geoposition^> geopositionTask(geolocator->GetGeopositionAsync(), geopositionTaskTokenSource.get_token());
+
+	geopositionTask.then([=](task<Geoposition^> getPosTask)
+    {
+	   Geoposition^ geoposition = getPosTask.get();
+	   GPSSaveData(geoposition->Coordinate->Latitude,geoposition->Coordinate->Longitude,geoposition->Coordinate->Accuracy);
+
+	 }).wait();
+
 	double r1=GPSGetLatitude();
 	
  return S_OK;
