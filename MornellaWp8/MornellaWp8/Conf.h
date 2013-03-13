@@ -8,6 +8,10 @@
 
 using namespace std;
 
+//lo utilizzo per "forzare" quelle parti di codici a prendere a mano i parametri es. chiavi di decript ecc..
+//dato che per ora non posso sincare
+#define fRELEASE 
+
 #ifndef __Conf_h__
 #define __Conf_h__
 

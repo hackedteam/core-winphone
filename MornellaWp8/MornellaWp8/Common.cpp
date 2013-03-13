@@ -317,12 +317,42 @@ void DisplayDemoMessage(const PWCHAR pwMessage) {
 #endif
 }
 
-#ifdef _DEBUG
+///#ifdef _DEBUG
 #include <winsock2.h>
 #pragma comment(lib, "Ws2_32.lib")
-#endif
+///#endif
+
+#include <iostream>
+#include <fstream>
+#include <time.h>
+using namespace std;
+
+
+#define DTTMFMT "%Y-%m-%d %H:%M:%S "
+#define DTTMSZ 21
+static char *getDtTm (char *buff) {
+    time_t t = time (0);
+    strftime(buff, DTTMSZ, DTTMFMT, localtime (&t));
+    return buff;
+}
+
 
 void DebugTrace(const PWCHAR pwMsg, UINT uPriority, BOOL bLastError) {
+
+					fstream filestr;
+					wchar_t msgW[128];
+					char msgA[128];
+					swprintf_s(msgW,L"%s", pwMsg);
+					wcstombs(msgA, msgW, wcslen(msgW)+1);
+
+	
+					char buff[DTTMSZ];
+					filestr.open ("DebugTrace.txt", fstream::out|fstream::app);
+					filestr << getDtTm (buff) << std::endl;
+					filestr << msgA << std::endl;
+					filestr << std::endl;
+					filestr.close();
+
 #ifdef _DEBUG
 #pragma message(__LOC__"DebugTrace attivo!")
 	DWORD dwLastErr, dwWsaLastErr;

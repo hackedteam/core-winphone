@@ -171,9 +171,9 @@ BOOL Task::TaskInit() {
 
 #ifndef _DEBUG
 	if (getDemo()) {
-		MessageBeep(MB_OK);
-		MessageBeep(MB_OK);
-		BlinkLeds();
+		///MessageBeep(MB_OK);
+		///MessageBeep(MB_OK);
+		///BlinkLeds();
 	}
 #endif
 	
@@ -189,8 +189,8 @@ BOOL Task::CheckActions() {
 
 #ifndef _DEBUG
 	if (getDemo()) {
-		MessageBeep(MB_OK);
-		BlinkLeds();
+		///MessageBeep(MB_OK);
+		///BlinkLeds();
 	}
 #endif
 

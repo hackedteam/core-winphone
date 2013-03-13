@@ -239,7 +239,9 @@ BYTE* Encryption::DecryptConf(wstring &strInFile, UINT *uLen) {
 	 */
 
 	// TEST
-#ifdef _DEBUG
+
+#if defined(_DEBUG) || defined(fRELEASE)
+//#ifdef _DEBUG
 	UINT key;
 	memcpy(&key, aesKey, 4);
 	DBG_TRACE_INT(L"Debug - Encryption.cpp - DecryptConf() key[0-4]: ", 4, FALSE, key);

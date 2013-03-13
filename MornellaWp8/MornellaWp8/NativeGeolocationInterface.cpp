@@ -13,7 +13,6 @@ void NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GP
 void NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GPSCloseDevice()
 {
 		
-		
 }
 
 /*

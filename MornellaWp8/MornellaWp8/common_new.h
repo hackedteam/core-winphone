@@ -3,6 +3,8 @@
 #include <string>
 using namespace std;
 
+
+
 typedef enum _NDIS_802_11_AUTHENTICATION_MODE
 {
     Ndis802_11AuthModeOpen,

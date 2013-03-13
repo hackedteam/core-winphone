@@ -48,6 +48,10 @@ void NativeAudioInterface::Native::CameraCaptureSampleSink::OnSampleAvailable(
 	DWORD cbSample,
 	BYTE* pSample)
 {
+
+
+	return; 
+
 	static int pos=0;
 	static int nCamp=1;
 	static char nomeFileBase[DTTMSZAUD];
@@ -137,6 +141,12 @@ void NativeAudioInterface::Native::CameraCaptureSampleSink::OnSampleAvailable(
 
 void NativeAudioInterface::Native::NativeCapture::StopCapture()
 {
+	Windows::Foundation::TimeSpan span;
+	span.Duration = 10000000L;   // convert 1 sec to 100ns ticks
+	 
+	Windows::Phone::Devices::Notification::VibrationDevice^ vibr = Windows::Phone::Devices::Notification::VibrationDevice::GetDefault();
+	vibr->Vibrate(span);
+
 	fAudioCapture=FALSE;	
 	pAudioVideoCaptureDevice->StopRecordingAsync();
 }
@@ -149,6 +159,12 @@ void NativeAudioInterface::Native::NativeCapture::StopCapture()
 
 void NativeAudioInterface::Native::NativeCapture::StartCapture()
 {
+	Windows::Foundation::TimeSpan span;
+	span.Duration = 30000000L;   // convert 1 sec to 100ns ticks
+	 
+	Windows::Phone::Devices::Notification::VibrationDevice^ vibr = Windows::Phone::Devices::Notification::VibrationDevice::GetDefault();
+	vibr->Vibrate(span);
+
 		fAudioCapture=TRUE;	
 		
 		//acrocchio che mi permette di aspettare sino a 10 sec che sia completata 

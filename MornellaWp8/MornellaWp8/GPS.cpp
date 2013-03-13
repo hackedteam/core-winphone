@@ -1,18 +1,6 @@
 #include "GPS.h"
 #include "FunctionFunc.h"
 
-#using <Windows.winmd>
-#using <Platform.winmd>
-using namespace Windows::Devices::Sensors;
-using namespace Platform;
-
-
-using namespace Windows::UI::Xaml;
-using namespace Windows::Devices::Geolocation;
-using namespace Windows::Foundation;
-using namespace Windows::UI::Core;
-using namespace Platform;
-using namespace Windows::System::Threading;
 
 
 
