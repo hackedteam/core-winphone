@@ -333,8 +333,6 @@ BOOL Conf::LoadConf() {
 	UINT Len = 0, i = 0, num = 0;
 	BOOL bBackConf = FALSE;
 	
-	OutputDebugString(strEncryptedConfName.c_str());
-
 	if (strEncryptedConfName.empty())
 		return NULL;
 

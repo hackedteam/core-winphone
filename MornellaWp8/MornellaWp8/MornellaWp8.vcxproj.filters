@@ -117,5 +117,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="pos.json.bin" />
+    <None Include="mic.json.bin" />
   </ItemGroup>
 </Project>

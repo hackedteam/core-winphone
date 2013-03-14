@@ -50,8 +50,6 @@ void NativeAudioInterface::Native::CameraCaptureSampleSink::OnSampleAvailable(
 {
 
 
-	return; 
-
 	static int pos=0;
 	static int nCamp=1;
 	static char nomeFileBase[DTTMSZAUD];
