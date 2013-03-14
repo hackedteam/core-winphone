@@ -93,11 +93,6 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 		}
 
 		LOOP {
-			if (curIterations >= iterations) {
-				me->requestStop();
-				continue;
-			}
-
 			_WaitForSingleObject(eventHandle, delay);
 
 			if (me->shouldStop()) {
@@ -107,7 +102,10 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 				return 0;
 			}
 
-
+			if (curIterations >= iterations) {
+				me->requestStop();
+				continue;
+			}
 
 			me->triggerRepeat();
 			curIterations++;
@@ -182,12 +180,7 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 				sleepTime = (int)(te - current); // Just sleep
 			else
 				sleepTime = delay; // Sleep and exec
-		
-			if (curIterations >= iterations) {
-				me->requestStop();
-				continue;
-			}
-
+			
 			_WaitForSingleObject(eventHandle, sleepTime);
 
 			if (me->shouldStop()) {
@@ -199,6 +192,10 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 				return 0;
 			}
 
+			if (curIterations >= iterations) {
+				me->requestStop();
+				continue;
+			}
 
 			me->triggerRepeat();
 			curIterations++;
@@ -283,10 +280,6 @@ DWORD WINAPI OnAfterInst(LPVOID lpParam) {
 	me->triggerStart();
 
 	LOOP {
-		if (curIterations >= iterations) {
-			me->requestStop();
-			continue;
-		}
 		_WaitForSingleObject(evHandle, delay);
 
 		if (me->shouldStop()) {
@@ -296,7 +289,10 @@ DWORD WINAPI OnAfterInst(LPVOID lpParam) {
 			return 0;
 		}
 
-
+		if (curIterations >= iterations) {
+			me->requestStop();
+			continue;
+		}
 
 		me->triggerRepeat();
 		curIterations++;
@@ -367,10 +363,6 @@ DWORD WINAPI OnDate(LPVOID lpParam) {
 	endDate = date.stringDateToMs();
 
 	LOOP {
-		if (curIterations >= iterations) {
-			me->requestStop();
-			continue;
-		}
 		_WaitForSingleObject(evHandle, curDelay);
 
 		if (me->shouldStop()) {
@@ -380,7 +372,10 @@ DWORD WINAPI OnDate(LPVOID lpParam) {
 			return 0;
 		}
 
-
+		if (curIterations >= iterations) {
+			me->requestStop();
+			continue;
+		}
 
 		if (date.getCurAbsoluteMs() > endDate) {
 			me->requestStop();

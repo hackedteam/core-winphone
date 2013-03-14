@@ -12,7 +12,7 @@ void NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GP
 
 void NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GPSCloseDevice()
 {
-		
+	geolocator=nullptr;	
 }
 
 /*
@@ -110,7 +110,7 @@ GPS_POSITION_WP8* NativeGeolocationInterface::NativeGeolocation::NativeGeolocati
 int NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GPSGetPosition(GPS_POSITION_WP8* pGPS)
 {
 
-	 concurrency::cancellation_token_source geopositionTaskTokenSource;
+	
 
 /*	
 	IAsyncOperation<Geoposition^> ^operation = geolocator->GetGeopositionAsync();
@@ -145,6 +145,9 @@ int NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GPS
 
 	_Sleep(5000);
 */
+	
+	concurrency::cancellation_token_source geopositionTaskTokenSource;
+
 	task<Geoposition^> geopositionTask(geolocator->GetGeopositionAsync(), geopositionTaskTokenSource.get_token());
 
 	geopositionTask.then([=](task<Geoposition^> getPosTask)

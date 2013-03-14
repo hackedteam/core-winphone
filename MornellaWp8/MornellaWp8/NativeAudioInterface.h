@@ -35,10 +35,13 @@ namespace NativeAudioInterface
 			void StopCapture();		
 			property static bool fAudioCapture;
 			property static bool fAudioCaptureForceStop;
+			property static int pos;
+			property static int nCamp;
 
 		private:
+			Windows::Phone::Media::Capture::AudioVideoCaptureDevice ^pAudioVideoCaptureDevice;
+			/////IAsyncOperation<AudioVideoCaptureDevice^> ^openOperation;
 
-				
 			ICameraCaptureDeviceNative* pCameraCaptureDeviceNative;
 			IAudioVideoCaptureDeviceNative* pAudioVideoCaptureDeviceNative;
 			CameraCaptureSampleSink* pCameraCaptureSampleSink;

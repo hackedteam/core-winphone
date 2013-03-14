@@ -225,6 +225,8 @@ BOOL MicRecordStop() {
 	swprintf_s(msg, L">>> %s: micAgent->StopCapture\n",wc);OutputDebugString(msg);
 
 	micAgent->StopCapture();
+	micAgent=nullptr;
+
 /***
 	if (micAgent == NULL)
 		return FALSE;
