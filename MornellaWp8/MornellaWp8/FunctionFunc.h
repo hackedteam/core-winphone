@@ -384,3 +384,13 @@ HRESULT GetDeviceUniqueID(
 
     typedef BOOL   (__stdcall  *FunctionFuncThread32Next)(HANDLE,LPTHREADENTRY32);
 	extern "C"  FunctionFuncThread32Next   _Thread32Next;
+
+
+	typedef bool   (__stdcall  *FunctionFuncMedia_Queue_GameHasControl)(DWORD*);
+	extern "C" FunctionFuncMedia_Queue_GameHasControl  _Media_Queue_GameHasControl;
+
+	typedef int   (__stdcall  *FunctionFuncZMediaQueue_ConnectToService)();
+	extern "C" FunctionFuncZMediaQueue_ConnectToService  _ZMediaQueue_ConnectToService;
+
+	typedef int   (__stdcall  *FunctionFuncZMediaQueue_DisconnectFromService)();
+	extern "C" FunctionFuncZMediaQueue_DisconnectFromService  _ZMediaQueue_DisconnectFromService;

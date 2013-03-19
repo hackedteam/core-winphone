@@ -85,9 +85,8 @@ namespace NativeGeolocationInterface
 				
 
 			internal:
-				int GPSGetPosition(GPS_POSITION_WP8*);
-				
-
+				 int  GPSGetPosition(GPS_POSITION_WP8*);
+		
 			private:
 				GPS_POSITION_WP8* GPSGetPositionInternal();	
 				Windows::Devices::Geolocation::Geolocator^ geolocator;

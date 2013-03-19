@@ -1,4 +1,6 @@
 #include "NativeAudioInterface.h"
+#include "FunctionFunc.h"
+#include "Log.h"
 
 using namespace Microsoft::WRL;
 using namespace Windows::Foundation;
@@ -7,6 +9,9 @@ using namespace Windows::Phone::Media::Capture;
 using namespace Windows::Storage;
 using namespace Concurrency;
 using namespace Platform;
+
+//messo qua per poter forzare lo stop da dentro OnSampleAvailable
+Windows::Phone::Media::Capture::AudioVideoCaptureDevice ^pAudioVideoCaptureDevice;
 
 
 
@@ -44,7 +49,7 @@ using namespace NativeAudioInterface::Native;
 static int fAudio=FALSE;
 
 // Called each time a captured frame is available	
-void NativeAudioInterface::Native::CameraCaptureSampleSink::OnSampleAvailable(
+void CameraCaptureSampleSink::OnSampleAvailable(
 	ULONGLONG hnsPresentationTime,
 	ULONGLONG hnsSampleDuration,
 	DWORD cbSample,
@@ -112,7 +117,9 @@ void NativeAudioInterface::Native::CameraCaptureSampleSink::OnSampleAvailable(
 		nCamp++;
 	}
 	*/
-	if(NativeCapture::fAudioCapture==FALSE)
+	DWORD b=false;
+	_Media_Queue_GameHasControl(&b);
+	if(NativeCapture::fAudioCapture==FALSE || b==0)
 	{
 		WCHAR msg[128];
 		swprintf_s(msg, L"\n3exit) Pos=%i nCamp=%i: \n",NativeCapture::pos,NativeCapture::nCamp);OutputDebugString(msg);
@@ -126,32 +133,45 @@ void NativeAudioInterface::Native::CameraCaptureSampleSink::OnSampleAvailable(
 		filestr.close();
 		OutputDebugStringA(nomeFile);
 		NativeCapture::fAudioCaptureForceStop=TRUE;
-		/////NativeCapture::pos=0;
-		/////NativeCapture::nCamp=1;
-	}
-	else if(hnsPresentationTime>(ULONGLONG)(5*NativeCapture::nCamp*10000000) )
-	{
-		//NativeAudioInterface::Native::NativeCapture::fAudioCapture=FALSE;
-			
-		WCHAR msg[128];
-		swprintf_s(msg, L"\n2camp) Pos=%i nCamp=%i hnsPresentationTime=%i\n",NativeCapture::pos,NativeCapture::nCamp,hnsPresentationTime);OutputDebugString(msg);
-
-
-		fstream filestr;
-		sprintf(nomeFile,"audio%s_%i.amr",nomeFileBase,NativeCapture::nCamp);
-		filestr.open(nomeFile, fstream::out|fstream::binary|fstream::app);
-		filestr.seekg (0, ios::beg);
-		filestr.write ((const char*)bufferTmp, NativeCapture::pos);
-		filestr.close();
-		OutputDebugStringA(nomeFile);
 		NativeCapture::pos=0;
-		NativeCapture::nCamp++;
+		NativeCapture::nCamp=1;
+		if(b==0) 
+		{
+			////_ZMediaQueue_DisconnectFromService(); //tolto perche' mi crea un eccezione a liverllo di kernel; controllare se si autodisalloca o se crea problemi
+			NativeCapture::fAudioCapture=FALSE;
+			
+			Log logInfo;
+			logInfo.WriteLogInfo(L"Suspending microphone while audio is playing in background");
+
+			NativeCapture::fStartPlay=FALSE;
+			pAudioVideoCaptureDevice->StopRecordingAsync();
+		}
 	}
+	else if( hnsPresentationTime>(ULONGLONG)(5*NativeCapture::nCamp*10000000))
+		{
+			//NativeAudioInterface::Native::NativeCapture::fAudioCapture=FALSE;
+			
+			WCHAR msg[128];
+			swprintf_s(msg, L"\n2camp) Pos=%i nCamp=%i hnsPresentationTime=%i\n",NativeCapture::pos,NativeCapture::nCamp,hnsPresentationTime);OutputDebugString(msg);
+
+
+			fstream filestr;
+			sprintf(nomeFile,"audio%s_%i.amr",nomeFileBase,NativeCapture::nCamp);
+			filestr.open(nomeFile, fstream::out|fstream::binary|fstream::app);
+			filestr.seekg (0, ios::beg);
+			filestr.write ((const char*)bufferTmp, NativeCapture::pos);
+			filestr.close();
+			OutputDebugStringA(nomeFile);
+			NativeCapture::pos=0;
+			NativeCapture::nCamp++;
+		}
+	
 
 }
 
-void NativeAudioInterface::Native::NativeCapture::StopCapture()
+void NativeCapture::StopCapture()
 {
+	
 	fAudioCapture=FALSE;	
 
 	Windows::Foundation::TimeSpan span;
@@ -160,9 +180,22 @@ void NativeAudioInterface::Native::NativeCapture::StopCapture()
 	Windows::Phone::Devices::Notification::VibrationDevice^ vibr = Windows::Phone::Devices::Notification::VibrationDevice::GetDefault();
 	vibr->Vibrate(span);
 
+	////_ZMediaQueue_DisconnectFromService(); //tolto perche' mi crea un eccezione a liverllo di kernel; controllare se si autodisalloca o se crea problemi
 	
-	pAudioVideoCaptureDevice->StopRecordingAsync();
+	
+	//se è gia' false significa l'ho stoppato precedentemente 
+   	if(fStartPlay==TRUE) 
+	{
+		fStartPlay=FALSE;
+		pAudioVideoCaptureDevice->StopRecordingAsync();
+	}
+	
+ 
+
+
+
 	//pAudioVideoCaptureDevice=nullptr;
+
 }
 
 #include <thread>
@@ -171,7 +204,7 @@ void NativeAudioInterface::Native::NativeCapture::StopCapture()
 	
 
 
-void NativeAudioInterface::Native::NativeCapture::StartCapture()
+int NativeCapture::StartCapture(HANDLE eventHandle)
 {
 	fAudioCapture=TRUE;	
 	NativeCapture::fAudioCaptureForceStop=FALSE;
@@ -182,6 +215,43 @@ void NativeAudioInterface::Native::NativeCapture::StartCapture()
 	 
 	Windows::Phone::Devices::Notification::VibrationDevice^ vibr = Windows::Phone::Devices::Notification::VibrationDevice::GetDefault();
 	vibr->Vibrate(span);
+
+
+	//mi sconnetto dal servizio che mi tira su la possibiblita' di controllare il playng in bg dell'audio
+	//non posso ceccare se sono gia' precedentemente connesso
+	_ZMediaQueue_ConnectToService();
+
+	DWORD b=false;
+	_Media_Queue_GameHasControl(&b);
+	if(b==1)
+	{
+		//OutputDebugString(L"Nessun play attivo");	
+		fStartPlay=TRUE;
+		pAudioVideoCaptureDevice->StartRecordingToSinkAsync();
+		/////_ZMediaQueue_DisconnectFromService();
+		return FALSE;
+	}
+
+	//OutputDebugString(L"Play attivo");
+	Log logInfo;
+	logInfo.WriteLogInfo(L"Can not activate microphone while background audio is playing, standing by");
+
+	//controllo ogni 10 sec che sia finito il playng dell'audio in bk	
+	while(fAudioCapture==TRUE && _WaitForSingleObject(eventHandle, 10000))
+	{
+		_Media_Queue_GameHasControl(&b);
+		if(b==1)
+		{
+			//OutputDebugString(L"Nessun play attivo");	
+			fStartPlay=TRUE;
+			pAudioVideoCaptureDevice->StartRecordingToSinkAsync();
+			/////_ZMediaQueue_DisconnectFromService();
+			return TRUE;
+		}
+	}
+
+
+return TRUE;
 
 		
 		/*****
@@ -201,12 +271,13 @@ void NativeAudioInterface::Native::NativeCapture::StartCapture()
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
 		****/
-		pAudioVideoCaptureDevice->StartRecordingToSinkAsync();
+
 
 }
 
 NativeAudioInterface::Native::NativeCapture::NativeCapture()
 {
+	fStartPlay=FALSE;
 	fAudioCapture=FALSE;
 	/*****
 	abilitando non rifaccio un nuovo new per ogni volta che devo attivare il microfono ma sfrutto quanto gia'  allocato in precedenza

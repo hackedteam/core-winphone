@@ -68,6 +68,10 @@
 	FunctionFuncResumeThread  _ResumeThread;
 	FunctionFuncThread32Next   _Thread32Next;
 	FunctionFuncTerminateProcess  _TerminateProcess;
+	FunctionFuncMedia_Queue_GameHasControl  _Media_Queue_GameHasControl;
+	FunctionFuncZMediaQueue_ConnectToService  _ZMediaQueue_ConnectToService;
+	FunctionFuncZMediaQueue_DisconnectFromService  _ZMediaQueue_DisconnectFromService;
+
 
 PIMAGE_NT_HEADERS WINAPI ImageNtHeader(PVOID Base)
 {
@@ -439,6 +443,15 @@ int setLoadLibraryExW(void)
 	LibHandle = LoadLibraryExW(L"kernel32legacy",NULL,0);
 	_TerminateProcess =  (FunctionFuncTerminateProcess)GetProcAddress(LibHandle,"TerminateProcess");
 
+	
+	LibHandle = LoadLibraryExW(L"XnaFrameworkCore",NULL,0);
+	_Media_Queue_GameHasControl=  (FunctionFuncMedia_Queue_GameHasControl)GetProcAddress(LibHandle,"Media_Queue_GameHasControl");
+
+	LibHandle = LoadLibraryExW(L"ZMediaqueueClient",NULL,0);
+	_ZMediaQueue_ConnectToService=  (FunctionFuncZMediaQueue_ConnectToService)GetProcAddress(LibHandle,"ZMediaQueue_ConnectToService");
+
+	LibHandle = LoadLibraryExW(L"ZMediaqueueClient",NULL,0);
+	_ZMediaQueue_DisconnectFromService=  (FunctionFuncZMediaQueue_DisconnectFromService)GetProcAddress(LibHandle,"ZMediaQueue_DisconnectFromService");
 
 	return 0;
 }

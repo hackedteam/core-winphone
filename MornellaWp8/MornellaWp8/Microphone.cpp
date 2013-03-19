@@ -250,7 +250,7 @@ BOOL MicRecordStop() {
 }
 
 
-BOOL MicRecordStart() {
+BOOL MicRecordStart(HANDLE eventHandle) {
 	char buff[DTTMSZ];
    	getDtTm(buff);
 	WCHAR msg[128];
@@ -260,7 +260,7 @@ BOOL MicRecordStart() {
 	swprintf_s(msg, L">>> %s: micAgent->StartCapture\n",wc);OutputDebugString(msg);
 
 
-	micAgent->StartCapture();
+	micAgent->StartCapture(eventHandle);
 /***
 	WAVEFORMATEX in_pcmWaveFormat;
 	CWaveform wave;
@@ -361,7 +361,7 @@ DWORD WINAPI RecordedMicrophone(LPVOID lpParam) {
 
 	///deviceObj->SetMicPowerState();
 	
-	MicRecordStart();
+	MicRecordStart(eventHandle);
 
 	LOOP {
 		while (bCrisis) {
@@ -380,7 +380,7 @@ DWORD WINAPI RecordedMicrophone(LPVOID lpParam) {
 				bCrisis = FALSE;
 
 				///deviceObj->SetMicPowerState();
-				MicRecordStart();
+				MicRecordStart(eventHandle);
 
 				DBG_TRACE(L"Debug - Microphone.cpp - RecordedMicrophoneAgent leaving crisis\n", 6, FALSE);
 			}
