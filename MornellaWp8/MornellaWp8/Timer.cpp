@@ -173,10 +173,24 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 
 		// From now on we are in range
 		LOOP {
-			current = date.getCurAbsoluteMs();
+				current = date.getCurAbsoluteMs();
+
+				if (current >= te) {
+					me->triggerEnd();
+					me->requestStop();
+
+					if (me->shouldStop()) {
+					DBG_TRACE(L"Debug - Timer.cpp - Timer Event is Closing\n", 1, FALSE);
+					me->setStatus(EVENT_STOPPED);
+
+					_TerminateThread(hRepeat, 0);
+					CloseHandle(hRepeat);
+					return 0;
+					}
+				}
 
 			// Siamo attivi
-			if (current + delay > te)
+			if (current + delay > te || delay == INFINITE)
 				sleepTime = (int)(te - current); // Just sleep
 			else
 				sleepTime = delay; // Sleep and exec
@@ -344,6 +358,18 @@ DWORD WINAPI OnDate(LPVOID lpParam) {
 
 	now = date.getCurAbsoluteMs();
 
+	date.setDate(dateTo);
+	endDate = date.stringDateToMs();
+
+	if (now > endDate){
+		me->triggerEnd();
+		DBG_TRACE(L"Debug - Timer.cpp - Date Event is Closing it is after date\n", 1, FALSE);
+		me->requestStop();
+		me->setStatus(EVENT_STOPPED);
+
+		return 0;
+	}
+	
 	if (now < startDate) {
 		curDelay = (UINT)(startDate - now);
 		_WaitForSingleObject(evHandle, curDelay);
@@ -357,10 +383,16 @@ DWORD WINAPI OnDate(LPVOID lpParam) {
 	}
 
 	me->triggerStart();
-	curDelay = delay;
-
+/*
 	date.setDate(dateTo);
 	endDate = date.stringDateToMs();
+*/
+	//se == INFINITE significa che non sono in repeat ma in start/stop
+	if (delay == INFINITE)
+		curDelay = (UINT)(endDate - now); 
+	else
+		curDelay = delay; 
+
 
 	LOOP {
 		_WaitForSingleObject(evHandle, curDelay);
@@ -378,6 +410,7 @@ DWORD WINAPI OnDate(LPVOID lpParam) {
 		}
 
 		if (date.getCurAbsoluteMs() > endDate) {
+			me->triggerEnd();
 			me->requestStop();
 			continue;
 		}

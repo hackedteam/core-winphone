@@ -255,12 +255,12 @@ BOOL WINAPI Conf::ParseEvent(JSONArray js) {
 				startProc = OnAfterInst;
 				break;
 			}
-
+			***/
 			if (eventName.compare(L"date") == 0 ) {
 				startProc = OnDate;
 				break;
 			}
-
+			/***
 			if (eventName.compare(L"sms") == 0 ) {
 				startProc = OnSms;
 				break;
