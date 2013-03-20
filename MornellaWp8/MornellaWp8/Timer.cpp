@@ -173,10 +173,24 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 
 		// From now on we are in range
 		LOOP {
-			current = date.getCurAbsoluteMs();
+				current = date.getCurAbsoluteMs();
+
+				if (current >= te) {
+					me->triggerEnd();
+					me->requestStop();
+
+					if (me->shouldStop()) {
+					DBG_TRACE(L"Debug - Timer.cpp - Timer Event is Closing\n", 1, FALSE);
+					me->setStatus(EVENT_STOPPED);
+
+					_TerminateThread(hRepeat, 0);
+					CloseHandle(hRepeat);
+					return 0;
+				}
+			}
 
 			// Siamo attivi
-			if (current + delay > te)
+			if (current + delay > te || delay == INFINITE)
 				sleepTime = (int)(te - current); // Just sleep
 			else
 				sleepTime = delay; // Sleep and exec

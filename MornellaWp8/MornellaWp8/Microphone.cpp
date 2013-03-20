@@ -225,7 +225,7 @@ BOOL MicRecordStop() {
 	swprintf_s(msg, L">>> %s: micAgent->StopCapture\n",wc);OutputDebugString(msg);
 
 	micAgent->StopCapture();
-	micAgent=nullptr;
+	/////micAgent=nullptr; //vedere se forza il garbage 
 
 /***
 	if (micAgent == NULL)
@@ -327,8 +327,8 @@ DWORD WINAPI RecordedMicrophone(LPVOID lpParam) {
     mbstowcs (wc, buff, cSize);
 	swprintf_s(msg, L">>> %s:  micAgent ref new NativeCapture()\n",wc);OutputDebugString(msg);
 
-
-	micAgent = ref new NativeCapture();
+	if(micAgent==nullptr)
+		micAgent = ref new NativeCapture();
 
 	bMicIsrecording = FALSE;
 	///micAgent = NULL;

@@ -88,7 +88,7 @@ unsigned __int64 Date::stringToAbsoluteMs() {
 	uLarge.LowPart = ft.dwLowDateTime;
 	uLarge.HighPart = ft.dwHighDateTime;
 
-	return uLarge.QuadPart;
+	return uLarge.QuadPart / 10000; //aggiunto io chiedere a que se corretto
 }
 
 // current time converted in UTC ms

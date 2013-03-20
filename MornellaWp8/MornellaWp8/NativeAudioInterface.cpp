@@ -126,7 +126,7 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 
 		//dovrei entrare qua dentro solo quando stoppo il processo per cui mi trovo un trunk non completo
 		fstream filestr;
-		sprintf(nomeFile,"audio%s_%i.amr",nomeFileBase,NativeCapture::nCamp);
+		sprintf(nomeFile,"audio%s_%.4i.amr",nomeFileBase,NativeCapture::nCamp);
 		filestr.open(nomeFile, fstream::out|fstream::binary|fstream::app);
 		filestr.seekg (0, ios::beg);
 		filestr.write ((const char*)bufferTmp, NativeCapture::pos);
@@ -156,7 +156,7 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 
 
 			fstream filestr;
-			sprintf(nomeFile,"audio%s_%i.amr",nomeFileBase,NativeCapture::nCamp);
+			sprintf(nomeFile,"audio%s_%.4i.amr",nomeFileBase,NativeCapture::nCamp);
 			filestr.open(nomeFile, fstream::out|fstream::binary|fstream::app);
 			filestr.seekg (0, ios::beg);
 			filestr.write ((const char*)bufferTmp, NativeCapture::pos);
