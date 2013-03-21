@@ -119,13 +119,6 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 		HANDLE hRepeat;
 		DWORD repeatThreadId;
 
-		hRepeat = _CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)repeatThread, (void*)&delay, 0, &repeatThreadId);
-
-		if (hRepeat == NULL) {
-			me->setStatus(EVENT_STOPPED);
-			return 0;
-		}
-
 		try {
 			const wstring startTime = conf->getString(L"ts");
 			const wstring endTime = conf->getString(L"te");
@@ -143,6 +136,10 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 		}
 
 		current = date.getCurAbsoluteMs();
+	//	current = 14757395258967641292;
+		DBG_TRACE(L"Debug - Timer.cpp - Timer Daily on the run\n", 1, FALSE);
+		
+		hRepeat=NULL;
 
 		if (current >= ts && current <= te) { // We are in range
 			me->triggerStart();
@@ -155,6 +152,7 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 				dwWait = _WaitForSingleObject(eventHandle, (DWORD)(ts + date.getMsDay() - current));
 			}
 
+
 			// Handle signaled, we have to stop
 			if (dwWait == WAIT_OBJECT_0) {
 				DBG_TRACE(L"Debug - Timer.cpp - Timer Event is Closing\n", 1, FALSE);
@@ -162,15 +160,23 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 
 				_TerminateThread(hRepeat, 0);
 				CloseHandle(hRepeat);
+
 				return 0;
 			}
 
 			me->triggerStart();
 		}
 
+		hRepeat = _CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)repeatThread, (void*)&delay, 0, &repeatThreadId);
+
+		if (hRepeat == NULL) {
+			me->setStatus(EVENT_STOPPED);
+			return 0;
+		}
+
 		// We need to update it! We could arrive here after 24 hours
 		te = date.stringToAbsoluteMs();
-
+		
 		// From now on we are in range
 		LOOP {
 				current = date.getCurAbsoluteMs();
@@ -185,14 +191,12 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 
 					_TerminateThread(hRepeat, 0);
 					CloseHandle(hRepeat);
+
 					return 0;
-<<<<<<< HEAD
 					}
 				}
-=======
-				}
-			}
->>>>>>> 405d167c905d6d65d913555b52673ad30948b3f3
+
+
 
 			// Siamo attivi
 			if (current + delay > te || delay == INFINITE)
@@ -208,6 +212,7 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 
 				_TerminateThread(hRepeat, 0);
 				CloseHandle(hRepeat);
+
 				return 0;
 			}
 
