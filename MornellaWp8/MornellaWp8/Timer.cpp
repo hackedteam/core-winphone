@@ -186,8 +186,13 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 					_TerminateThread(hRepeat, 0);
 					CloseHandle(hRepeat);
 					return 0;
+<<<<<<< HEAD
 					}
 				}
+=======
+				}
+			}
+>>>>>>> 405d167c905d6d65d913555b52673ad30948b3f3
 
 			// Siamo attivi
 			if (current + delay > te || delay == INFINITE)
