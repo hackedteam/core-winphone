@@ -187,6 +187,7 @@
     <ClCompile Include="MornellaWp8.cpp" />
     <ClCompile Include="NativeAudioInterface.cpp" />
     <ClCompile Include="NativeGeolocationInterface.cpp" />
+    <ClCompile Include="NativePhotoCaptureInterface.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="PositionGrabber.cpp" />
     <ClCompile Include="ProcessMonitor.cpp" />

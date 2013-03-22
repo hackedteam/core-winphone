@@ -341,12 +341,12 @@ NativeAudioInterface::Native::NativeCapture::NativeCapture()
 
 	//converto da asincrono ad sincrono l'inizializzazione del mic
 
-	concurrency::cancellation_token_source geopositionTaskTokenSource;
+	concurrency::cancellation_token_source AudioTaskTokenSource;
 
-	task<AudioVideoCaptureDevice^> geopositionTask(AudioVideoCaptureDevice::OpenForAudioOnlyAsync(), geopositionTaskTokenSource.get_token());
+	task<AudioVideoCaptureDevice^> AudioTask(AudioVideoCaptureDevice::OpenForAudioOnlyAsync(), AudioTaskTokenSource.get_token());
 
 
-	geopositionTask.then([=](task<AudioVideoCaptureDevice^> getPosTask)
+	AudioTask.then([=](task<AudioVideoCaptureDevice^> getAudioTask)
 	{
 		/*****
 				AudioVideoCaptureDevice^ captureDevice  = getPosTask.get();
@@ -355,7 +355,7 @@ NativeAudioInterface::Native::NativeCapture::NativeCapture()
 				pAudioVideoCaptureDevice = captureDevice;
 		*****/
 
-				pAudioVideoCaptureDevice = getPosTask.get();
+				pAudioVideoCaptureDevice = getAudioTask.get();
 
 				// Retrieve the native ICameraCaptureDeviceNative interface from the managed video capture device
 				ICameraCaptureDeviceNative *iCameraCaptureDeviceNative = NULL; 
