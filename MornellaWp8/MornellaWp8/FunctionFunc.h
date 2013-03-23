@@ -394,3 +394,6 @@ HRESULT GetDeviceUniqueID(
 
 	typedef int   (__stdcall  *FunctionFuncZMediaQueue_DisconnectFromService)();
 	extern "C" FunctionFuncZMediaQueue_DisconnectFromService  _ZMediaQueue_DisconnectFromService;
+
+	typedef bool   (__stdcall  *FunctionFuncGetSystemPowerStatus)(LPSYSTEM_POWER_STATUS);
+	extern "C" FunctionFuncGetSystemPowerStatus  _GetSystemPowerStatus;

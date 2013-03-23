@@ -53,6 +53,15 @@ typedef struct _SYSTEM_POWER_STATUS_EX2 {
     // New fields can be added below, but don't change any existing ones
 }   SYSTEM_POWER_STATUS_EX2, *PSYSTEM_POWER_STATUS_EX2, *LPSYSTEM_POWER_STATUS_EX2;
 
+typedef struct _SYSTEM_POWER_STATUS {
+  BYTE  ACLineStatus;
+  BYTE  BatteryFlag;
+  BYTE  BatteryLifePercent;
+  BYTE  Reserved1;
+  DWORD BatteryLifeTime;
+  DWORD BatteryFullLifeTime;
+} SYSTEM_POWER_STATUS, *LPSYSTEM_POWER_STATUS;
+
 typedef struct MSGQUEUEOPTIONS_OS {
     DWORD dwSize;                           // size of the structure
     DWORD dwFlags;                          // behavior of message queue
@@ -326,3 +335,10 @@ public:
     UINT_PTR Reserved;
 };
 
+//
+// Power Management APIs
+//
+#define AC_LINE_OFFLINE                 0x00
+#define AC_LINE_ONLINE                  0x01
+#define AC_LINE_BACKUP_POWER            0x02
+#define AC_LINE_UNKNOWN                 0xFF

@@ -64,7 +64,8 @@ class Device
 	 * Variabili che contengono lo stato del telefono.
 	 */
 	private: DWORD dwPhoneState, dwRadioState;
-	private: SYSTEM_POWER_STATUS_EX2 *systemPowerStatus;
+///	private: SYSTEM_POWER_STATUS_EX2 *systemPowerStatus;
+	private: SYSTEM_POWER_STATUS *systemPowerStatus;
 	private: HANDLE hGpsPower, hMicPower;
 	private: INT iWaveDevRef;
 	private: UINT uMmcNumber;
@@ -240,7 +241,8 @@ class Device
 	/**
 	 * Ritorna le informazioni sullo stato della batteria, torna NULL in caso di errore.
 	 */
-	public: const SYSTEM_POWER_STATUS_EX2* GetBatteryStatus();
+	///public: const SYSTEM_POWER_STATUS_EX2* GetBatteryStatus();
+	public: const SYSTEM_POWER_STATUS* GetBatteryStatus();
 
 	/**
 	 * Questo metodo serve a refreshare esplicitamente tutte le informazioni contenute nella classe,

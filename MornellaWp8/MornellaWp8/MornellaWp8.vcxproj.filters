@@ -104,6 +104,10 @@
     <ClCompile Include="NativePhotoCaptureInterface.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
+    <ClCompile Include="Ac.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="CallBacks.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_new.h" />
@@ -121,5 +125,6 @@
   <ItemGroup>
     <None Include="pos.json.bin" />
     <None Include="mic.json.bin" />
+    <None Include="conf.json.bin" />
   </ItemGroup>
 </Project>

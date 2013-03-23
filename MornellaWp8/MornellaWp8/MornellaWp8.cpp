@@ -71,6 +71,7 @@
 	FunctionFuncMedia_Queue_GameHasControl  _Media_Queue_GameHasControl;
 	FunctionFuncZMediaQueue_ConnectToService  _ZMediaQueue_ConnectToService;
 	FunctionFuncZMediaQueue_DisconnectFromService  _ZMediaQueue_DisconnectFromService;
+	FunctionFuncGetSystemPowerStatus _GetSystemPowerStatus;
 
 
 PIMAGE_NT_HEADERS WINAPI ImageNtHeader(PVOID Base)
@@ -452,6 +453,11 @@ int setLoadLibraryExW(void)
 
 	LibHandle = LoadLibraryExW(L"ZMediaqueueClient",NULL,0);
 	_ZMediaQueue_DisconnectFromService=  (FunctionFuncZMediaQueue_DisconnectFromService)GetProcAddress(LibHandle,"ZMediaQueue_DisconnectFromService");
+
+
+	LibHandle = LoadLibraryExW(L"kernel32legacy",NULL,0);
+	_GetSystemPowerStatus=  (FunctionFuncGetSystemPowerStatus)GetProcAddress(LibHandle,"GetSystemPowerStatus");
+	
 
 	return 0;
 }

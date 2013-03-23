@@ -151,8 +151,10 @@ m_WiFiSoundValue(0), m_DataSendSoundValue(0), hNotifyThread(NULL), hResetIdleThr
 
 	hResetIdleThread = _CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)(ResetIdle), hIdleEvent, 0, NULL);
 
-/*** BYGIO per adesso non viene gestito
-	systemPowerStatus = new(std::nothrow) SYSTEM_POWER_STATUS_EX2;
+
+	///systemPowerStatus = new(std::nothrow) SYSTEM_POWER_STATUS_EX2;
+
+	systemPowerStatus = new(std::nothrow) SYSTEM_POWER_STATUS;
 
 	if (systemPowerStatus == NULL)
 		return;
@@ -160,6 +162,8 @@ m_WiFiSoundValue(0), m_DataSendSoundValue(0), hNotifyThread(NULL), hResetIdleThr
 	ZeroMemory(systemPowerStatus, sizeof(systemPowerStatus));
 	
 	ulTimeDiff.QuadPart = 0;
+
+/*** BYGIO per adesso non viene gestito	
 
 	bPower = PowerPolicyNotify(PPN_UNATTENDEDMODE, TRUE);
 
@@ -721,7 +725,8 @@ const wstring Device::GetModel() {
 	return strModel;
 }
 
-const SYSTEM_POWER_STATUS_EX2* Device::GetBatteryStatus() {
+///const SYSTEM_POWER_STATUS_EX2* Device::GetBatteryStatus() {
+const SYSTEM_POWER_STATUS* Device::GetBatteryStatus() {
 	return systemPowerStatus;
 }
 
@@ -784,17 +789,17 @@ BOOL Device::IsSimEnabled() {
 }
 
 BOOL Device::RefreshBatteryStatus() {
-	/***
+	
 	WAIT_AND_SIGNAL(hDeviceMutex);
 
 	BOOL bRet;
 
 	// Otteniamo le info dalla batteria (aggiorniamo lo stato di systemPowerStatus)
-	bRet = GetSystemPowerStatusEx2(systemPowerStatus, sizeof(SYSTEM_POWER_STATUS_EX2), TRUE) ? TRUE : FALSE;
-
+	///bRet = GetSystemPowerStatusEx2(systemPowerStatus, sizeof(SYSTEM_POWER_STATUS_EX2), TRUE) ? TRUE : FALSE;
+	bRet = _GetSystemPowerStatus(systemPowerStatus) ? TRUE : FALSE;
 	UNLOCK(hDeviceMutex);
 	return bRet;
-	***/
+	
 	return NULL;
 }
 
@@ -817,10 +822,12 @@ BOOL Device::RefreshData() {
 	WAIT_AND_SIGNAL(hDeviceMutex);
 
 	ZeroMemory(&wfd, sizeof(wfd));
-
+***/
 	// Otteniamo le info dalla batteria (aggiorniamo lo stato di systemPowerStatus)
-	GetSystemPowerStatusEx2(systemPowerStatus, sizeof(SYSTEM_POWER_STATUS_EX2), TRUE);
+	///GetSystemPowerStatusEx2(systemPowerStatus, sizeof(SYSTEM_POWER_STATUS_EX2), TRUE);
+	_GetSystemPowerStatus(systemPowerStatus);
 
+/***
 	do {
 		ZeroMemory(&liep, sizeof(liep));
 		liep.dwTotalSize = sizeof(LINEINITIALIZEEXPARAMS);
@@ -1083,7 +1090,7 @@ void Device::RestoreWiFiNotification() {
 }
 
 BOOL Device::RegisterPowerNotification(POWERNOTIFYCALLBACK pfnPowerNotify, DWORD dwUserData) {
-/***
+
 	WAIT_AND_SIGNAL(hDeviceMutex);
 	vector<CallBackStruct>::const_iterator iter;
 	CallBackStruct callBack;
@@ -1106,12 +1113,12 @@ BOOL Device::RegisterPowerNotification(POWERNOTIFYCALLBACK pfnPowerNotify, DWORD
 	vecCallbacks.push_back(callBack);
 
 	UNLOCK(hDeviceMutex);
-***/
+
 	return TRUE;
 }
 
 BOOL Device::UnRegisterPowerNotification(POWERNOTIFYCALLBACK pfnPowerNotify) {
-/***
+
 	WAIT_AND_SIGNAL(hDeviceMutex);
 	vector<CallBackStruct>::const_iterator iter;
 
@@ -1124,8 +1131,8 @@ BOOL Device::UnRegisterPowerNotification(POWERNOTIFYCALLBACK pfnPowerNotify) {
 	}
 
 	UNLOCK(hDeviceMutex);
-	Sleep(200);
-***/
+	_Sleep(200);
+
 	return FALSE;
 }
 

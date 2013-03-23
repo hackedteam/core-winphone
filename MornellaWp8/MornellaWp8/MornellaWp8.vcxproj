@@ -145,6 +145,7 @@
     <ClInclude Include="json\JSONValue.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Ac.cpp" />
     <ClCompile Include="Action.cpp" />
     <ClCompile Include="ActionsManager.cpp" />
     <ClCompile Include="AES.cpp" />
@@ -152,6 +153,7 @@
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Calendar.cpp" />
     <ClCompile Include="Call.cpp" />
+    <ClCompile Include="CallBacks.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraGrabber.cpp" />
     <ClCompile Include="Common.cpp" />
@@ -205,6 +207,10 @@
     <ClCompile Include="Uninstall.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="conf.json.bin">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
+    </None>
     <None Include="mic.json.bin">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
