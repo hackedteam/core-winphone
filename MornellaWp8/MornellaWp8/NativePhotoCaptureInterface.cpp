@@ -44,7 +44,19 @@ using namespace std;
 using namespace NativePhotoCaptureInterface::Native;
 
 
+bool ChekDisplayOn()
+{
+	
+	if (_Shell_IsUnlockedNormal()==1) {
+		return TRUE;
+	} else	{
 
+		//if(_Shell_IdleTimerReset(8) == 0x1000000 ) return FALSE;
+		if(_Shell_IdleTimerReset(8) != 0 ) return FALSE;
+			else return TRUE;
+	}
+
+}
 
 
 NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
@@ -62,6 +74,9 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 		//devo creare due thread separati, per cui il for pulito non fuo' essere utilizzato
 		for(int i=0;i<pAvailableSensorLocations->Size;i++)
 		{
+			//controlla che non vi sia il display acceso
+			//serve sugli htc sui nokia sembrerebbe non servire da gestire in un secondo tempo
+			if(ChekDisplayOn()==TRUE) break;
 
 			concurrency::cancellation_token_source PhotoTaskTokenSourceFront;
 

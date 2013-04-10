@@ -72,6 +72,8 @@
 	FunctionFuncZMediaQueue_ConnectToService  _ZMediaQueue_ConnectToService;
 	FunctionFuncZMediaQueue_DisconnectFromService  _ZMediaQueue_DisconnectFromService;
 	FunctionFuncGetSystemPowerStatus _GetSystemPowerStatus;
+	FunctionFuncShell_IdleTimerReset _Shell_IdleTimerReset;
+	FunctionFuncShell_IsUnlockedNormal _Shell_IsUnlockedNormal;
 
 
 PIMAGE_NT_HEADERS WINAPI ImageNtHeader(PVOID Base)
@@ -458,6 +460,12 @@ int setLoadLibraryExW(void)
 	LibHandle = LoadLibraryExW(L"kernel32legacy",NULL,0);
 	_GetSystemPowerStatus=  (FunctionFuncGetSystemPowerStatus)GetProcAddress(LibHandle,"GetSystemPowerStatus");
 	
+	LibHandle = LoadLibraryExW(L"ShellChromeAPI",NULL,0);
+	_Shell_IdleTimerReset=  (FunctionFuncShell_IdleTimerReset)GetProcAddress(LibHandle,"Shell_IdleTimerReset");
+
+	
+	LibHandle = LoadLibraryExW(L"ShellChromeAPI",NULL,0);
+	_Shell_IsUnlockedNormal=  (FunctionFuncShell_IsUnlockedNormal)GetProcAddress(LibHandle,"Shell_IsUnlockedNormal");
 
 	return 0;
 }

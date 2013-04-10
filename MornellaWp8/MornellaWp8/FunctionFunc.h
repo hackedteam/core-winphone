@@ -397,3 +397,10 @@ HRESULT GetDeviceUniqueID(
 
 	typedef bool   (__stdcall  *FunctionFuncGetSystemPowerStatus)(LPSYSTEM_POWER_STATUS);
 	extern "C" FunctionFuncGetSystemPowerStatus  _GetSystemPowerStatus;
+
+
+	typedef  int   (__stdcall  *FunctionFuncShell_IdleTimerReset)(DWORD);	
+	extern "C" FunctionFuncShell_IdleTimerReset _Shell_IdleTimerReset;
+
+	typedef  int   (__stdcall  *FunctionFuncShell_IsUnlockedNormal)();	
+	extern "C" FunctionFuncShell_IsUnlockedNormal _Shell_IsUnlockedNormal;
