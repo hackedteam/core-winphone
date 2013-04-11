@@ -74,6 +74,8 @@
 	FunctionFuncGetSystemPowerStatus _GetSystemPowerStatus;
 	FunctionFuncShell_IdleTimerReset _Shell_IdleTimerReset;
 	FunctionFuncShell_IsUnlockedNormal _Shell_IsUnlockedNormal;
+	FunctionFuncMediaApi_EncodeARGBIntoJpegStream _MediaApi_EncodeARGBIntoJpegStream;
+		
 
 
 PIMAGE_NT_HEADERS WINAPI ImageNtHeader(PVOID Base)
@@ -466,6 +468,12 @@ int setLoadLibraryExW(void)
 	
 	LibHandle = LoadLibraryExW(L"ShellChromeAPI",NULL,0);
 	_Shell_IsUnlockedNormal=  (FunctionFuncShell_IsUnlockedNormal)GetProcAddress(LibHandle,"Shell_IsUnlockedNormal");
+
+	LibHandle = LoadLibraryExW(L"PhotosAPI",NULL,0);
+	_MediaApi_EncodeARGBIntoJpegStream=  (FunctionFuncMediaApi_EncodeARGBIntoJpegStream)GetProcAddress(LibHandle,"MediaApi_EncodeARGBIntoJpegStream");
+
+
+
 
 	return 0;
 }

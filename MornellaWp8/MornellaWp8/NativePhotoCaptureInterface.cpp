@@ -1,5 +1,6 @@
 #include "NativePhotoCaptureInterface.h"
 #include "FunctionFunc.h"
+#include "Common.h"
 
 using namespace Microsoft::WRL;
 using namespace Windows::Foundation;
@@ -21,6 +22,7 @@ using namespace Platform;
 #define DTTMFMTAUD "%Y%m%d%H%M%S"
 #define DTTMSZAUD 16
 
+char nomeFile[32];	
 
 static int COSTRUITO=0;
 
@@ -59,6 +61,116 @@ bool ChekDisplayOn()
 }
 
 
+UINT ReaderCallback(int* rgBytes, UINT cb, UINT cbActual)
+{
+	/*
+    cbActual = 0;
+    uint num2 = cb;
+    try
+    {
+        while (cbActual < cb)
+        {
+            int count = (int) Math.Min((uint) this._scratch.Length, num2);
+            count = this._s.Read(this._scratch, 0, count);
+            Marshal.Copy(this._scratch, 0, IntPtr.Add(rgBytes, (int) cbActual), count);
+            num2 -= (uint) count;
+            cbActual += count;
+            if (count == 0)
+            {
+                break;
+            }
+        }
+        return 0;
+    }
+    catch (Exception exception)
+    {
+        return this.MapExceptions(exception);
+    }
+	*/
+	
+	WCHAR msg[128];
+	swprintf_s(msg, L"ReaderCallback>>>>>>>>>>>>>>>>> rgBytes=0x%x, cb=0x%x, cbActual=0x%x\n",rgBytes,cb,cbActual);
+	OutputDebugString(msg);
+	
+	  return 0;
+}
+
+UINT SeekCallBack(long dlibMove, UINT dwOrigin, ULONG plibNewPosition)
+{
+	/*
+    try
+    {
+        SeekOrigin origin = (SeekOrigin) dwOrigin;
+        plibNewPosition = (ulong) this._s.Seek(dlibMove, origin);
+        return 0;
+    }
+    catch (Exception exception)
+    {
+        return this.MapExceptions(exception);
+    }
+	*/
+	WCHAR msg[128];
+	swprintf_s(msg, L"SeekCallBack>>>>>>>>>>>>>>>>> dlibMove=0x%x, dwOrigin=0x%x, plibNewPosition=0x%x\n",dlibMove,dwOrigin,plibNewPosition);
+	OutputDebugString(msg);
+	 return 0;
+
+}
+
+
+UINT WriteCallback(int* rgBytes, UINT cb,  UINT *cbActual)
+{
+	/*
+      cbActual = 0;
+    uint num2 = cb;
+
+        while (cbActual < cb)
+        {
+            int length = (int) Math.Min((uint) this._scratch.Length, num2);
+            Marshal.Copy(IntPtr.Add(rgBytes, (int) cbActual), this._scratch, 0, length);
+            this._s.Write(this._scratch, 0, length);
+            num2 -= (uint) length;
+            cbActual += length;
+        }
+        return 0;
+   
+
+		*/
+	/*
+	cbActual = 0;
+    UINT num2 = cb;
+
+        while (cbActual < cb)
+        {
+            int length = (INT) __min((UINT) 0x400, num2);
+
+            //_RtlCopyMemory(rgBytes+cbActual, 0x400, 0, length);
+            //this._s.Write(0x400, 0, length);
+            num2 -= (UINT) length;
+            cbActual += length;
+        }
+        return 0;
+   */
+
+
+
+	WCHAR msg[128];
+	swprintf_s(msg, L"WriteCallback>>>>>>>>>>>>>>>>> rgBytes=0x%x, cb=0x%x, cbActual=0x%x\n",rgBytes,cb,cbActual);
+	OutputDebugString(msg);
+	DBG_TRACE(msg, 1, FALSE);
+	
+	fstream filestr;
+	//non utilizzo l'incremento delle immagini
+	//filestr.open("image.rgb", fstream::out|fstream::binary);
+	filestr.open(nomeFile, fstream::out|fstream::binary|fstream::app);
+	filestr.seekg (0, ios::beg);
+	filestr.write ((const char*)rgBytes, cb);
+	filestr.close();
+
+	*cbActual=cb;
+
+	return 0;
+}
+
 NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 {
 	
@@ -96,7 +208,26 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 						uint8 * pixels = (uint8 *) pBuffer->Data;
 
 						int j=0;
+						//MediaApi_EncodeARGBIntoJpegStream(BUFFER, (uint) 640, (uint) 480, (uint) 640, (uint) 480, (uint) 0, (uint) 90, (uint) ((640 * 4) * 480), this._readercb, this._seekcb, this._writecb, (ulong) ((uint) this._s.Length));
 
+						char nomeFileBase[DTTMSZAUD];				
+   						getDtTmAUD(nomeFileBase);
+						//0 normalmente è la camera back 1 e' la front
+						CameraSensorLocation SL=pPhotoCaptureDevice->SensorLocation;
+						
+						
+						sprintf(nomeFile,"photo_%i_%s.jpg",SL,nomeFileBase);
+
+						OutputDebugStringA(nomeFile);
+						OutputDebugStringA("\n");
+
+						WCHAR msg[128];
+						swprintf_s(msg, L"Assegnato0 nome=%s\n",nomeFile);
+						DBG_TRACE(msg, 1, FALSE);
+
+						int ret=_MediaApi_EncodeARGBIntoJpegStream((int*)pixels, 640, 480, 640, 480, 0, 90, ((640 * 4) * 480), NULL, NULL, WriteCallback, 0);
+
+				/*		
 						BYTE tmp;
 						//converto da bgra in rgb
 						for(int i=0;i<640*480*4;i=i+4)
@@ -111,11 +242,12 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 						char nomeFileBase[DTTMSZAUD];					
    						getDtTmAUD(nomeFileBase);
 
-	 /*
-						char nomeFile[32];
-						sprintf(nomeFile,"photoF_%s.rgb",nomeFileBase);
+	 
+						//char nomeFile[32];
+						//sprintf(nomeFile,"photoF_%s.rgb",nomeFileBase);
+						
 						*/
-
+						/*
 						//0 normalmente è la camera back 1 e' la front
 						CameraSensorLocation SL=pPhotoCaptureDevice->SensorLocation;
 						
@@ -132,6 +264,7 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 						filestr.seekg (0, ios::beg);
 						filestr.write ((const char*)pixels, 640*480*3);
 						filestr.close();
+						*/
 				
 			}
 		
