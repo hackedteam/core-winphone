@@ -32,7 +32,9 @@ void NativeCameraCaptureInterface::Native::CameraCapturePreviewSink::OnFrameAvai
 	BYTE* pixels
 	)
 {
-	
+	/****
+ if(fCapture==TRUE) 
+ {
 	// Insert your own code to process each preview frame here
 	//OutputDebugString(L"preview frame here: ");
 	
@@ -62,6 +64,10 @@ void NativeCameraCaptureInterface::Native::CameraCapturePreviewSink::OnFrameAvai
 
 	//if(contaCameraCapturePreviewSink==0) pVideoCaptureDevice->StopRecordingAsync();
 	//pCameraCapturePreviewSink->Release;
+	fCapture=FALSE;
+	if(pVideoCaptureDevice!=nullptr) pVideoCaptureDevice->StopRecordingAsync();
+  }
+  *****/
 	contaCameraCapturePreviewSink++;
 
 }
@@ -73,6 +79,7 @@ void NativeCameraCaptureInterface::Native::CameraCaptureSampleSink::OnSampleAvai
 	DWORD cbSample,
 	BYTE* pSample)
 {
+	
 	// Insert your own code to process each captured frame here
 	//OutputDebugString(L"preview frame here");
 	
@@ -82,39 +89,40 @@ void NativeCameraCaptureInterface::Native::CameraCaptureSampleSink::OnSampleAvai
 	{
 		BYTE *buftmp;
 
-	buftmp=(BYTE*)malloc(640*480*4);
+		buftmp=(BYTE*)malloc(640*480*4);
 
-	memcpy(buftmp,pSample,cbSample);
+		memcpy(buftmp,pSample,cbSample);
 
-	int j=0;
-	BYTE tmp;
-	//converto da bgra in rgb
-	for(int i=0;i<640*480*4;i=i+4)
-	{
-      tmp=buftmp[i];
-	  buftmp[j]=buftmp[i+2];
-	  buftmp[j+1]=buftmp[i+1];
-	  buftmp[j+2]=tmp;
-	  j=j+3;
-	}
+		int j=0;
+		BYTE tmp;
+		//converto da bgra in rgb
+		for(int i=0;i<640*480*4;i=i+4)
+		{
+		  tmp=buftmp[i];
+		  buftmp[j]=buftmp[i+2];
+		  buftmp[j+1]=buftmp[i+1];
+		  buftmp[j+2]=tmp;
+		  j=j+3;
+		}
 	
 	 
-	char nomeFile[20];
-	sprintf(nomeFile,"image%i.rgb",conta);
+		char nomeFile[20];
+		sprintf(nomeFile,"image%i.rgb",conta);
 
-	fstream filestr;
-	//non utilizzo l'incremento delle immagini
-	//filestr.open("image.rgb", fstream::out|fstream::binary);
-	filestr.open(nomeFile, fstream::out|fstream::binary);
-	filestr.seekg (0, ios::beg);
-    filestr.write ((const char*)buftmp, 640*480*3);
-	filestr.close();
+		fstream filestr;
+		//non utilizzo l'incremento delle immagini
+		//filestr.open("image.rgb", fstream::out|fstream::binary);
+		filestr.open(nomeFile, fstream::out|fstream::binary);
+		filestr.seekg (0, ios::beg);
+		filestr.write ((const char*)buftmp, 640*480*3);
+		filestr.close();
 
-	free(buftmp);
+		free(buftmp);
 
 		fCapture=FALSE;
-		pVideoCaptureDevice->StopRecordingAsync();
+		if(pVideoCaptureDevice!=nullptr) pVideoCaptureDevice->StopRecordingAsync();
 	}
+	
 	contaCameraCaptureSampleSink++;
 }
 
@@ -250,53 +258,50 @@ NativeCameraCaptureInterface::Native::NativeCapture::NativeCapture()
 				// The aspect ratio of the capture and preview resolution must be equal,
 				// 4:3 for capture => 4:3 for preview, and 16:9 for capture => 16:9 for preview.
 
-/*******				
+			
 				Size previewDimensions;
 				previewDimensions.Width = 640;
 				previewDimensions.Height = 480;					
 
-				IAsyncAction^ setPreviewResolutionAction = pVideoCaptureDevice->SetPreviewResolutionAsync(previewDimensions);
-				setPreviewResolutionAction->Completed = ref new AsyncActionCompletedHandler(
-					[this](IAsyncAction^ action, Windows::Foundation::AsyncStatus status)
-					{
-						HResult hr = action->ErrorCode;
 
-						if (status == Windows::Foundation::AsyncStatus::Completed)
-						{
-							// Create the sink
-							MakeAndInitialize<CameraCapturePreviewSink>(&pCameraCapturePreviewSink);
-							pCameraCaptureDeviceNative->SetPreviewSink(pCameraCapturePreviewSink);
+
+				concurrency::cancellation_token_source VideoPreviewTaskTokenSource;
+
+				task<void> VideoPreviewTask(pVideoCaptureDevice->SetPreviewResolutionAsync(previewDimensions), VideoPreviewTaskTokenSource.get_token());
+
+
+				VideoPreviewTask.then([=](task<void> getVideoTask)
+				{
+					// Create the sink
+										MakeAndInitialize<CameraCapturePreviewSink>(&pCameraCapturePreviewSink);
+										pCameraCaptureDeviceNative->SetPreviewSink(pCameraCapturePreviewSink);
 							
-							// Set the preview format
-							pCameraCaptureDeviceNative->SetPreviewFormat(DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM);						
-						}
-					}
-					
-				);
-**********/
-				
+										// Set the preview format
+										pCameraCaptureDeviceNative->SetPreviewFormat(DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM);	
+
+				}
+				).wait();
 			
 				// Retrieve IAudioVideoCaptureDeviceNative native interface from managed projection.
-				IAudioVideoCaptureDeviceNative *iAudioVideoCaptureDeviceNative = NULL;
-				hr = reinterpret_cast<IUnknown*>(captureDevice)->QueryInterface(__uuidof(IAudioVideoCaptureDeviceNative), (void**) &iAudioVideoCaptureDeviceNative);
+				IAudioVideoCaptureDeviceNative *iVideoCaptureDeviceNative = NULL;
+				hr = reinterpret_cast<IUnknown*>(captureDevice)->QueryInterface(__uuidof(IAudioVideoCaptureDeviceNative), (void**) &iVideoCaptureDeviceNative);
 
 				// Save the pointer to the IAudioVideoCaptureDeviceNative native interface
-				pVideoCaptureDeviceNative = iAudioVideoCaptureDeviceNative;
+				pVideoCaptureDeviceNative = iVideoCaptureDeviceNative;
 
 				// Set sample encoding format to ARGB. See the documentation for further values.
 				pVideoCaptureDevice->VideoEncodingFormat = CameraCaptureVideoFormat::Argb;
 
+			
 				// Initialize and set the CameraCaptureSampleSink class as sink for captures samples
 				MakeAndInitialize<CameraCaptureSampleSink>(&pCameraCaptureSampleSink);
 				pVideoCaptureDeviceNative->SetVideoSampleSink(pCameraCaptureSampleSink);
-
-				// Start recording (only way to receive samples using the ICameraCaptureSampleSink interface
-				//pVideoCaptureDevice->StartRecordingToSinkAsync();
-				//fCapture=TRUE;
 				
-			}
+	}
 		
 	).wait();
 
-	
+	// Start recording (only way to receive samples using the ICameraCaptureSampleSink interface
+	pVideoCaptureDevice->StartRecordingToSinkAsync();
+	fCapture=TRUE;
 }
