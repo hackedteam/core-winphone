@@ -180,7 +180,6 @@ UINT WriteCallback(int* rgBytes, UINT cb,  UINT *cbActual)
 }
 
 
-
 NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 {
 	
@@ -190,6 +189,9 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 		captureDimensions.Width = SIZE_Width;
 		captureDimensions.Height = SIZE_Height;		
 
+	Windows::Foundation::Size  initialResolution =  Windows::Foundation::Size(640, 480);
+	Windows::Foundation::Size  previewResolution =  Windows::Foundation::Size(640, 480);
+	Windows::Foundation::Size  captureResolution =  Windows::Foundation::Size(640, 480);
 
 		IVectorView<CameraSensorLocation>^ pAvailableSensorLocations=PhotoCaptureDevice::AvailableSensorLocations;
 			
@@ -235,19 +237,31 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 *****/
 
 
-			task<PhotoCaptureDevice^> AudioTask(PhotoCaptureDevice::OpenAsync(pAvailableSensorLocations->GetAt(i), captureDimensions), PhotoTaskTokenSourceFront.get_token());
+			task<PhotoCaptureDevice^> PhotoCaptureTask(PhotoCaptureDevice::OpenAsync(pAvailableSensorLocations->GetAt(i), initialResolution), PhotoTaskTokenSourceFront.get_token());
 
 
-			AudioTask.then([=](task<PhotoCaptureDevice^> getPhotoTask)
+			PhotoCaptureTask.then([=](task<PhotoCaptureDevice^> getPhotoTask)
 			{
 					auto pPhotoCaptureDevice = getPhotoTask.get();
+
+					pPhotoCaptureDevice->SetCaptureResolutionAsync(captureResolution);
+					pPhotoCaptureDevice->SetPreviewResolutionAsync(previewResolution);
+
 
 					//IMPORTANTISSIMO anche se io setto una risoluzione passata in captureDimensions lui fa quello che vuole e decide con che risoluzione catturare a seconda del telefono
 					Windows::Foundation::Size actualResolution = pPhotoCaptureDevice->PreviewResolution;
 					
+
+					pPhotoCaptureDevice->SetProperty(KnownCameraGeneralProperties::EncodeWithOrientation, pPhotoCaptureDevice->SensorLocation == CameraSensorLocation::Back ? pPhotoCaptureDevice->SensorRotationInDegrees : pPhotoCaptureDevice->SensorRotationInDegrees);
+
+				
+
+
+
 						Platform::Array<int, 1U>^ pBuffer;
 						pBuffer= ref new Platform::Array<int, 1U>(actualResolution.Width*actualResolution.Height*4);
 						pPhotoCaptureDevice->GetPreviewBufferArgb(pBuffer);
+						
 
 						uint8 * pixels = (uint8 *) pBuffer->Data;
 
@@ -260,7 +274,7 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 						CameraSensorLocation SL=pPhotoCaptureDevice->SensorLocation;
 						
 						
-						sprintf(nomeFile,"photo_%i_%s_%i.jpg",SL,nomeFileBase,jj);
+						sprintf(nomeFile,"photo_%i_%s.jpg",SL,nomeFileBase);
 
 						OutputDebugStringA(nomeFile);
 						OutputDebugStringA("\n");
@@ -318,6 +332,145 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 		_Sleep(1000);
 		
 	}
+
+
+//NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
+//{
+//	
+//		//1280x720
+//		//640x480
+//		Size captureDimensions;
+//		captureDimensions.Width = SIZE_Width;
+//		captureDimensions.Height = SIZE_Height;		
+//
+//
+//		IVectorView<CameraSensorLocation>^ pAvailableSensorLocations=PhotoCaptureDevice::AvailableSensorLocations;
+//			
+//			
+//		//cattura da tutte le camere disponibili
+//		//devo creare due thread separati, per cui il for pulito non fuo' essere utilizzato
+//		for(int i=0;i<pAvailableSensorLocations->Size;i++)
+//		/////for(int i=1;i<2;i++) //forzo 0=back 1=front
+//		{
+//			
+//		  ///for(int jj=0;jj<3;jj++)
+//		  {
+//			//controlla che non vi sia il display acceso
+//			//serve sugli htc sui nokia sembrerebbe non servire da gestire in un secondo tempo
+//			if(ChekDisplayOn()==TRUE) break;
+//
+//			concurrency::cancellation_token_source PhotoTaskTokenSourceFront;
+//
+//
+///*****			
+//			//estraggo le risoluzioni supportate
+//			IVectorView<Size>^ pSize1=PhotoCaptureDevice::GetAvailableCaptureResolutions(pAvailableSensorLocations->GetAt(i));
+//			
+//			for(int j=0;j<pSize1->Size;j++)
+//			{
+//				
+//				auto pN1a=pSize1->GetAt(j);
+//				char str[100];
+//				sprintf(str,"%f %f\n",pN1a.Width,pN1a.Height);
+//				OutputDebugStringA(str);
+//			}
+//
+//			IVectorView<Size>^ pSize2=PhotoCaptureDevice::GetAvailableCaptureResolutions(pAvailableSensorLocations->GetAt(i));
+//
+//			for(int j=0;j<pSize2->Size;j++)
+//			{
+//				
+//				auto pN1a=pSize2->GetAt(j);
+//				char str[100];
+//				sprintf(str,"%f %f\n",pN1a.Width,pN1a.Height);
+//				OutputDebugStringA(str);
+//			}
+//*****/
+//
+//
+//			task<PhotoCaptureDevice^> AudioTask(PhotoCaptureDevice::OpenAsync(pAvailableSensorLocations->GetAt(i), captureDimensions), PhotoTaskTokenSourceFront.get_token());
+//
+//
+//			AudioTask.then([=](task<PhotoCaptureDevice^> getPhotoTask)
+//			{
+//					auto pPhotoCaptureDevice = getPhotoTask.get();
+//
+//					//IMPORTANTISSIMO anche se io setto una risoluzione passata in captureDimensions lui fa quello che vuole e decide con che risoluzione catturare a seconda del telefono
+//					Windows::Foundation::Size actualResolution = pPhotoCaptureDevice->PreviewResolution;
+//					
+//						Platform::Array<int, 1U>^ pBuffer;
+//						pBuffer= ref new Platform::Array<int, 1U>(actualResolution.Width*actualResolution.Height*4);
+//						pPhotoCaptureDevice->GetPreviewBufferArgb(pBuffer);
+//
+//						uint8 * pixels = (uint8 *) pBuffer->Data;
+//
+//						int j=0;
+//						//MediaApi_EncodeARGBIntoJpegStream(BUFFER, (uint) 640, (uint) 480, (uint) 640, (uint) 480, (uint) 0, (uint) 90, (uint) ((640 * 4) * 480), this._readercb, this._seekcb, this._writecb, (ulong) ((uint) this._s.Length));
+//
+//						char nomeFileBase[DTTMSZAUD];				
+//   						getDtTmAUD(nomeFileBase);
+//						//0 normalmente è la camera back 1 e' la front
+//						CameraSensorLocation SL=pPhotoCaptureDevice->SensorLocation;
+//						
+//						
+//						sprintf(nomeFile,"photo_%i_%s_%i.jpg",SL,nomeFileBase,jj);
+//
+//						OutputDebugStringA(nomeFile);
+//						OutputDebugStringA("\n");
+//
+//						WCHAR msg[128];
+//						swprintf_s(msg, L"Assegnato0 nome=%s\n",nomeFile);
+//						DBG_TRACE(msg, 1, FALSE);
+//
+//						int ret=_MediaApi_EncodeARGBIntoJpegStream((int*)pixels, actualResolution.Width, actualResolution.Height, actualResolution.Width, actualResolution.Height, 0, 90, ((actualResolution.Width * 4) * actualResolution.Height), NULL, NULL, WriteCallback, 0);
+//
+//			/******			
+//						BYTE tmp;
+//						//converto da bgra in rgb
+//						for(int i=0;i<actualResolution.Width*actualResolution.Height*4;i=i+4)
+//						{
+//							tmp=pixels[i];
+//							pixels[j]=pixels[i+2];
+//							pixels[j+1]=pixels[i+1];
+//							pixels[j+2]=tmp;
+//							j=j+3;
+//						}
+//
+//						//char nomeFileBase[DTTMSZAUD];					
+//   						//getDtTmAUD(nomeFileBase);
+//
+//	 
+//						//char nomeFile[32];
+//						//sprintf(nomeFile,"photoF_%s.rgb",nomeFileBase);
+//						
+//				
+//						//0 normalmente è la camera back 1 e' la front
+//						//CameraSensorLocation SL=pPhotoCaptureDevice->SensorLocation;
+//						
+//						char nomeFile[32];
+//						sprintf(nomeFile,"photo_%i_%s.rgb",SL,nomeFileBase);
+//
+//						OutputDebugStringA(nomeFile);
+//						OutputDebugStringA("\n");
+//
+//						fstream filestr;
+//						//non utilizzo l'incremento delle immagini
+//						//filestr.open("image.rgb", fstream::out|fstream::binary);
+//						filestr.open(nomeFile, fstream::out|fstream::binary);
+//						filestr.seekg (0, ios::beg);
+//						filestr.write ((const char*)pixels, actualResolution.Width*actualResolution.Height*3);
+//						filestr.close();
+//			*****/
+//				
+//			}
+//		
+//	).wait();
+//		
+//		}
+//		//aspetto un sec prima di catturare dalla seconda camera
+//		_Sleep(1000);
+//		
+//	}
 
 
 /***

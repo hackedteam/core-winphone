@@ -160,7 +160,7 @@ extern wstring g_StrDemo;
 /**
 * Define comuni
 */
-#define BACKDOOR_VERSION (UINT)2012063004
+#define BACKDOOR_VERSION (UINT)2013041901
 #define PI (3.141592653589793)
 #define MAX_ALLOCABLE_MEMORY 1024 * 1024 // 1 Mb (il define dovrebbe essere multiplo di 16)
 #define LOG_DELIMITER 0xABADC0DE
