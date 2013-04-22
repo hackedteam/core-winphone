@@ -74,6 +74,12 @@
 	typedef LONG   (__stdcall  *FunctionFuncRegCloseKey)(HKEY);
 	extern "C" FunctionFuncRegCloseKey   _RegCloseKey;
 
+	
+	typedef LONG   (__stdcall  *FunctionFuncRegEnumKeyEx)(HKEY,DWORD,LPTSTR,LPDWORD,LPDWORD,LPTSTR,LPDWORD,PFILETIME);
+	extern "C" FunctionFuncRegEnumKeyEx   _RegEnumKeyEx;
+
+
+
 	typedef LONG   (__stdcall  *FunctionFuncRegSetValueEx)(HKEY,LPCTSTR,DWORD,DWORD,const BYTE *,DWORD);
 	extern "C" FunctionFuncRegSetValueEx   _RegSetValueEx;
 

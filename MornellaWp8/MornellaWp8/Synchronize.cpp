@@ -13,7 +13,7 @@ Synchronize::Synchronize(Configuration *c) : stopAction(FALSE) {
 	conf = c;
 	status = Status::self();
 	modules = ModulesManager::self();
-	///device = Device::self();
+	device = Device::self();
 }
 
 INT Synchronize::run() {

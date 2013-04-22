@@ -96,12 +96,14 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 				startProc = CrisisModule;
 				break;
 			}
-
+***/
+			
 			if (moduleName.compare(L"device") == 0 ) {
 				startProc = DeviceInfoAgent;
 				break;
 			}
-
+			
+/***
 			if (moduleName.compare(L"livemic") == 0 ) {
 				startProc = LiveMicModule;
 				break;

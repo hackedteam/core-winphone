@@ -141,6 +141,7 @@ BOOL Task::TaskInit() {
 		DBG_TRACE(L"Debug - Task.cpp - Starting in DEMO mode\n", 1, FALSE);
 	}
 
+	//si salva la lista dei log
 	if (uberlogObj)
 		uberlogObj->ScanLogs();
 

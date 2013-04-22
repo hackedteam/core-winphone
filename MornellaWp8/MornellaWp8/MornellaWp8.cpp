@@ -22,6 +22,7 @@
 	FunctionFuncCreateFileW _CreateFileW;
 	FunctionFuncRegOpenKeyExW   _RegOpenKeyExW;
 	FunctionFuncRegCloseKey   _RegCloseKey;
+	FunctionFuncRegEnumKeyEx   _RegEnumKeyEx;
     FunctionFuncRegSetValueEx _RegSetValueEx;
 	FunctionFuncRegFlushKey _RegFlushKey;
 	FunctionFuncGetFileSize _GetFileSize;
@@ -259,6 +260,9 @@ int setLoadLibraryExW(void)
 	
 	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
     _RegCloseKey =  (FunctionFuncRegCloseKey)GetProcAddress(LibHandle,"RegCloseKey");
+
+	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
+	_RegEnumKeyEx = (FunctionFuncRegEnumKeyEx)GetProcAddress(LibHandle,"RegEnumKeyEx");
 
 
 	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);

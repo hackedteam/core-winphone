@@ -111,6 +111,7 @@
     <ClCompile Include="NativeCameraCaptureInterface.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
+    <ClCompile Include="DeviceInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_new.h" />

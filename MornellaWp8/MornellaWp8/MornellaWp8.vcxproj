@@ -165,6 +165,9 @@
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="Device.cpp" />
+    <ClCompile Include="DeviceInfo.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Enable.cpp" />
     <ClCompile Include="Encryption.cpp" />
     <ClCompile Include="Event.cpp" />

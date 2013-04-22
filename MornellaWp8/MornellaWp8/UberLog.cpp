@@ -111,7 +111,8 @@ BOOL UberLog::ScanLogs() {
 
 	// Generiamo la search string completa di path ("*.mob")
 	ZeroMemory(wLogName, sizeof(wLogName));
-	wprintf_s(wLogName, L"%s%s", L"*", LOG_EXTENSION);
+	///wprintf_s(wLogName, L"%s%s", L"*", LOG_EXTENSION);
+	swprintf_s(wLogName, L"%s%s", L"*", LOG_EXTENSION);
 	strLogMask = wLogName;
 
 	// Puliamo la lista dei log
