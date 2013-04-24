@@ -122,7 +122,8 @@ DWORD WINAPI OnLocation(LPVOID lpParam) {
 					fstream filestr;
 					wchar_t msgW[128];
 					char msgA[128];
-					swprintf_s(msgW,L"gps: orig:%f,%f pos:%f,%f  Dis:%f  type:%i\n", latOrigin, lonOrigin, gps.dblLatitude, gps.dblLongitude,curDistance,gps.PositionSource );
+					/////swprintf_s(msgW,L"gps: orig:%f,%f pos:%f,%f  Dis:%f  type:%i\n", latOrigin, lonOrigin, gps.dblLatitude, gps.dblLongitude,curDistance,gps.PositionSource );
+					swprintf_s(msgW,L"gps: orig:%f,%f pos:%f,%f  Dis:%f \n", latOrigin, lonOrigin, gps.dblLatitude, gps.dblLongitude,curDistance);
 					wcstombs(msgA, msgW, wcslen(msgW)+1);
 
 	

@@ -178,7 +178,7 @@ wstring GetSecondMMCPath(const PWCHAR pInFile) {
 
 	return strBackdoorPath;
 ***/
-	return NULL;
+	return L".\\"; //ByGIO
 }
 
 // Torna l'HANDLE (e quindi anche l'ID) di un processo, l'HANDLE

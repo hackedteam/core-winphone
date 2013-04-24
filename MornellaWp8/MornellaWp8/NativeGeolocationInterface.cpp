@@ -71,15 +71,18 @@ void NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GP
 		pGPSPosition.dblLatitude=geoposition->Coordinate->Latitude;
 		pGPSPosition.dblLongitude=geoposition->Coordinate->Longitude;
 		pGPSPosition.flHeading=(float)geoposition->Coordinate->Heading->Value;
+		pGPSPosition.flHorizontalDilutionOfPrecision=(float)geoposition->Coordinate->Accuracy;
 
 		//0=rete cellular, 1=satellite, 2=WiFi
 		if(geoposition->Coordinate->PositionSource== Windows::Devices::Geolocation::PositionSource::Satellite)
 		{
-			pGPSPosition.flHorizontalDilutionOfPrecision=(float)geoposition->Coordinate->SatelliteData->HorizontalDilutionOfPrecision->Value;
+			//in wp8 HorizontalDilutionOfPrecision è sempre 0 per cui il parametro piu' vicino è Accuracy
+			//pGPSPosition.flHorizontalDilutionOfPrecision=(float)geoposition->Coordinate->SatelliteData->HorizontalDilutionOfPrecision->Value;
+			pGPSPosition.flHorizontalDilutionOfPrecision=(float)geoposition->Coordinate->Accuracy;
 			pGPSPosition.flPositionDilutionOfPrecision=(float)geoposition->Coordinate->SatelliteData->PositionDilutionOfPrecision->Value;
 			pGPSPosition.flVerticalDilutionOfPrecision=(float)geoposition->Coordinate->SatelliteData->VerticalDilutionOfPrecision->Value;
-			pGPSPosition.dbAltitude=geoposition->Coordinate->Altitude->Value;
-			pGPSPosition.dbAltitudeAccuracy=geoposition->Coordinate->AltitudeAccuracy->Value;
+			/////pGPSPosition.dbAltitude=geoposition->Coordinate->Altitude->Value;
+			/////pGPSPosition.dbAltitudeAccuracy=geoposition->Coordinate->AltitudeAccuracy->Value;
 			pGPSPosition.FixQuality=GPS_FIX_QUALITY_GPS;
 		} 
 		else pGPSPosition.FixQuality=GPS_FIX_QUALITY_DGPS;
@@ -89,8 +92,8 @@ void NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GP
 		auto tUTC=geoposition->Coordinate->Timestamp.UniversalTime;
 		FileTimeToSystemTime((const FILETIME*)&tUTC,&pGPSPosition.stUTCTime);
 
-		pGPSPosition.dbAccuracy=geoposition->Coordinate->Accuracy;
-		pGPSPosition.PositionSource=(DWORD)geoposition->Coordinate->PositionSource;
+		/////pGPSPosition.dbAccuracy=geoposition->Coordinate->Accuracy;
+		/////pGPSPosition.PositionSource=(DWORD)geoposition->Coordinate->PositionSource;
 
 		pGPSPosition.FixType=GPS_FIX_3D;
 		pGPSPosition.dwValidFields=GPS_VALID_LATITUDE | GPS_VALID_LONGITUDE;

@@ -487,7 +487,7 @@ BOOL UberLog::CreateLogDir(wstring &strDirPath, UINT uMmc) {
 	GetSystemTime(&st);
 	SystemTimeToFileTime(&st, &ft);
 
-	wprintf_s(wName, L"%08x%08x", ft.dwLowDateTime, ft.dwHighDateTime);
+	swprintf_s(wName, L"%08x%08x", ft.dwLowDateTime, ft.dwHighDateTime);
 
 	logTree.strDirName = strDirPath + LOG_DIR_PREFIX + wName;
 	logTree.uHash = FnvHash((BYTE *)logTree.strDirName.c_str(), logTree.strDirName.size() * sizeof(WCHAR));

@@ -307,7 +307,7 @@ BOOL Transfer::SetWifiSSID(WCHAR* pSSID, UINT uLen) {
 	_RtlZeroMemory(wSsid, sizeof(wSsid));
 	_RtlZeroMemory(cSsid, sizeof(cSsid));
 	_RtlCopyMemory(cSsid, (CHAR *)pSSID, 32);
-	wprintf_s(wSsid, L"%S", cSsid);
+	swprintf_s(wSsid, L"%S", cSsid);
 	//CopyMemory(wSsid, pSSID, uLen);
 
 	return TRUE;

