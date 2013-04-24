@@ -242,6 +242,8 @@ extern wstring g_StrDemo;
 #define LOG_AUDIO_CODEC_SPEEX	(UINT)0x0;
 #define LOG_AUDIO_CODEC_AMR		(UINT)0x1;
 
+#define MIC_SAMPLE_RATE 8000L
+
 /**
 * Parametri del protocollo (i comandi validi iniziano da 1 in poi)
 */

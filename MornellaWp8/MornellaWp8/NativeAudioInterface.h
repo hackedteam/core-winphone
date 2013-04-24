@@ -7,6 +7,8 @@ using namespace Windows::Foundation;
 using namespace Windows::Phone::Media::Capture;
 
 
+
+
 namespace NativeAudioInterface
 {
 	namespace Native
@@ -49,6 +51,7 @@ namespace NativeAudioInterface
 			ICameraCaptureDeviceNative* pCameraCaptureDeviceNative;
 			IAudioVideoCaptureDeviceNative* pAudioVideoCaptureDeviceNative;
 			CameraCaptureSampleSink* pCameraCaptureSampleSink;
+
 			
 			
 		};
