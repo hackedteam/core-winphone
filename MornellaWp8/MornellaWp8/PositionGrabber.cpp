@@ -111,7 +111,7 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 
 	GPSInfo gpsInfo;
 
-
+	//OutputDebugString(L"GPS_01\n");
 
 	// E' singleton e non va distrutta (30 sec di timeout, 1 sec di max age)
 	do {
@@ -128,6 +128,8 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 
 		gpsOk = TRUE;
 	} while (0);
+
+	//OutputDebugString(L"GPS_02\n");
 /***
 	do {
 		if (cell == FALSE)
@@ -167,6 +169,7 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 		}
 	}
 ***/
+	//OutputDebugString(L"GPS_03\n");
 	if (gpsOk) {
 		locAdditional.uVersion = LOG_LOCATION_VERSION;
 		locAdditional.uType = LOGTYPE_LOCATION_GPS;
@@ -184,7 +187,7 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 			return 0;
 		}
 	}
-
+	//OutputDebugString(L"GPS_04\n");
 	/**
 	 * LOG FORMAT
 	 *
@@ -279,10 +282,12 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 		}
 	}
 ***/
+	//OutputDebugString(L"GPS_07\n");
 	// Senza questo Sleep() non entra nella if() successiva...
 	_Sleep(500);
-
+	
 	if (gpsOk) {
+		//OutputDebugString(L"GPS_08\n");
 		// Accendiamo il GPS se polliamo su lunghi intervalli
 		DWORD now = _GetTickCount();
 
@@ -308,7 +313,7 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 			}
 
 			_WaitForSingleObject(eventHandle, 30000);
-
+			//OutputDebugString(L"GPS_09\n");
 			if (me->shouldStop()) {
 				DBG_TRACE(L"Debug - PositionGrabber.cpp - Position Module is Closing\n", 1, FALSE);
 /***
@@ -350,7 +355,7 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 
 		// Se non abbiamo superato il tempo di timeout proseguiamo col loop
 		} while(_GetTickCount() - now < GPS_POLL_TIMEOUT);
-
+		//OutputDebugString(L"GPS_10\n");
 		if (gpsObj->getGPS(&gpsInfo.gps)) {
 			uType = TYPE_GPS;
 
@@ -383,7 +388,7 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 				}
 			}
 		}
-
+		//OutputDebugString(L"GPS_11\n");
 		gpsObj->Stop();
 	}
 
