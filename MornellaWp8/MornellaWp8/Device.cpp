@@ -942,24 +942,42 @@ BOOL Device::RefreshData() {
 
 		lineClose(hLine);
 		lineShutdown(hApp);
-
+***/
 		strManufacturer.clear();
 
+		WCHAR stringBuilder[128];
+		WCHAR stringBuilder1[64];
+		WCHAR stringBuilder2[64];
+		DWORD ret;
+
+		
+		/*****
 		if (lpBuffer->dwManufacturerSize) {
 			PBYTE pManuf = (BYTE *)lpBuffer + (lpBuffer->dwManufacturerOffset);
 
 			strManufacturer = (PWCHAR)pManuf;
 		}
-		
+		*****/
+		_QueryPhoneInformation(0,stringBuilder1,sizeof(stringBuilder1)/sizeof(WCHAR),&ret);
+		strManufacturer=stringBuilder1;
+
+
+
 		// Prendiamo il nome del modello
 		strModel.clear();
-
+		/*****
 		if (lpBuffer->dwModelSize) {
 			PBYTE pModel = (BYTE *)lpBuffer + (lpBuffer->dwModelOffset);
 
 			strModel = (PWCHAR)pModel;
 		}
+		*****/
+		_QueryPhoneInformation(4,stringBuilder1,sizeof(stringBuilder1)/sizeof(WCHAR),&ret);
+		_QueryPhoneInformation(8,stringBuilder2,sizeof(stringBuilder2)/sizeof(WCHAR),&ret);
+		swprintf_s(stringBuilder, TEXT("%s - %s\n"),stringBuilder1,stringBuilder2);
+		strModel=stringBuilder;
 
+/***
 		// Il supporto radio GSM e' spento
 		if (dwRadioState == LINERADIOSUPPORT_OFF) {
 			delete[] lpBuffer;

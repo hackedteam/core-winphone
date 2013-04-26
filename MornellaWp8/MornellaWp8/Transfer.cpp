@@ -1939,6 +1939,9 @@ BOOL Transfer::RestSendLogs() {
 			continue;
 		}
 
+	WCHAR msg[256];
+	swprintf_s(msg, L"Debug - Transfer.cpp - RestSendLogs() sending log file:%s\n",(*iter).strLog.c_str());OutputDebugString(msg);
+		
 		DBG_TRACE(L"Debug - Transfer.cpp - RestSendLogs() sending log file\n", 6, FALSE);
 
 		// Copiamo il file nel buffer
@@ -1985,6 +1988,10 @@ BOOL Transfer::RestSendLogs() {
 		UINT uResponse = 0;
 
 		PBYTE pResponse = RestSendCommand((BYTE *)b.getBuf(), b.getPos(), uResponse);
+
+
+	swprintf_s(msg, L"Debug - Transfer.cpp - RestSendLogs() b.getPos():%i uResponse:%i\n", b.getPos(), uResponse);OutputDebugString(msg);
+
 
 		if (pResponse == NULL) {
 			DBG_TRACE(L"Debug - Transfer.cpp - RestSendLogs() FAILED [RestSendCommand()] ", 4, TRUE);

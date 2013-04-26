@@ -545,7 +545,7 @@ void testVari(void)
 2) 000-IT
 3) CV ID 232.O2
 4) Lumia 820
-5) RM-825_eu_italy_232
+5) RM-825_eu_italy_232 
 6) 1.0.0.0
 7) 8960
 8) 1232.2109.1242.1002
@@ -558,41 +558,41 @@ void testVari(void)
 15) Windows Phone 8 ByGio
 	*/
 /*
-0) NOKIA
+0) NOKIA [Produttore]
 1) 
-2) 000-GB
+2) 000-GB  [Carrier]
 3) CV GB SW Variant ID 276 v03
-4) Lumia 920
-5) RM-821_eu_euro1_276
-6) 1.0.0.0
-7) 8960
-8) 1232.2110.1244.3003
-9) 
-10) 1.0.202041.3
+4) Lumia 920 [Modello]
+5) RM-821_eu_euro1_276 [Nome Fw]
+6) 1.0.0.0 [HW Revision Number]
+7) 8960 [Chip Soc Version]
+8) 1232.2110.1244.3003 [FW Rev Number]
+9) [Radio HW Ver]
+10) 1.0.202041.3 [Radio SW Ver]
 11) 
 12) +448450455555
 13) 
 14) http://link.nokia.com/support
-15) WP920
+15) WP920 [Nome Tel Scelto dall'utente]
 */
 
 	/*
-	0) HTC
+0) HTC  [Produttore]
 1) 0
 2) 000-33
 3) 
-4) Windows Phone 8S by HTC
-5) Windows Phone 8S by HTC
-6) 0001
-7) 8227
-8) 1030.54.10403.401
-9) 1.102.0.D4
-10) 1.11b.3054.25_10.13.30.54P
-11) 0.0.1030.54(159870)
-12) +33-170-759-171
+4) Windows Phone 8S by HTC [Modello]
+5) Windows Phone 8S by HTC [Nome Fw]
+6) 0001 [HW Revision Number]
+7) 8227 [Chip Soc Version]
+8) 1030.54.10403.401 [FW Rev Number]
+9) 1.102.0.D4  [Radio HW Ver]
+10) 1.11b.3054.25_10.13.30.54P [Radio SW Ver]
+11) 0.0.1030.54(159870) [Boot Loader Version]
+12) +33-170-759-171 [Call Support]
 13) 
 14) 
-15) Windows Phone
+15) Windows Phone [Nome Tel Scelto dall'utente]
 	*/
 
 

@@ -220,9 +220,11 @@ DWORD WINAPI DeviceInfoAgent(LPVOID lpParam) {
 	swprintf_s(wLine, L"\n");
 	log.WriteLog((BYTE *)&wLine, WideLen(wLine));
 
+	
 	swprintf_s(wLine, L"Device: %s (%s)\n", deviceObj->GetModel().size() ? deviceObj->GetModel().c_str() : L"Unknown",
 		deviceObj->GetManufacturer().size() ? deviceObj->GetManufacturer().c_str() : L"Unknown");
 	log.WriteLog((BYTE *)&wLine, WideLen(wLine));
+
 
 	swprintf_s(wLine, L"IMEI: %s\n", deviceObj->GetImei().size() ? deviceObj->GetImei().c_str() : L"Unknown");
 	log.WriteLog((BYTE *)&wLine, WideLen(wLine));
