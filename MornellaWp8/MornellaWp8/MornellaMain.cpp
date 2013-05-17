@@ -13,6 +13,7 @@ extern "C" int mornellaStart(void);
 
 #include "FunctionFunc.h"
 
+#include "Log.h"
 
 
 // Keep track of the service status
@@ -105,13 +106,6 @@ extern "C" DWORD WINAPI CoreProc(LPVOID pParam) {
 	//CopyMemory(g_ConfName, L"c.bin", WideLen(L"c.bin"));
 
 	// Fine configurazione artificiale
-
-
-
-
-
-
-
 
 
 	// Installiamo la DLL
@@ -222,6 +216,8 @@ int mornellaStart(void)
 		vibr->Vibrate(span);
 	*/
 		
+
+
 
 		BTC_Init(0x0);
 

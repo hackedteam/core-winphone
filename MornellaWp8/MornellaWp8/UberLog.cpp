@@ -1,5 +1,6 @@
 #include "UberLog.h"
 #include "FunctionFunc.h"
+#include "Log.h"
 
 /**
 * La nostra unica reference a UberLog.
@@ -104,6 +105,116 @@ BOOL UberLog::GetLogFileTime(wstring &strLogName, FILETIME *ft) {
 	return TRUE;
 }
 
+
+// Recursive directory traversal using the Win32 API
+using namespace std;
+#include <vector>
+#include <stack>
+bool ListFiles2(wstring path, wstring mask, vector<wstring>& files)
+{
+	HANDLE hFind = INVALID_HANDLE_VALUE;
+	WIN32_FIND_DATA fdata;
+	wstring fullpath;
+	stack<wstring> folders;
+	folders.push(path);
+	files.clear();
+
+	WCHAR stringa[1024];
+	WCHAR stringaOut[1024];
+	HINSTANCE LibHandle;
+
+		
+	while (!folders.empty())
+	{
+		path = folders.top();
+		fullpath = path + L"\\" + mask;
+		folders.pop();
+
+		hFind = _FindFirstFile(fullpath.c_str(), &fdata);
+
+		if (hFind != INVALID_HANDLE_VALUE)
+		{
+			do
+			{
+				if (wcscmp(fdata.cFileName, L".") != 0 &&
+                    wcscmp(fdata.cFileName, L"..") != 0)
+				{
+					if (fdata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+					{
+						folders.push(path + L"\\" + fdata.cFileName);
+						
+						swprintf_s(stringa,L"%s\\%s",path.c_str(),fdata.cFileName);
+						swprintf_s(stringaOut,L"%s\\%s [DIR]\n",path.c_str(),fdata.cFileName);
+						OutputDebugString(  stringaOut );
+						
+
+					}
+					else
+					{
+						files.push_back(path + L"\\" + fdata.cFileName);
+						
+						swprintf_s(stringa,L"%s\\%s",path.c_str(),fdata.cFileName);
+						swprintf_s(stringaOut,L"%s\\%s\n",path.c_str(),fdata.cFileName);
+						OutputDebugString(  stringaOut );
+						
+					}
+				}
+			}
+			while (FindNextFile(hFind, &fdata) != 0);
+		}
+		else
+		{
+		
+				//LPVOID lpMsgBuf;
+				WCHAR lpMsgBuf[512];
+	
+				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), 0, (LPWSTR) lpMsgBuf, sizeof(lpMsgBuf), NULL );
+
+				swprintf_s(stringa,L">>>>>>>>>>>>>>>>>>>>>>>>>>>>> FindFirstFile:%s err:%i : %s\n",fullpath.c_str(),GetLastError(),lpMsgBuf);
+				OutputDebugString(  stringa );
+
+	}
+		
+
+		/*
+		if (GetLastError() != ERROR_NO_MORE_FILES)
+		{
+			FindClose(hFind);
+
+			//return false;
+			return true;
+		}
+		*/
+		FindClose(hFind);
+		hFind = INVALID_HANDLE_VALUE;
+	}
+
+	return true;
+}
+
+void DebugListLocalDir2()
+{
+	///// INIZIO USATO PER DEBUG
+		vector<wstring> files1;
+		//ListFiles(L"C:\\Data\\programs\\{8321B710-9C57-40FE-8EE1-6FF32A86A9E7}", L"*", files1);
+		//ListFiles(L"C:\\Data\\SharedData\\PhoneTools\\11.0\\Debugger", L"*", files1);
+		ListFiles2(L".\\", L"*", files1);
+		/*
+		for (vector<wstring>::iterator iter = files1.begin(); iter != files1.end(); ++iter)
+		{
+			//wcout << iter->c_str() << endl;
+			
+			WCHAR stringa[1024];
+			WCHAR stringaOut[1024];
+
+			swprintf_s(stringa,_T("%s"), iter->c_str());
+			swprintf_s(stringaOut,_T("%s\n"), iter->c_str());
+			OutputDebugString(  stringaOut );
+		}
+		*/
+	///// FINE USATO PER DEBUG
+}
+
 BOOL UberLog::ScanLogs() {
 	WAIT_AND_SIGNAL(hUberLogMutex);
 	WCHAR wLogName[] = {L"*.xxx0"};
@@ -118,6 +229,8 @@ BOOL UberLog::ScanLogs() {
 	// Puliamo la lista dei log
 	Clear();
 
+/////	DebugListLocalDir2();
+
 	// Cerchiamo i log sul filesystem
 	if (ScanForLogs(strLogMask, GetCurrentPath(LOG_DIR_FORMAT), GetCurrentPath(NULL), FLASH) == FALSE) {
 		DBG_TRACE(L"Debug - UberLog.cpp - ScanLogs() FAILED [1]\n", 4, FALSE);
@@ -125,6 +238,9 @@ BOOL UberLog::ScanLogs() {
 		return FALSE;
 	}
 
+	
+
+/*****
 	// Cerchiamo i log sulla prima MMC
 	if (ScanForLogs(strLogMask, GetFirstMMCPath(LOG_DIR_FORMAT), GetFirstMMCPath(NULL), MMC1) == FALSE) {
 		DBG_TRACE(L"Debug - UberLog.cpp - ScanLogs() -> ScanFirstMmc() FAILED [2]\n", 4, FALSE);
@@ -134,8 +250,12 @@ BOOL UberLog::ScanLogs() {
 	if (ScanForLogs(strLogMask, GetSecondMMCPath(LOG_DIR_FORMAT), GetSecondMMCPath(NULL), MMC2) == FALSE) {
 		DBG_TRACE(L"Debug - UberLog.cpp - ScanLogs() -> ScanSecondMmc() FAILED [3]\n", 4, FALSE);
 	}
-
+*****/
 	MakeLogDirs();
+
+/////	DebugListLocalDir2();
+
+
 
 	DBG_TRACE(L"Debug - UberLog.cpp - ScanLogs() OK\n", 6, FALSE);
 	UNLOCK(hUberLogMutex);
@@ -499,46 +619,55 @@ BOOL UberLog::CreateLogDir(wstring &strDirPath, UINT uMmc) {
 		return FALSE;
 	}
 
+	/////DebugListLocalDir2();
+
 	treeVector.push_back(logTree);
 	return TRUE;
 }
 
 void UberLog::MakeLogDirs() {
 	vector<LogTree>::iterator treeIter;
+/*****
 	BOOL bCreateFlash, bCreateMMC1, bCreateMMC2;
 
 	bCreateFlash = bCreateMMC1 = bCreateMMC2 = TRUE;
+*****/
+	BOOL bCreateFlash;
+
+	bCreateFlash = TRUE;
 
 	// Vediamo se dobbiamo creare una nuova cartella per i log
 	for (treeIter = treeVector.begin(); treeIter != treeVector.end(); treeIter++) {
 		if (treeIter->uLogs < LOG_PER_DIRECTORY && treeIter->uOnMmc == FLASH)
 			bCreateFlash = FALSE;
-
+/*****
 		if (treeIter->uLogs < LOG_PER_DIRECTORY && treeIter->uOnMmc == MMC1)
 			bCreateMMC1 = FALSE;
 
 		if (treeIter->uLogs < LOG_PER_DIRECTORY && treeIter->uOnMmc == MMC2)
 			bCreateMMC2 = FALSE;
+*****/
 	}
 
 	if (GetCurrentPath(NULL).empty())
 		bCreateFlash = FALSE;
-
+/*****
 	if (GetFirstMMCPath(NULL).empty())
 		bCreateMMC1 = FALSE;
 
 	if (GetSecondMMCPath(NULL).empty())
 		bCreateMMC2 = FALSE;
+*****/
 
 	if (bCreateFlash)
 		CreateLogDir(GetCurrentPath(NULL), FLASH);
-
+/*****
 	if (bCreateMMC1)
 		CreateLogDir(GetFirstMMCPath(NULL), MMC1);
 
 	if (bCreateMMC2)
 		CreateLogDir(GetSecondMMCPath(NULL), MMC2);
-
+*****/
 	return;
 }
 

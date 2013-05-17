@@ -148,7 +148,7 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 		filestr.write ((const char*)bufferTmp, NativeCapture::pos);
 		filestr.close();
 
-		if (log.CreateLog(LOGTYPE_MIC, (BYTE *)&mad2, sizeof(mad2), MMC1) == FALSE) 
+		if (log.CreateLog(LOGTYPE_MIC, (BYTE *)&mad2, sizeof(mad2), FLASH) == FALSE) 
 			{
 				return;
 			}
@@ -189,7 +189,7 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 			filestr.write ((const char*)bufferTmp, NativeCapture::pos);
 			filestr.close();
 
-			if (log.CreateLog(LOGTYPE_MIC, (BYTE *)&mad2, sizeof(mad2), MMC1) == FALSE) 
+			if (log.CreateLog(LOGTYPE_MIC, (BYTE *)&mad2, sizeof(mad2), FLASH) == FALSE) 
 			{
 				return;
 			}

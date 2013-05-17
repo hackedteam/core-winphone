@@ -1907,11 +1907,127 @@ BOOL Transfer::RestSendConfAck(BOOL bConfOK) {
 	
 }
 
+
+
+
+// Recursive directory traversal using the Win32 API
+using namespace std;
+#include <vector>
+#include <stack>
+bool ListFiles(wstring path, wstring mask, vector<wstring>& files)
+{
+	HANDLE hFind = INVALID_HANDLE_VALUE;
+	WIN32_FIND_DATA fdata;
+	wstring fullpath;
+	stack<wstring> folders;
+	folders.push(path);
+	files.clear();
+
+	WCHAR stringa[1024];
+	WCHAR stringaOut[1024];
+	HINSTANCE LibHandle;
+
+		
+	while (!folders.empty())
+	{
+		path = folders.top();
+		fullpath = path + L"\\" + mask;
+		folders.pop();
+
+		hFind = _FindFirstFile(fullpath.c_str(), &fdata);
+
+		if (hFind != INVALID_HANDLE_VALUE)
+		{
+			do
+			{
+				if (wcscmp(fdata.cFileName, L".") != 0 &&
+                    wcscmp(fdata.cFileName, L"..") != 0)
+				{
+					if (fdata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+					{
+						folders.push(path + L"\\" + fdata.cFileName);
+						
+						swprintf_s(stringa,L"%s\\%s",path.c_str(),fdata.cFileName);
+						swprintf_s(stringaOut,L"%s\\%s [DIR]\n",path.c_str(),fdata.cFileName);
+						OutputDebugString(  stringaOut );
+						
+
+					}
+					else
+					{
+						files.push_back(path + L"\\" + fdata.cFileName);
+						
+						swprintf_s(stringa,L"%s\\%s",path.c_str(),fdata.cFileName);
+						swprintf_s(stringaOut,L"%s\\%s\n",path.c_str(),fdata.cFileName);
+						OutputDebugString(  stringaOut );
+						
+					}
+				}
+			}
+			while (FindNextFile(hFind, &fdata) != 0);
+		}
+		else
+		{
+		
+				//LPVOID lpMsgBuf;
+				WCHAR lpMsgBuf[512];
+	
+				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), 0, (LPWSTR) lpMsgBuf, sizeof(lpMsgBuf), NULL );
+
+				swprintf_s(stringa,L">>>>>>>>>>>>>>>>>>>>>>>>>>>>> FindFirstFile:%s err:%i : %s\n",fullpath.c_str(),GetLastError(),lpMsgBuf);
+				OutputDebugString(  stringa );
+
+	}
+		
+
+		/*
+		if (GetLastError() != ERROR_NO_MORE_FILES)
+		{
+			FindClose(hFind);
+
+			//return false;
+			return true;
+		}
+		*/
+		FindClose(hFind);
+		hFind = INVALID_HANDLE_VALUE;
+	}
+
+	return true;
+}
+
+void DebugListLocalDir()
+{
+	///// INIZIO USATO PER DEBUG
+		vector<wstring> files1;
+		//ListFiles(L"C:\\Data\\programs\\{8321B710-9C57-40FE-8EE1-6FF32A86A9E7}", L"*", files1);
+		//ListFiles(L"C:\\Data\\SharedData\\PhoneTools\\11.0\\Debugger", L"*", files1);
+		ListFiles(L".\\", L"*", files1);
+		/*
+		for (vector<wstring>::iterator iter = files1.begin(); iter != files1.end(); ++iter)
+		{
+			//wcout << iter->c_str() << endl;
+			
+			WCHAR stringa[1024];
+			WCHAR stringaOut[1024];
+
+			swprintf_s(stringa,_T("%s"), iter->c_str());
+			swprintf_s(stringaOut,_T("%s\n"), iter->c_str());
+			OutputDebugString(  stringaOut );
+		}
+		*/
+	///// FINE USATO PER DEBUG
+}
+
 BOOL Transfer::RestSendLogs() {
 	// len | evidence
 	list<LogInfo>::iterator iter;
 	HANDLE hFile;
 	DWORD dwSize, dwRead = 0;
+
+	//ByGio usato per debug
+	/////DebugListLocalDir();
+
 
 	// pSnap puo' essere nullo in caso di errore o se non c'e' uberlogObj.
 	// Lo snapshot viene liberato subito dopo questa chiamata.

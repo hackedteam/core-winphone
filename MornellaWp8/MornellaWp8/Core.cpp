@@ -49,6 +49,7 @@ BOOL Core::Run() {
 	WIN32_FIND_DATA wfd;
 	HANDLE hMmc = INVALID_HANDLE_VALUE;
 
+
 	_Sleep(500);
 
 	// Inizializziamo g_strOurName

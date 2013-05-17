@@ -355,7 +355,13 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 
 		// Se non abbiamo superato il tempo di timeout proseguiamo col loop
 		} while(_GetTickCount() - now < GPS_POLL_TIMEOUT);
+		//Se tolgo queso OutputDebugString non cattura il position
 		//OutputDebugString(L"GPS_10\n");
+
+		//se metto questa sleep sotto funzia altrimenti non si sa per quale motivo non cattura i dati
+		//forse non fa in tempo a fare la new prima di richiamare i dati dal gps, valutare questa opzione per riscrivere il codice
+		_Sleep(500);
+
 		if (gpsObj->getGPS(&gpsInfo.gps)) {
 			uType = TYPE_GPS;
 

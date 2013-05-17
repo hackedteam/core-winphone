@@ -116,6 +116,7 @@ void Task::StartNotification() {
 
 BOOL Task::TaskInit() {
 	
+
 	if (deviceObj)
 		deviceObj->RefreshData(); // Inizializza varie cose tra cui g_InstanceId
 

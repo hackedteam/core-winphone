@@ -42,6 +42,8 @@ BOOL Log::CreateLog(UINT LogType, BYTE* pByte, UINT uAdditional, UINT uStoreToMM
 
 		strLogName = MakeName(wLogName, TRUE, uStoreToMMC);
 
+		OutputDebugString(strLogName.c_str());
+
 		if (strLogName.size() == 0) {
 			DBG_TRACE(L"Debug - Log.cpp - CreateLog() FAILED [Cannot create name, maybe no MMC]\n", 4, FALSE);
 			return FALSE;
@@ -252,9 +254,12 @@ BOOL Log::CloseLog(BOOL bRemove) {
 BOOL Log::WriteLogInfo(wstring &strData) {
 	WCHAR wNull = 0;
 
+	OutputDebugString(L"[WriteLogInfo:] File: ");
 	if (CreateLog(LOGTYPE_INFO, NULL, 0, FLASH) == FALSE)
 		return FALSE;
 
+	
+	OutputDebugString(L" Data: ");OutputDebugString(strData.c_str());OutputDebugString(L"\n");
 	if (WriteLog((PBYTE)strData.c_str(), strData.length() * sizeof(WCHAR)) == FALSE) {
 		CloseLog(TRUE);
 		return FALSE;
@@ -541,7 +546,7 @@ void Log::RemoveLogDirs() {
 			DBG_TRACE(L"Debug - Log.cpp - RemoveLogDirs() [Deletion Failure] [0] ", 1, TRUE);
 		}
 	}
-
+/*****
 	strMmc = GetFirstMMCPath(NULL);
 
 	if (strMmc.empty() == FALSE) {
@@ -581,6 +586,7 @@ void Log::RemoveLogDirs() {
 			// Arriviamo qui se il parametro della erase() e' dopo la fine della stringa
 		}
 	}
+*****/
 }
 
 wstring Log::MakeName(WCHAR *wName, BOOL bAddPath, UINT uStoreToMMC) {
@@ -601,7 +607,7 @@ wstring Log::MakeName(WCHAR *wName, BOOL bAddPath, UINT uStoreToMMC) {
 
 	if (wTmpEncName == NULL)
 		return strName;
-/***
+
 	if (bAddPath) {
 
 		strName = uberlogObj->GetAvailableDir(uStoreToMMC);
@@ -617,11 +623,11 @@ wstring Log::MakeName(WCHAR *wName, BOOL bAddPath, UINT uStoreToMMC) {
 		strName += L"\\";
 		strName += wTmpEncName;
 	} else {
-***/
+
 		strName = wTmpEncName;
-/***
+
 	}
-***/
+
 
 	if (wTmpEncName)
 		free(wTmpEncName);
@@ -667,6 +673,7 @@ wstring Log::MakeMarkupName(wstring &strMarkupName, BOOL bAddPath, BOOL bStoreTo
 	} else {
 		strLogName = wTmpEncName;
 	}
+
 
 	if (wTmpEncName)
 		free(wTmpEncName);
