@@ -89,7 +89,7 @@ BOOL UberLog::GetLogFileTime(wstring &strLogName, FILETIME *ft) {
 		DBG_TRACE(L"Debug - UberLog.cpp - GetLogFileTime() FAILED [1]\n", 4, FALSE);
 		return FALSE;
 	}
-
+	
 	// 16 = sizeof(FILETIME) * sizeof(WCHAR);
 	strTimeStamp.assign(strLogName, dot - 16, 16);
 
@@ -226,10 +226,13 @@ BOOL UberLog::ScanLogs() {
 	swprintf_s(wLogName, L"%s%s", L"*", LOG_EXTENSION);
 	strLogMask = wLogName;
 
+
+	DebugListLocalDir2();
+
 	// Puliamo la lista dei log
 	Clear();
 
-/////	DebugListLocalDir2();
+	DebugListLocalDir2();
 
 	// Cerchiamo i log sul filesystem
 	if (ScanForLogs(strLogMask, GetCurrentPath(LOG_DIR_FORMAT), GetCurrentPath(NULL), FLASH) == FALSE) {
@@ -253,7 +256,7 @@ BOOL UberLog::ScanLogs() {
 *****/
 	MakeLogDirs();
 
-/////	DebugListLocalDir2();
+	DebugListLocalDir2();
 
 
 
@@ -619,7 +622,7 @@ BOOL UberLog::CreateLogDir(wstring &strDirPath, UINT uMmc) {
 		return FALSE;
 	}
 
-	/////DebugListLocalDir2();
+	DebugListLocalDir2();
 
 	treeVector.push_back(logTree);
 	return TRUE;

