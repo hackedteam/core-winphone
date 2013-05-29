@@ -820,9 +820,9 @@ BOOL Device::RefreshData() {
 	WIN32_FIND_DATA wfd;
 	HANDLE hMmc = INVALID_HANDLE_VALUE;
 	map<UINT, DiskStruct>::iterator flashIter;
-
+***/
 	WAIT_AND_SIGNAL(hDeviceMutex);
-
+/***
 	ZeroMemory(&wfd, sizeof(wfd));
 ***/
 	// Otteniamo le info dalla batteria (aggiorniamo lo stato di systemPowerStatus)
@@ -1051,9 +1051,9 @@ BOOL Device::RefreshData() {
 	uMmcNumber = uMmc;
 
 	FindClose(hMmc);
-
-	UNLOCK(hDeviceMutex);
 ***/
+	UNLOCK(hDeviceMutex);
+
 	return TRUE;
 }
 

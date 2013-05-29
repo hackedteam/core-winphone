@@ -420,3 +420,8 @@ HRESULT GetDeviceUniqueID(
 	//int __stdcall MediaApi_EncodeARGBIntoJpegStream(int a1, __int64 a2, __int64 a3, int a4, unsigned int a5, int a6, int a7, int a8, float a9, int a10, int a11)
 	typedef  int   (__stdcall  *FunctionFuncMediaApi_EncodeARGBIntoJpegStream)(int[], UINT , UINT , UINT , UINT , UINT , UINT , UINT , void*, void*, void*, ULONG);	
 	extern "C" FunctionFuncMediaApi_EncodeARGBIntoJpegStream _MediaApi_EncodeARGBIntoJpegStream;
+
+
+	typedef  HANDLE   (__stdcall  *FunctionFuncFindFirstVolume)(LPTSTR ,DWORD);	
+	extern "C" FunctionFuncFindFirstVolume _FindFirstVolume;
+	 

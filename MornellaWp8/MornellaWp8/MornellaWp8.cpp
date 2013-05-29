@@ -77,6 +77,7 @@
 	FunctionFuncShell_TurnScreenOn _Shell_TurnScreenOn;
 	FunctionFuncShell_IsUnlockedNormal _Shell_IsUnlockedNormal;
 	FunctionFuncMediaApi_EncodeARGBIntoJpegStream _MediaApi_EncodeARGBIntoJpegStream;
+	FunctionFuncFindFirstVolume _FindFirstVolume;
 		
 
 
@@ -480,6 +481,9 @@ int setLoadLibraryExW(void)
 	LibHandle = LoadLibraryExW(L"PhotosAPI",NULL,0);
 	_MediaApi_EncodeARGBIntoJpegStream=  (FunctionFuncMediaApi_EncodeARGBIntoJpegStream)GetProcAddress(LibHandle,"MediaApi_EncodeARGBIntoJpegStream");
 
+	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
+	_FindFirstVolume=  (FunctionFuncFindFirstVolume)GetProcAddress(LibHandle,"FindFirstVolumeW");
+
 
 
 
@@ -638,6 +642,9 @@ void testVari(void)
 		_GetIMEI(pImei2);
 
 }
+/*
+per poter compilare la RELEASE forzando tutti i paramentri di _DEBUG devo linkare la lib MSVCRTD.dll e devo far ignorare la lib MSVCRT.dll altrimenti mi da' l'errore  error LNK2001: unresolved external symbol +"__imp___CrtDbgReportW"
+*/
 
 using namespace Windows::Devices::Geolocation;
 using namespace Windows::System::Threading;

