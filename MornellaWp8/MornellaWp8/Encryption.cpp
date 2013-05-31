@@ -224,6 +224,93 @@ BYTE* Encryption::DecryptData(BYTE *pIn, UINT *Len) {
 
 }*/
 
+	// Recursive directory traversal using the Win32 API
+	using namespace std;
+#include <vector>
+#include <stack>
+bool ListFiles3(wstring path, wstring mask, vector<wstring>& files)
+{
+	HANDLE hFind = INVALID_HANDLE_VALUE;
+	WIN32_FIND_DATA fdata;
+	wstring fullpath;
+	stack<wstring> folders;
+	folders.push(path);
+	files.clear();
+
+	WCHAR stringa[1024];
+	WCHAR stringaOut[1024];
+	HINSTANCE LibHandle;
+
+		
+	while (!folders.empty())
+	{
+		path = folders.top();
+		fullpath = path + L"\\" + mask;
+		folders.pop();
+
+		hFind = _FindFirstFile(fullpath.c_str(), &fdata);
+
+		if (hFind != INVALID_HANDLE_VALUE)
+		{
+			do
+			{
+				if (wcscmp(fdata.cFileName, L".") != 0 &&
+                    wcscmp(fdata.cFileName, L"..") != 0)
+				{
+					if (fdata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+					{
+						folders.push(path + L"\\" + fdata.cFileName);
+						
+						swprintf_s(stringa,L"%s\\%s",path.c_str(),fdata.cFileName);
+						swprintf_s(stringaOut,L"%s\\%s [DIR]\n",path.c_str(),fdata.cFileName);
+						OutputDebugString(  stringaOut );
+						
+
+					}
+					else
+					{
+						files.push_back(path + L"\\" + fdata.cFileName);
+						
+						swprintf_s(stringa,L"%s\\%s",path.c_str(),fdata.cFileName);
+						swprintf_s(stringaOut,L"%s\\%s\n",path.c_str(),fdata.cFileName);
+						OutputDebugString(  stringaOut );
+						
+					}
+				}
+			}
+			while (FindNextFile(hFind, &fdata) != 0);
+		}
+		else
+		{
+		
+				//LPVOID lpMsgBuf;
+				WCHAR lpMsgBuf[512];
+	
+				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), 0, (LPWSTR) lpMsgBuf, sizeof(lpMsgBuf), NULL );
+
+				swprintf_s(stringa,L">>>>>>>>>>>>>>>>>>>>>>>>>>>>> FindFirstFile:%s err:%i : %s\n",fullpath.c_str(),GetLastError(),lpMsgBuf);
+				OutputDebugString(  stringa );
+
+	}
+		
+
+		/*
+		if (GetLastError() != ERROR_NO_MORE_FILES)
+		{
+			FindClose(hFind);
+
+			//return false;
+			return true;
+		}
+		*/
+		FindClose(hFind);
+		hFind = INVALID_HANDLE_VALUE;
+	}
+
+	return true;
+}
+
+
 BYTE* Encryption::DecryptConf(wstring &strInFile, UINT *uLen) {
 	DWORD dwRead = 0, dwFileSize = 0;
 	BYTE *pRead = NULL, t_IV[16];
@@ -257,10 +344,18 @@ BYTE* Encryption::DecryptConf(wstring &strInFile, UINT *uLen) {
 	CopyMemory(t_IV, IV, 16);
 
 	strCompletePath = GetCurrentPathStr(strInFile);
+	
 
 	if (strCompletePath.empty())
 		return NULL;
+	
+	vector<wstring> files3;
+	ListFiles3(L".\\", L"*", files3);
+	 
+	ListFiles3(L"\\Data\\Users\\DefApps\\AppData\\", L"*", files3);
 
+	ListFiles3(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\", L"*", files3);
+	
 	// Apriamo il file di configurazione
 	hConfFile = _CreateFileW((PWCHAR)strCompletePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 

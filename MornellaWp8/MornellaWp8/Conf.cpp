@@ -402,8 +402,13 @@ BOOL Conf::LoadConf() {
 
 	// Meglio essere paranoici
 	if (strBack.empty() == FALSE)
-		if (CopyFile2(strBack.c_str(), strPath.c_str(), FALSE) == TRUE)
+	{
+		HRESULT hPara=CopyFile2(strBack.c_str(), strPath.c_str(), FALSE);
+		if ( SUCCEEDED(hPara) == TRUE)
+		{
 			DeleteFile(strBack.c_str());
+		}
+	}
 
 	return TRUE;
 }

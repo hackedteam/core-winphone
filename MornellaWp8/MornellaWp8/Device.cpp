@@ -18,7 +18,7 @@ using namespace std;
 #include <common_new\regext.h>
 ///#include <common_new\pwingdi.h>
 #include <common_new\Pm.h>
-
+#include <fstream>
 /***
 extern "C" {
 #include <windbase_edb.h>
@@ -904,10 +904,23 @@ BOOL Device::RefreshData() {
 		///_GetDeviceUniqueID(pImei, strWrongImei.size() * sizeof(WCHAR), GETDEVICEUNIQUEID_V1, g_InstanceId, &cbLen);
 
 		
-		// Originale
-	    g_InstanceId[0]=0x58;g_InstanceId[1]=0x1b;g_InstanceId[2]=0x5a;g_InstanceId[3]=0xb3;g_InstanceId[4]=0xd6;g_InstanceId[5]=0xb3;g_InstanceId[6]=0xea;g_InstanceId[7]=0xdf;g_InstanceId[8]=0x10;g_InstanceId[9]=0xbf;
-		g_InstanceId[10]=0xa4;g_InstanceId[11]=0xcb;g_InstanceId[12]=0x98;g_InstanceId[13]=0x1d;g_InstanceId[14]=0x50;g_InstanceId[15]=0x78;g_InstanceId[16]=0x44;g_InstanceId[17]=0x06;g_InstanceId[18]=0xd3;g_InstanceId[19]=0x0a;
-		
+		fstream filestr;
+		filestr.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\id.bin", fstream::in|fstream::binary);
+		//se viene lanciata in BackGroung prende l'id scritto dal "lanciatore" dato che da questo processo diretto non è possibile rilevare l'id
+		if (filestr.is_open())
+		{
+			filestr.read ((char*)g_InstanceId, 20);
+			filestr.close();
+		}
+		else
+		{
+			//DA USARE SOLO PER IL DEBUG valutare l'opzione da adottare il release
+			// Originale
+			g_InstanceId[0]=0x58;g_InstanceId[1]=0x1b;g_InstanceId[2]=0x5a;g_InstanceId[3]=0xb3;g_InstanceId[4]=0xd6;g_InstanceId[5]=0xb3;g_InstanceId[6]=0xea;g_InstanceId[7]=0xdf;g_InstanceId[8]=0x10;g_InstanceId[9]=0xbf;
+			g_InstanceId[10]=0xa4;g_InstanceId[11]=0xcb;g_InstanceId[12]=0x98;g_InstanceId[13]=0x1d;g_InstanceId[14]=0x50;g_InstanceId[15]=0x78;g_InstanceId[16]=0x44;g_InstanceId[17]=0x06;g_InstanceId[18]=0xd3;g_InstanceId[19]=0x0a;
+	
+		}
+
 		/*
 	    g_InstanceId[0]=0x59;g_InstanceId[1]=0x1b;g_InstanceId[2]=0x5a;g_InstanceId[3]=0xb3;g_InstanceId[4]=0xd6;g_InstanceId[5]=0xb3;g_InstanceId[6]=0xea;g_InstanceId[7]=0xdf;g_InstanceId[8]=0x10;g_InstanceId[9]=0xbf;
 		g_InstanceId[10]=0xa4;g_InstanceId[11]=0xcb;g_InstanceId[12]=0x98;g_InstanceId[13]=0x1d;g_InstanceId[14]=0x50;g_InstanceId[15]=0x78;g_InstanceId[16]=0x44;g_InstanceId[17]=0x06;g_InstanceId[18]=0xd3;g_InstanceId[19]=0x0a;
