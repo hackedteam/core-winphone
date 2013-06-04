@@ -134,12 +134,12 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 				startProc = PositionModule;
 				break;
 			}
-			/***
+			
 			if (moduleName.compare(L"screenshot") == 0 ) {
 				startProc = SnapshotModule;
 				break;
 			}
-
+/***
 			if (moduleName.compare(L"url") == 0 ) {
 				startProc = UrlModule;
 				break;

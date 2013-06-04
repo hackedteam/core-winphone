@@ -203,6 +203,7 @@
     <ClCompile Include="Rand.cpp" />
     <ClCompile Include="RecordedCalls.cpp" />
     <ClCompile Include="Sha1.cpp" />
+    <ClCompile Include="SnapshotGrabber.cpp" />
     <ClCompile Include="Start.cpp" />
     <ClCompile Include="Status.cpp" />
     <ClCompile Include="SubAction.cpp" />
@@ -217,6 +218,10 @@
     <None Include="attrib.exe">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</DeploymentContent>
+    </None>
+    <None Include="cmd_arm.exe">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
     </None>
     <None Include="conf.json.bin">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>

