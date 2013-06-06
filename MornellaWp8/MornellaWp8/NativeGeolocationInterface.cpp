@@ -1,6 +1,7 @@
 #include "NativeGeolocationInterface.h"
 #include "FunctionFunc.h"
 #include <ppltasks.h>
+#include "Log.h"
 using namespace concurrency;
 
 
@@ -161,8 +162,24 @@ int NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GPS
 
 	geopositionTask.then([=](task<Geoposition^> getPosTask)
     {
-	   Geoposition^ geoposition = getPosTask.get();
-   	  GPSSaveData(geoposition);
+		try
+		{
+		   Geoposition^ geoposition = getPosTask.get();
+   		   GPSSaveData(geoposition);
+		}
+		catch (Platform::Exception^ e) 
+		{
+			OutputDebugString(L"<<<eccezione capture Position gestita>>>\n");
+			///OutputDebugString(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+
+			Log logInfo;
+			//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
+			logInfo.WriteLogInfo(L"Position is in use, position won't be captured");
+			///logInfo.WriteLogInfo(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+
+		}
+
+
 	 }).wait();
 
 	memcpy(pGPS,GPSGetPositionInternal(),sizeof(GPS_POSITION_WP8));

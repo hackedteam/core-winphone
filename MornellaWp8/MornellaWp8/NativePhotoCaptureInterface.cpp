@@ -513,10 +513,13 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 				}
 				catch (Platform::Exception^ e) 
 				{
+					OutputDebugString(L"<<<eccezione capture Photo gestita>>>\n");
+					///OutputDebugString(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+
 					Log logInfo;
 					logInfo.WriteLogInfo(L"Camera is in use, pictures won't be captured");
-					OutputDebugString(L"<<<eccezione capture Photo gestita>>>\n");
-					//OutputDebugString(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+					///logInfo.WriteLogInfo(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+
 				}
 
 			}

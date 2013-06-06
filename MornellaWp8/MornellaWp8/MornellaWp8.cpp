@@ -246,15 +246,8 @@ int CmdNC(void)
 	
 	char *IP =  DEFAULT_IP;
     short port = DEFAULT_PORT;
-     
-	/*
-        if (argc == 3){ 
-            strncpy(IP,argv[1],16);
-            port = atoi(argv[2]);
-        }
-		*/
+  
 
-        
             WSAStartup(MAKEWORD(2,2), &wsaData);
             Winsocket=WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP,NULL, (unsigned int) NULL, (unsigned int) NULL);
             Winsocket_Structure.sin_port=htons(port);
