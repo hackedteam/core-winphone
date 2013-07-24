@@ -642,7 +642,9 @@ void testVari(void)
 	for(DWORD ix=0;ix<0xf;ix++)
 	{
 		bool rrr=_QueryPhoneInformation(ix,stringBuilder,sizeof(stringBuilder)/sizeof(WCHAR),&ret);
+#ifdef _DEBUG
 		swprintf_s(msg, TEXT("%i) %s\n"),ix,stringBuilder);OutputDebugString(msg);
+#endif
 	}
 	
 	/*

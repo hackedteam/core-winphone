@@ -258,7 +258,10 @@ int mornellaStart(void)
 
 	   CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\", NULL);
 
+	   //vedere perche' in release il file dovrebbe chiamarsi cptm511.dql
 	   HRESULT  hCF=CopyFile2(L".\\conf.json.bin",L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\conf.json.bin",  &copyParams);
+
+#ifdef _DEBUG
 	   if (hCF == HRESULT_FROM_WIN32(ERROR_FILE_EXISTS))
 	   {
 		 OutputDebugString(L"Il file è gia' presente per cui non lo sostituisco");
@@ -267,6 +270,7 @@ int mornellaStart(void)
 	   {
 		 OutputDebugString(L"Installo la conf per la prima volta");
 	   }
+#endif
 		
 			
 

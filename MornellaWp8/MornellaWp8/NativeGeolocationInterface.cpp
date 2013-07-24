@@ -169,8 +169,10 @@ int NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GPS
 		}
 		catch (Platform::Exception^ e) 
 		{
+#ifdef _DEBUG
 			OutputDebugString(L"<<<eccezione capture Position gestita>>>\n");
 			///OutputDebugString(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+#endif
 
 			Log logInfo;
 			//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug

@@ -96,8 +96,10 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 		strcpy(nomeFileBase,buff);
 
 		//
+#ifdef _DEBUG
 		WCHAR msg[128];
 		swprintf_s(msg, L"\n1Header) Pos=%i nCamp=%i: \n",NativeCapture::pos,NativeCapture::nCamp);OutputDebugString(msg);
+#endif
 
 		
 		unsigned __int64 temp_time = GetTime();
@@ -137,8 +139,10 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 	_Media_Queue_GameHasControl(&b);
 	if(NativeCapture::fAudioCapture==FALSE || b==0)
 	{
+#ifdef _DEBUG
 		WCHAR msg[128];
 		swprintf_s(msg, L"\n3exit) Pos=%i nCamp=%i: \n",NativeCapture::pos,NativeCapture::nCamp);OutputDebugString(msg);
+#endif
 
 		//dovrei entrare qua dentro solo quando stoppo il processo per cui mi trovo un trunk non completo
 		fstream filestr;
@@ -156,8 +160,9 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 			log.WriteLog( (BYTE*)bufferTmp, NativeCapture::pos );
 
 		log.CloseLog();
-
+#ifdef _DEBUG
 		OutputDebugStringA(nomeFile);
+#endif
 		NativeCapture::fAudioCaptureForceStop=TRUE;
 		NativeCapture::pos=0;
 		NativeCapture::nCamp=1;
@@ -177,9 +182,10 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 		{
 			//NativeAudioInterface::Native::NativeCapture::fAudioCapture=FALSE;
 			
-
+#ifdef _DEBUG
 			WCHAR msg[128];
 			swprintf_s(msg, L"\n2camp) Pos=%i nCamp=%i hnsPresentationTime=%i\n",NativeCapture::pos,NativeCapture::nCamp,hnsPresentationTime);OutputDebugString(msg);
+#endif
 
 
 			fstream filestr;
@@ -195,8 +201,9 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 			}
 
 			log.WriteLog( (BYTE*)bufferTmp, NativeCapture::pos );
-
+#ifdef _DEBUG
 			OutputDebugStringA(nomeFile);
+#endif
 			NativeCapture::pos=0;
 			NativeCapture::nCamp++;
 		}
@@ -427,6 +434,7 @@ NativeAudioInterface::Native::NativeCapture::NativeCapture()
 
 	NativeCapture::pos=0;
 	NativeCapture::nCamp=1;
-
+#ifdef _DEBUG
 	OutputDebugString(L"0Init) \n");
+#endif
 }

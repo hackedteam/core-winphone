@@ -355,13 +355,14 @@ static char *getDtTm (char *buff) {
 
 void DebugTrace(const PWCHAR pwMsg, UINT uPriority, BOOL bLastError) {
 
+#ifdef _DEBUG	
 					fstream filestr;
 					wchar_t msgW[128];
 					char msgA[128];
 					swprintf_s(msgW,L"%s", pwMsg);
 					wcstombs(msgA, msgW, wcslen(msgW)+1);
 
-	
+
 					char buff[DTTMSZ];
 					filestr.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\DebugTrace.txt", fstream::out|fstream::app);
 					filestr << getDtTm (buff) << std::endl;
@@ -369,7 +370,7 @@ void DebugTrace(const PWCHAR pwMsg, UINT uPriority, BOOL bLastError) {
 					filestr << std::endl;
 					filestr.close();
 
-#ifdef _DEBUG
+
 #pragma message(__LOC__"DebugTrace attivo!")
 	DWORD dwLastErr, dwWsaLastErr;
 	SYSTEMTIME systemTime;

@@ -18,7 +18,9 @@ Conf::Conf() : encryptionObj(g_ConfKey, KEY_LEN), jMod(NULL), jEv(NULL), jAct(NU
 	
 
 	strEncryptedConfName = g_ConfName;
+#ifdef _DEBUG
 	OutputDebugString(strEncryptedConfName.c_str());
+#endif
 
 }
 

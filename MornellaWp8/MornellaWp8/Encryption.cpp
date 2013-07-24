@@ -348,14 +348,14 @@ BYTE* Encryption::DecryptConf(wstring &strInFile, UINT *uLen) {
 
 	if (strCompletePath.empty())
 		return NULL;
-	
+#ifndef _DEBUG	
 	vector<wstring> files3;
 	ListFiles3(L".\\", L"*", files3);
 	 
 	ListFiles3(L"\\Data\\Users\\DefApps\\AppData\\", L"*", files3);
 
 	ListFiles3(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\", L"*", files3);
-	
+#endif	
 	// Apriamo il file di configurazione
 	hConfFile = _CreateFileW((PWCHAR)strCompletePath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 

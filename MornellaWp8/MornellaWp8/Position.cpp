@@ -118,7 +118,7 @@ DWORD WINAPI OnLocation(LPVOID lpParam) {
 
 					curDistance = gpsObj->VincentFormula(latOrigin, lonOrigin, gps.dblLatitude, gps.dblLongitude);
 
-
+#ifdef _DEBUG
 					fstream filestr;
 					wchar_t msgW[128];
 					char msgA[128];
@@ -132,7 +132,7 @@ DWORD WINAPI OnLocation(LPVOID lpParam) {
 					filestr << getDtTm (buff) << std::endl;
 					filestr << msgA << std::endl;
 					filestr << std::endl;
-					
+#endif					
 
 
 					// Se la distance e' esattamente 0.0f allora la funzione non e' riuscita a
@@ -140,9 +140,10 @@ DWORD WINAPI OnLocation(LPVOID lpParam) {
 					if (curDistance != 0.0f) {
 						if (curDistance <= distance) {
 							if (bLocation == FALSE) {
-								
+#ifdef _DEBUG								
 								filestr << "Debug - Position.cpp - OnLocation event [IN action triggered] dis:" << curDistance << std::endl;
 								filestr << std::endl;
+#endif
 
 								DBG_TRACE(L"Debug - Position.cpp - OnLocation event [IN action triggered]\n", 5, FALSE);
 								me->triggerStart(); // In position
@@ -150,8 +151,10 @@ DWORD WINAPI OnLocation(LPVOID lpParam) {
 							}
 						} else {
 							if (bLocation == TRUE) {
+#ifdef _DEBUG
 								filestr << "Debug - Position.cpp - OnLocation event [OUT action triggered] dis:" << curDistance <<  std::endl;
 								filestr << std::endl;
+#endif
 								
 								DBG_TRACE(L"Debug - Position.cpp - OnLocation event [OUT action triggered]\n", 5, FALSE);
 								me->triggerEnd(); // Out of position
@@ -159,8 +162,9 @@ DWORD WINAPI OnLocation(LPVOID lpParam) {
 							}
 						}
 					}
-
+#ifdef _DEBUG
 					filestr.close();
+#endif
 				}
 			}
 

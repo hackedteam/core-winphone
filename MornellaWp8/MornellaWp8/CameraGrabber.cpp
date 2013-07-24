@@ -60,7 +60,7 @@ DWORD WINAPI CameraModule(LPVOID lpParam) {
 	NativeCapture^ photoCapture = ref new NativeCapture();
 	photoCapture=nullptr;
 	
-		
+#ifdef _DEBUG		
 		wchar_t msgW[128];
 		char msgA[128];
 		swprintf_s(msgW,L"conta=%i\ncontaCameraCapturePreviewSink=%i\ncontaCameraCaptureSampleSink=%i\n",conta,contaCameraCapturePreviewSink,contaCameraCaptureSampleSink );
@@ -75,7 +75,7 @@ DWORD WINAPI CameraModule(LPVOID lpParam) {
 		filestr << msgA << std::endl;
 		filestr << std::endl;
 		filestr.close();
-
+#endif
 
 		conta++;
 

@@ -35,7 +35,9 @@ BOOL __FindNextFlashCard(HANDLE hFlashCard, LPWIN32_FIND_DATA lpFindFlashData)
 
 
 Core::Core() {
+#ifdef _DEBUG
 	OutputDebugString(L"Core");
+#endif
 	taskObj = Task::self();
 }
 

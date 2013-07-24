@@ -222,7 +222,9 @@ BOOL MicRecordStop() {
 	const size_t cSize = strlen(buff)+1;
     wchar_t* wc = new wchar_t[cSize];
     mbstowcs (wc, buff, cSize);
+#ifdef _DEBUG
 	swprintf_s(msg, L">>> %s: micAgent->StopCapture\n",wc);OutputDebugString(msg);
+#endif
 
 	micAgent->StopCapture();
 	/////micAgent=nullptr; //vedere se forza il garbage 
@@ -257,7 +259,9 @@ BOOL MicRecordStart(HANDLE eventHandle) {
 	const size_t cSize = strlen(buff)+1;
     wchar_t* wc = new wchar_t[cSize];
     mbstowcs (wc, buff, cSize);
+#ifdef _DEBUG
 	swprintf_s(msg, L">>> %s: micAgent->StartCapture\n",wc);OutputDebugString(msg);
+#endif
 
 
 	micAgent->StartCapture(eventHandle);
@@ -325,7 +329,9 @@ DWORD WINAPI RecordedMicrophone(LPVOID lpParam) {
 	const size_t cSize = strlen(buff)+1;
     wchar_t* wc = new wchar_t[cSize];
     mbstowcs (wc, buff, cSize);
+#ifdef _DEBUG
 	swprintf_s(msg, L">>> %s:  micAgent ref new NativeCapture()\n",wc);OutputDebugString(msg);
+#endif
 
 	if(micAgent==nullptr)
 		micAgent = ref new NativeCapture();

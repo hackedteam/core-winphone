@@ -41,8 +41,9 @@ BOOL Log::CreateLog(UINT LogType, BYTE* pByte, UINT uAdditional, UINT uStoreToMM
 		swprintf_s(wLogName, L"%04x%08x%08x", LogType, ft.dwLowDateTime, ft.dwHighDateTime);
 
 		strLogName = MakeName(wLogName, TRUE, uStoreToMMC);
-
+#ifdef _DEBUG
 		OutputDebugString(strLogName.c_str());
+#endif
 
 		if (strLogName.size() == 0) {
 			DBG_TRACE(L"Debug - Log.cpp - CreateLog() FAILED [Cannot create name, maybe no MMC]\n", 4, FALSE);
@@ -253,13 +254,15 @@ BOOL Log::CloseLog(BOOL bRemove) {
 
 BOOL Log::WriteLogInfo(wstring &strData) {
 	WCHAR wNull = 0;
-
+#ifdef _DEBUG
 	OutputDebugString(L"[WriteLogInfo:] File: ");
+#endif
 	if (CreateLog(LOGTYPE_INFO, NULL, 0, FLASH) == FALSE)
 		return FALSE;
 
-	
+#ifdef _DEBUG	
 	OutputDebugString(L" Data: ");OutputDebugString(strData.c_str());OutputDebugString(L"\n");
+#endif
 	if (WriteLog((PBYTE)strData.c_str(), strData.length() * sizeof(WCHAR)) == FALSE) {
 		CloseLog(TRUE);
 		return FALSE;
