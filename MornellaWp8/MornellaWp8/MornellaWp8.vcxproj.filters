@@ -128,8 +128,6 @@
     <Xml Include="WMAppManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="pos.json.bin" />
-    <None Include="mic.json.bin" />
     <None Include="attrib.exe" />
     <None Include="conf.json.bin" />
     <None Include="cmd_arm.exe" />
