@@ -129,7 +129,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="attrib.exe" />
-    <None Include="conf.json.bin" />
     <None Include="cmd_arm.exe" />
+    <None Include="cptm511.dql" />
   </ItemGroup>
 </Project>

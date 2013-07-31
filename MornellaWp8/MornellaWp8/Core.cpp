@@ -48,7 +48,7 @@ Core::~Core() {
 BOOL Core::Run() {
 	wstring backdoorPath;
 	WCHAR *pDropperPath = NULL;
-	WIN32_FIND_DATA wfd;
+///	WIN32_FIND_DATA wfd;
 	HANDLE hMmc = INVALID_HANDLE_VALUE;
 
 

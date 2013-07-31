@@ -121,7 +121,7 @@ bool ListFiles2(wstring path, wstring mask, vector<wstring>& files)
 
 	WCHAR stringa[1024];
 	WCHAR stringaOut[1024];
-	HINSTANCE LibHandle;
+///	HINSTANCE LibHandle;
 
 		
 	while (!folders.empty())

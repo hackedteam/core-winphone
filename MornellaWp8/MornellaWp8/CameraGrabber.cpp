@@ -44,7 +44,8 @@ DWORD WINAPI CameraModule(LPVOID lpParam) {
 	HANDLE moduleHandle;
 
 	INT  iResult = 0;
-	BSTR bstr1, bstr2 = NULL;
+	//BSTR bstr1, bstr2 = NULL;
+	BSTR bstr2 = NULL;
 	DWORD dwModeRear = MODE_STILL, dwModeFront = MODE_CAPTURE;
 	Device* devobj = Device::self();
 	Status* statusObj = Status::self();

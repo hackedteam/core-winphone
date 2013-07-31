@@ -395,7 +395,8 @@ extern "C" {
 DWORD ProcessMonitor::ThreadHandler( DWORD dwProc, DWORD dwMode, DWORD dwValue )
 {
 	BOOL bOut = FALSE;
-	DWORD dwErr = -1, dwOut = -1, dwOldPerm;
+	///DWORD dwErr = -1, dwOut = -1, dwOldPerm;
+	DWORD dwErr = -1, dwOut = -1;
 	HANDLE hSnapTh = INVALID_HANDLE_VALUE;
 	THREADENTRY32  te;
 	ZeroMemory(&te, sizeof(THREADENTRY32));

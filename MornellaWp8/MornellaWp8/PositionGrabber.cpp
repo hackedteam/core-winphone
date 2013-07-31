@@ -13,7 +13,8 @@
 
 DWORD WINAPI PositionModule(LPVOID lpParam) {
 #define GPS_POLL_TIMEOUT 1000 * 60 * 14 // Tempo massimo di wait prima che il GPS venga spento
-	BOOL gps, cell, wifi;
+	///BOOL gps, cell, wifi;
+	BOOL gps;
 
 	Module *me = (Module *)lpParam;
 	Configuration *conf = me->getConf();

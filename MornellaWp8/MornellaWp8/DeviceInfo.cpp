@@ -240,7 +240,7 @@ DWORD WINAPI DeviceInfoAgent(LPVOID lpParam) {
 	log.WriteLog((BYTE *)&wLine, WideLen(wLine));
 
 	// Leggiamo l'operatore
-	WCHAR wCarrier[50];
+///	WCHAR wCarrier[50];
 /***
 	if (RegistryGetString(SN_PHONEOPERATORNAME_ROOT, SN_PHONEOPERATORNAME_PATH, SN_PHONEOPERATORNAME_VALUE,
 		wCarrier, sizeof(wCarrier)) == S_OK && wcslen(wCarrier)) {

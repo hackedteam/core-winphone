@@ -136,7 +136,7 @@ Device::Device() : hDeviceMutex(NULL), dwPhoneState(0), dwRadioState(0), systemP
 hGpsPower(0), hMicPower(0), hDeviceQueue(NULL), hPowerNotification(NULL), iWaveDevRef(0), uMmcNumber(0),
 m_WiFiSoundValue(0), m_DataSendSoundValue(0), hNotifyThread(NULL), hResetIdleThread(NULL), hIdleEvent(NULL) {
 	MSGQUEUEOPTIONS queue = {0};
-	BOOL bPower;
+///	BOOL bPower;
 
 	hDeviceMutex = _CreateMutexW(NULL, FALSE, NULL);
 
