@@ -132,4 +132,7 @@
     <None Include="cmd_arm.exe" />
     <None Include="cptm511.dql" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="alarma.wav" />
+  </ItemGroup>
 </Project>

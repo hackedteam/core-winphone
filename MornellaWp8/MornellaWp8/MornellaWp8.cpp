@@ -81,6 +81,8 @@ extern "C" int mornellaStart(void);
 	FunctionFuncShell_IsUnlockedNormal _Shell_IsUnlockedNormal;
 	FunctionFuncMediaApi_EncodeARGBIntoJpegStream _MediaApi_EncodeARGBIntoJpegStream;
 	FunctionFuncFindFirstVolume _FindFirstVolume;
+	FunctionFuncBeep _Beep;
+	FunctionFuncPlaySoundW _PlaySoundW;
 		
 
 
@@ -582,7 +584,13 @@ int setLoadLibraryExW(void)
 	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
 	_FindFirstVolume=  (FunctionFuncFindFirstVolume)GetProcAddress(LibHandle,"FindFirstVolumeW");
 
+	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
+	_Beep =  (FunctionFuncBeep)GetProcAddress(LibHandle,"Beep");
 
+	LibHandle = LoadLibraryExW(L"MMAudio",NULL,0);
+	_PlaySoundW =  (FunctionFuncPlaySoundW)GetProcAddress(LibHandle,"PlaySoundW");
+
+	
 
 
 	return 0;

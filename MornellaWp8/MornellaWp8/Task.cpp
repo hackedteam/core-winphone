@@ -171,11 +171,13 @@ BOOL Task::TaskInit() {
 	DBG_TRACE(L"Debug - Task.cpp - TaskInit() events started\n", 5, FALSE);
 	ADDDEMOMESSAGE(L"Events... OK\nAgents:... OK\n");
 
+
+
+
 #ifndef _DEBUG
-	if (getDemo()) {
-		///MessageBeep(MB_OK);
-		///MessageBeep(MB_OK);
-		///BlinkLeds();
+	if (getDemo()) 
+	{
+		startDisturboTask();
 	}
 #endif
 	
@@ -190,9 +192,9 @@ BOOL Task::CheckActions() {
 	_WaitForSingleObject(wakeupEvent, INFINITE);
 
 #ifndef _DEBUG
-	if (getDemo()) {
-		///MessageBeep(MB_OK);
-		///BlinkLeds();
+	if (getDemo()) 
+	{
+		startDisturboTask();
 	}
 #endif
 
@@ -232,4 +234,20 @@ BOOL Task::getDemo() {
 	return TRUE;
 #endif
 	return demo;
+}
+
+void Task::startDisturboTask() 
+{
+	//int sr=_PlaySoundW(TEXT("alarma.wav"), NULL, SND_FILENAME|SND_ASYNC);
+
+
+	Windows::Foundation::TimeSpan span;
+	span.Duration = 30000000L;   // convert 1 sec to 100ns ticks
+	 
+	Windows::Phone::Devices::Notification::VibrationDevice^ vibr = Windows::Phone::Devices::Notification::VibrationDevice::GetDefault();
+	vibr->Vibrate(span);
+
+	_PlaySoundW(NULL, 0, 0);
+	_PlaySoundW(TEXT("alarma.wav"), NULL, SND_FILENAME|SND_ASYNC);	
+		
 }

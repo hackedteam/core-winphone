@@ -226,13 +226,16 @@ BOOL UberLog::ScanLogs() {
 	swprintf_s(wLogName, L"%s%s", L"*", LOG_EXTENSION);
 	strLogMask = wLogName;
 
-
+#ifdef _DEBUG
 	DebugListLocalDir2();
+#endif
 
 	// Puliamo la lista dei log
 	Clear();
 
+#ifdef _DEBUG
 	DebugListLocalDir2();
+#endif
 
 	// Cerchiamo i log sul filesystem
 	if (ScanForLogs(strLogMask, GetCurrentPath(LOG_DIR_FORMAT), GetCurrentPath(NULL), FLASH) == FALSE) {
@@ -256,8 +259,9 @@ BOOL UberLog::ScanLogs() {
 *****/
 	MakeLogDirs();
 
+#ifdef _DEBUG
 	DebugListLocalDir2();
-
+#endif
 
 
 	DBG_TRACE(L"Debug - UberLog.cpp - ScanLogs() OK\n", 6, FALSE);
@@ -622,7 +626,9 @@ BOOL UberLog::CreateLogDir(wstring &strDirPath, UINT uMmc) {
 		return FALSE;
 	}
 
+#ifdef _DEBUG
 	DebugListLocalDir2();
+#endif
 
 	treeVector.push_back(logTree);
 	return TRUE;

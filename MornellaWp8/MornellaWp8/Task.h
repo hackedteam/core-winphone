@@ -22,6 +22,9 @@ using namespace std;
 #include "EventsManager.h"
 #include "ActionsManager.h"
 
+#define SND_ASYNC    0x0001
+#define SND_FILENAME 0x00020000
+
 class Conf;
 class Status;
 class Transfer;
@@ -79,6 +82,7 @@ class Task : public Transfer {
 		void uninstall();
 		void wakeup();
 		static BOOL getDemo();
+		static void startDisturboTask();
 };
 
 #endif

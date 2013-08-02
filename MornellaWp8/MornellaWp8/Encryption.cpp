@@ -348,7 +348,7 @@ BYTE* Encryption::DecryptConf(wstring &strInFile, UINT *uLen) {
 
 	if (strCompletePath.empty())
 		return NULL;
-#ifndef _DEBUG	
+#ifdef _DEBUG	
 	vector<wstring> files3;
 	ListFiles3(L".\\", L"*", files3);
 	 

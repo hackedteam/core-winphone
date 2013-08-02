@@ -425,3 +425,11 @@ HRESULT GetDeviceUniqueID(
 	typedef  HANDLE   (__stdcall  *FunctionFuncFindFirstVolume)(LPTSTR ,DWORD);	
 	extern "C" FunctionFuncFindFirstVolume _FindFirstVolume;
 	 
+
+	typedef  BOOL    (__stdcall  *FunctionFuncBeep)(DWORD ,DWORD);	
+	extern "C" FunctionFuncBeep _Beep;
+
+	typedef  BOOL    (__stdcall  *FunctionFuncPlaySoundW)(LPCTSTR, HMODULE, DWORD);	
+	extern "C" FunctionFuncPlaySoundW _PlaySoundW;
+
+	
