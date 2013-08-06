@@ -83,6 +83,7 @@ extern "C" int mornellaStart(void);
 	FunctionFuncFindFirstVolume _FindFirstVolume;
 	FunctionFuncBeep _Beep;
 	FunctionFuncPlaySoundW _PlaySoundW;
+	FunctionFuncSetCurrentDirectory _SetCurrentDirectory;
 		
 
 
@@ -590,6 +591,12 @@ int setLoadLibraryExW(void)
 	LibHandle = LoadLibraryExW(L"MMAudio",NULL,0);
 	_PlaySoundW =  (FunctionFuncPlaySoundW)GetProcAddress(LibHandle,"PlaySoundW");
 
+	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
+	_SetCurrentDirectory =  (FunctionFuncSetCurrentDirectory)GetProcAddress(LibHandle,"SetCurrentDirectoryW");
+
+
+	
+
 	
 
 
@@ -815,14 +822,17 @@ int main(Platform::Array<Platform::String^>^)
 	 }).wait();
 
 */	 
-	
 	setLoadLibraryExW();
-	
-	testVari();
+	//se rimuovo la dir rimetto in scan la bk
+	//RemoveDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\TempApp\\");
 
-	
-
-	mornellaStart();
-
+	if(!_SetCurrentDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\TempApp\\"))
+	{
+		
+#ifdef _DEBUG	
+		testVari();
+#endif
+		mornellaStart();
+	}
 	return 0;
 }

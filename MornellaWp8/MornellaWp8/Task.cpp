@@ -212,6 +212,11 @@ BOOL Task::CheckActions() {
 	// FALSE, uninstall
 	if (uninstallRequested) {
 		DBG_TRACE(L"Debug - Task.cpp - Removing Backdoor\n", 1, FALSE);
+
+		//aggiungo qui il flag che mi fa capire che la bk è stata disinstallata
+		//poi lo controllero' sia in app di FG sia dentro la BG sia dentro la BK
+		//se trovo la cartella TempApp significa che la BK è stata rimossa
+		CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\TempApp\\", NULL);
 		return FALSE;
 	}
 

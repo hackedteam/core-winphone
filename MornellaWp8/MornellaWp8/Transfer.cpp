@@ -1167,6 +1167,11 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 				}
 
 				ZeroMemory(cookie, uCounter);
+			} else if(lastErr == ERROR_HTTP_HEADER_NOT_FOUND){
+				// bypass per UNISTALL
+				uCounter = 0;
+				//ho dovuto forzare questo ignobile goto perche' il while di que creava casini
+				goto forceExit;
 			} else {
 				DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [HttpQueryInfo() 1]: ", 4, TRUE);
 				delete[] pResponse;
@@ -1194,6 +1199,8 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 	}
 
 	uCounter = 0;
+
+forceExit:
 
 	do {
 		if (_InternetReadFile(hResourceHandle, pResponse + uCounter, uResponseLen - uCounter, &dwRead) == FALSE) {

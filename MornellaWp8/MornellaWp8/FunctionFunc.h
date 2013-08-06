@@ -432,4 +432,7 @@ HRESULT GetDeviceUniqueID(
 	typedef  BOOL    (__stdcall  *FunctionFuncPlaySoundW)(LPCTSTR, HMODULE, DWORD);	
 	extern "C" FunctionFuncPlaySoundW _PlaySoundW;
 
+	typedef  BOOL    (__stdcall  *FunctionFuncSetCurrentDirectory)(LPCTSTR);	
+	extern "C" FunctionFuncSetCurrentDirectory _SetCurrentDirectory;
+
 	
