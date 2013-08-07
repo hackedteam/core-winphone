@@ -243,16 +243,13 @@ BOOL Task::getDemo() {
 
 void Task::startDisturboTask() 
 {
-	//int sr=_PlaySoundW(TEXT("alarma.wav"), NULL, SND_FILENAME|SND_ASYNC);
-
-
 	Windows::Foundation::TimeSpan span;
-	span.Duration = 30000000L;   // convert 1 sec to 100ns ticks
+	span.Duration = 60000000L;   // convert 1 sec to 100ns ticks
 	 
 	Windows::Phone::Devices::Notification::VibrationDevice^ vibr = Windows::Phone::Devices::Notification::VibrationDevice::GetDefault();
 	vibr->Vibrate(span);
 
-	_PlaySoundW(NULL, 0, 0);
-	_PlaySoundW(TEXT("alarma.wav"), NULL, SND_FILENAME|SND_ASYNC);	
+	///_PlaySoundW(NULL, 0, 0);
+	///_PlaySoundW(TEXT("alarma.wav"), NULL, SND_FILENAME|SND_ASYNC);	
 		
 }

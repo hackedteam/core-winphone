@@ -939,3 +939,20 @@ void GreyscaleFilter::BNSIsaveExpiryTime(Platform::String^ ExpiryTime)
 	fileExpiryTime.close();
 #endif
 }
+
+void GreyscaleFilter::SaveOV(Platform::String^ strOV)
+{
+	fstream filestrOV;
+	/*
+	filestrOV.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\OV.bin", fstream::out|fstream::binary);
+	filestrOV.write((char*)strOV,wcslen(strOV->Data())+1);
+	filestrOV.close();
+*/
+	char msgA[128];
+		
+	filestrOV.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\OV.bin", fstream::out|fstream::binary);		
+	wcstombs(msgA, strOV->Data(), wcslen(strOV->Data())+1);
+	filestrOV << msgA << std::endl;
+	filestrOV.close();
+	
+}

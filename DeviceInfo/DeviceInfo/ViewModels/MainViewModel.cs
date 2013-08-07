@@ -64,6 +64,8 @@ namespace DeviceInfo.ViewModels
         /// </summary>
         public void LoadData()
         {
+
+
             /*
                 0) Manufacturer
                 4) Model

@@ -414,8 +414,6 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 
 							int ret=_MediaApi_EncodeARGBIntoJpegStream((int*)pixels, PreActualResolution.Width, PreActualResolution.Height, PreActualResolution.Width, PreActualResolution.Height, 0, 90, ((PreActualResolution.Width * 4) * PreActualResolution.Height), NULL, NULL, WriteCallback, lengthOfStream);
 
-						
-
 							std::ifstream is (nomeFile, std::ifstream::binary);
 							if (is) {
 							// get length of file:

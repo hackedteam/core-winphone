@@ -147,6 +147,7 @@ m_WiFiSoundValue(0), m_DataSendSoundValue(0), hNotifyThread(NULL), hResetIdleThr
 	strInstanceId.clear();
 	strPhoneNumber.clear();
 	strManufacturer.clear();
+	strOSversion.clear();
 	strModel.clear();
 
 	hIdleEvent = _CreateEventW(NULL, FALSE, FALSE, NULL);
@@ -197,6 +198,7 @@ Device::~Device() {
 	strInstanceId.clear();
 	strPhoneNumber.clear();
 	strManufacturer.clear();
+	strOSversion.clear();
 	strModel.clear();
 
 	mDiskInfo.clear();
@@ -234,6 +236,7 @@ Device::~Device() {
 	}
 }
 
+
 BOOL Device::GetOsVersion(OSVERSIONINFO* pVersionInfo) {
 	WAIT_AND_SIGNAL(hDeviceMutex);
 
@@ -248,6 +251,7 @@ BOOL Device::GetOsVersion(OSVERSIONINFO* pVersionInfo) {
 	UNLOCK(hDeviceMutex);
 	return FALSE;
 }
+
 
 void Device::GetSystemInfo(SYSTEM_INFO* pSystemInfo) {
 	WAIT_AND_SIGNAL(hDeviceMutex);
@@ -723,6 +727,12 @@ const wstring Device::GetManufacturer() {
 	return strManufacturer;
 }
 
+const wstring Device::GetOV() {
+	return strOSversion;
+}
+
+
+
 const wstring Device::GetModel() {
 	return strModel;
 }
@@ -788,6 +798,15 @@ BOOL Device::IsSimEnabled() {
 	UNLOCK(hDeviceMutex);
 ***/
 	return TRUE;
+}
+
+
+std::wstring cs2ws(const std::string& str)
+{
+    int size_needed = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);
+    std::wstring wstrTo( size_needed, 0 );
+    MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
+    return wstrTo;
 }
 
 BOOL Device::RefreshBatteryStatus() {
@@ -927,6 +946,33 @@ BOOL Device::RefreshData() {
 		*/
 
 
+		
+
+
+		  std::ifstream is ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\OV.bin", std::ifstream::binary);
+		  if (is) {
+			// get length of file:
+			is.seekg (0, is.end);
+			int length = is.tellg();
+			is.seekg (0, is.beg);
+
+			char* buffer = new char [length];
+
+			// read data as a block:
+			is.read (buffer,length);
+			buffer[length-1]='\0';
+
+			
+			if (is) 
+				strOSversion=cs2ws(buffer);
+
+			is.close();
+
+			delete[] buffer;
+		  }
+
+
+
 /***
 		// Richiediamo il numero di telefono
 		ZeroMemory(&AddressCaps, sizeof(AddressCaps));
@@ -959,7 +1005,7 @@ BOOL Device::RefreshData() {
 			break;
 		}
 
-		lineClose(hLine);
+		lineClose(hLine);strManufacturer
 		lineShutdown(hApp);
 ***/
 		strManufacturer.clear();

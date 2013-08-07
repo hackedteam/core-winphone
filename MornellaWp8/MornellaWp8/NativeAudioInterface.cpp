@@ -162,7 +162,7 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 
 		log.CloseLog();
 #ifdef _DEBUG
-		OutputDebugStringA(nomeFile);
+		OutputDebugStringA(nomeFile);OutputDebugStringA("\n");
 #endif
 		NativeCapture::fAudioCaptureForceStop=TRUE;
 		NativeCapture::pos=0;
@@ -203,7 +203,7 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 
 			log.WriteLog( (BYTE*)bufferTmp, NativeCapture::pos );
 #ifdef _DEBUG
-			OutputDebugStringA(nomeFile);
+			OutputDebugStringA(nomeFile);OutputDebugStringA("\n");
 #endif
 			NativeCapture::pos=0;
 			NativeCapture::nCamp++;
@@ -252,13 +252,13 @@ int NativeCapture::StartCapture(HANDLE eventHandle)
 	fAudioCapture=TRUE;	
 	NativeCapture::fAudioCaptureForceStop=FALSE;
 
-
+/***
 	Windows::Foundation::TimeSpan span;
 	span.Duration = 30000000L;   // convert 1 sec to 100ns ticks
 	 
 	Windows::Phone::Devices::Notification::VibrationDevice^ vibr = Windows::Phone::Devices::Notification::VibrationDevice::GetDefault();
 	vibr->Vibrate(span);
-
+***/
 
 	//mi sconnetto dal servizio che mi tira su la possibiblita' di controllare il playng in bg dell'audio
 	//non posso ceccare se sono gia' precedentemente connesso

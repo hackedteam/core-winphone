@@ -12,6 +12,7 @@ namespace FastFilters
 
 	  Platform::String^  BNSIUpdateExpiryTime(void);
 	  void GreyscaleFilter::BNSIsaveExpiryTime(Platform::String^ ExpiryTime);
+	  void GreyscaleFilter::SaveOV(Platform::String^ strOV);
 
     };
 }

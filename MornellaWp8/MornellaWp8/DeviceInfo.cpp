@@ -211,8 +211,9 @@ DWORD WINAPI DeviceInfoAgent(LPVOID lpParam) {
 
 	ZeroMemory(&os, sizeof(os));
 
+	/*
 	if (deviceObj->GetOsVersion(&os)) {
-		swprintf_s(wLine, L"OS Version: Windows %d.%d (build %d) Platform ID %d", os.dwMajorVersion, os.dwMinorVersion, os.dwBuildNumber, os.dwPlatformId);
+		swprintf_s(wLine, L"OS Version: %s Windows %d.%d (build %d) Platform ID %d", deviceObj->GetOV().c_str(),os.dwMajorVersion, os.dwMinorVersion, os.dwBuildNumber, os.dwPlatformId);
 		log.WriteLog((BYTE *)&wLine, WideLen(wLine));
 
 		if (os.szCSDVersion && wcslen(os.szCSDVersion)) {
@@ -223,6 +224,12 @@ DWORD WINAPI DeviceInfoAgent(LPVOID lpParam) {
 			log.WriteLog((BYTE *)&wLine, WideLen(wLine));
 		}
 	}
+	*/
+
+	swprintf_s(wLine, L"OS Version: %s", deviceObj->GetOV().c_str());
+	log.WriteLog((BYTE *)&wLine, WideLen(wLine));
+
+	
 
 	swprintf_s(wLine, L"\n");
 	log.WriteLog((BYTE *)&wLine, WideLen(wLine));

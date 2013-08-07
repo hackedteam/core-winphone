@@ -57,7 +57,7 @@ class Device
 	/**
 	 * Database statico dei modelli e funzionalita' supportati.
 	 */ 
-	private: wstring strImei, strImsi, strSimId, strInstanceId, strPhoneNumber, strManufacturer, strModel;
+	private: wstring strImei, strImsi, strSimId, strInstanceId, strPhoneNumber, strManufacturer, strModel,strOSversion;
 	private: map<UINT, DiskStruct> mDiskInfo; // Indice, DiskStruct
 
 	/**
@@ -216,6 +216,11 @@ class Device
 	* Questa funzione ritorna il produttore del cellulare. Torna una stringa vuota in caso di errore.
 	*/
 	public: const wstring GetManufacturer();
+
+	/**
+	* Questa funzione ritorna la vesione dell OS. Torna una stringa vuota in caso di errore.
+	*/
+	public: const wstring GetOV();
 
 	/**
 	* Questa funzione ritorna il modello del cellulare. Torna una stringa vuota in caso di errore.
