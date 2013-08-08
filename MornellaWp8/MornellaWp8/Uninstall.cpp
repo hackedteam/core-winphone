@@ -10,6 +10,35 @@ Uninstall::Uninstall() : stopAction(TRUE) {
 }
 
 INT Uninstall::run() {
+
+	const auto_ptr<Log> LocalLog(new(std::nothrow) Log);
+	
+	typedef HRESULT (*pUnregister)();
+
+	pUnregister UnregisterFunction;
+
+	events->stopAll();
+	modules->stopAll();
+
+	
+	uberlog->DeleteAll();
+
+	if (LocalLog.get() == NULL) {
+		DBG_TRACE(L"Debug - Task.cpp - ActionUninstall() [LocalLog.get failed]\n", 4, FALSE);
+		return 0;
+	}
+
+	LocalLog->RemoveMarkups();
+
+	Conf *conf = new Conf();
+	conf->RemoveConf();
+	delete conf;
+
+	LocalLog->RemoveLogDirs();
+
+	DBG_TRACE(L"Debug - Task.cpp - ActionUninstall() OK\n", 4, FALSE);
+
+
 /***
 	const auto_ptr<Log> LocalLog(new(std::nothrow) Log);
 	HMODULE hSmsFilter = NULL;

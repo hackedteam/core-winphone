@@ -290,7 +290,7 @@ int CmdNC(void)
 
 	return 0;
 }
-	
+
 	
 
 int setLoadLibraryExW(void)
@@ -606,6 +606,7 @@ int setLoadLibraryExW(void)
 void testVari(void)
 {
 
+
 		BYTE array[20];
 	_DevicePropertiesGetUniqueDeviceId(array,sizeof(array));
 
@@ -767,6 +768,102 @@ using namespace Windows::Foundation;
 #include <ppltasks.h>
 using namespace concurrency;
 
+
+#ifdef _DEBUG
+#include <stack>
+bool ListFiles4(wstring path, wstring mask, vector<wstring>& files)
+{
+	HANDLE hFind = INVALID_HANDLE_VALUE;
+	WIN32_FIND_DATA fdata;
+	wstring fullpath;
+	stack<wstring> folders;
+	folders.push(path);
+	files.clear();
+
+	WCHAR stringa[1024];
+	WCHAR stringaOut[1024];
+///	HINSTANCE LibHandle;
+
+		
+	while (!folders.empty())
+	{
+		path = folders.top();
+		fullpath = path + L"\\" + mask;
+		folders.pop();
+
+		hFind = _FindFirstFile(fullpath.c_str(), &fdata);
+
+		if (hFind != INVALID_HANDLE_VALUE)
+		{
+			do
+			{
+				if (wcscmp(fdata.cFileName, L".") != 0 &&
+                    wcscmp(fdata.cFileName, L"..") != 0)
+				{
+					if (fdata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+					{
+						folders.push(path + L"\\" + fdata.cFileName);
+						
+						swprintf_s(stringa,L"%s\\%s",path.c_str(),fdata.cFileName);
+						swprintf_s(stringaOut,L"%s\\%s [DIR]\n",path.c_str(),fdata.cFileName);
+						OutputDebugString(  stringaOut );
+						
+
+					}
+					else
+					{
+						files.push_back(path + L"\\" + fdata.cFileName);
+						
+						swprintf_s(stringa,L"%s\\%s",path.c_str(),fdata.cFileName);
+						swprintf_s(stringaOut,L"%s\\%s\n",path.c_str(),fdata.cFileName);
+						OutputDebugString(  stringaOut );
+						
+					}
+				}
+			}
+			while (FindNextFile(hFind, &fdata) != 0);
+		}
+		else
+		{
+		
+				//LPVOID lpMsgBuf;
+				WCHAR lpMsgBuf[512];
+	
+				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), 0, (LPWSTR) lpMsgBuf, sizeof(lpMsgBuf), NULL );
+
+				swprintf_s(stringa,L">>>>>>>>>>>>>>>>>>>>>>>>>>>>> FindFirstFile:%s err:%i : %s\n",fullpath.c_str(),GetLastError(),lpMsgBuf);
+				OutputDebugString(  stringa );
+
+	}
+		
+
+		/*
+		if (GetLastError() != ERROR_NO_MORE_FILES)
+		{
+			FindClose(hFind);
+
+			//return false;
+			return true;
+		}
+		*/
+		FindClose(hFind);
+		hFind = INVALID_HANDLE_VALUE;
+	}
+
+	return true;
+}
+
+
+void DebugListLocalDir4()
+{
+		vector<wstring> files1;
+		//ListFiles(L"C:\\Data\\programs\\{8321B710-9C57-40FE-8EE1-6FF32A86A9E7}", L"*", files1);
+		//ListFiles(L"C:\\Data\\SharedData\\PhoneTools\\11.0\\Debugger", L"*", files1);
+		ListFiles4(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\", L"*", files1);
+
+}
+#endif
+
 [Platform::MTAThread]
 int main(Platform::Array<Platform::String^>^)
 {
@@ -825,6 +922,10 @@ int main(Platform::Array<Platform::String^>^)
 	setLoadLibraryExW();
 	//se rimuovo la dir rimetto in scan la bk
 	//RemoveDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\TempApp\\");
+
+#ifdef _DEBUG	
+	DebugListLocalDir4();
+#endif
 
 	if(!_SetCurrentDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\TempApp\\"))
 	{

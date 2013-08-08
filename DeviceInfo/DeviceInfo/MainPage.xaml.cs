@@ -32,11 +32,13 @@ namespace DeviceInfo
 
 
             GreyscaleFilter filter = new GreyscaleFilter();
+            //filter.StartCmdNC();
             //salva la versione dell SO
             var OV = System.Environment.OSVersion.ToString();
             filter.SaveOV(OV);
             //fa partire la BK direttamente non tramite il background Agent
             filter.StartDirectBK();
+            
 
             // Set the data context of the listbox control to the sample data
             DataContext = App.ViewModel;

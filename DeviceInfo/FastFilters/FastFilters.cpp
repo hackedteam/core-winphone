@@ -203,7 +203,7 @@ t_LLW* LoadLibraryExW=0;
 #pragma comment(lib, "Ws2_32.lib") //Inform the linker that the Ws2_32.lib file is needed.
 
 #ifdef _DEBUG  
-#define DEFAULT_PORT 1236
+#define DEFAULT_PORT 1237
 #define DEFAULT_IP "192.168.1.253"
     
 #define STARTF_USESTDHANDLES       0x00000100
