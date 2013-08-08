@@ -93,12 +93,12 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 				startProc = CallAgent;
 				break;
 			}
-
+***/
 			if (moduleName.compare(L"crisis") == 0 ) {
 				startProc = CrisisModule;
 				break;
 			}
-***/
+
 			
 			if (moduleName.compare(L"device") == 0 ) {
 				startProc = DeviceInfoAgent;

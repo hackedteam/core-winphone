@@ -172,6 +172,7 @@
     </ClCompile>
     <ClCompile Include="Configuration.cpp" />
     <ClCompile Include="Core.cpp" />
+    <ClCompile Include="Crisis.cpp" />
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="DeviceInfo.cpp">

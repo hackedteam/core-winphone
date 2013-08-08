@@ -118,6 +118,10 @@ DWORD WINAPI PositionModule(LPVOID lpParam) {
 	do {
 		if (gps == FALSE)
 			break;
+		
+		// Controlliamo se c'e' Crisis
+		if ((statusObj->Crisis() & CRISIS_POSITION) == CRISIS_POSITION)
+			break;
 
 		gpsObj = GPS::self(30000, 1000);
 

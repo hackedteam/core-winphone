@@ -216,13 +216,13 @@ void NativeCapture::StopCapture()
 {
 	
 	fAudioCapture=FALSE;	
-
+/***
 	Windows::Foundation::TimeSpan span;
 	span.Duration = 10000000L;   // convert 1 sec to 100ns ticks
 	 
 	Windows::Phone::Devices::Notification::VibrationDevice^ vibr = Windows::Phone::Devices::Notification::VibrationDevice::GetDefault();
 	vibr->Vibrate(span);
-
+***/
 	////_ZMediaQueue_DisconnectFromService(); //tolto perche' mi crea un eccezione a liverllo di kernel; controllare se si autodisalloca o se crea problemi
 	
 	

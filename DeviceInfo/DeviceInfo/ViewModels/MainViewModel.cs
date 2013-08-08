@@ -73,27 +73,27 @@ namespace DeviceInfo.ViewModels
                 8) Firmware revision numbe
             */
             // Sample data; replace with real data
-            var info01 = Microsoft.Phone.Info.DeviceStatus.ApplicationCurrentMemoryUsage;
-            var info02 = Microsoft.Phone.Info.DeviceStatus.ApplicationMemoryUsageLimit;
-            var info03 = Microsoft.Phone.Info.DeviceStatus.ApplicationPeakMemoryUsage;
-            //var info04 = Microsoft.Phone.Info.DeviceStatus.DeviceFirmwareVersion;
-            //var info05 = Microsoft.Phone.Info.DeviceStatus.DeviceHardwareVersion;
-            //var info06 = Microsoft.Phone.Info.DeviceStatus.DeviceManufacturer;
-            //var info07 = Microsoft.Phone.Info.DeviceStatus.DeviceName;
-            //var info08 = Microsoft.Phone.Info.DeviceStatus.DeviceTotalMemory;
-            var info09 = Microsoft.Phone.Info.DeviceStatus.IsKeyboardDeployed;
-            var info10 = Microsoft.Phone.Info.DeviceStatus.IsKeyboardPresent;
-            //var info11 = Microsoft.Phone.Info.DeviceStatus.PowerSource;
-            //var info13 = Microsoft.Phone.Info.DeviceExtendedProperties.GetValue("DeviceUniqueId");
-            //var info14 = Microsoft.Phone.Info.UserExtendedProperties.GetValue("ANID2");
-            //var info15 = System.Environment.OSVersion.Version.Major;
-            //var info16 = System.Environment.OSVersion.Version.Minor;
-            var info15 = System.Environment.OSVersion.ToString();
+            //var info01 = Microsoft.Phone.Info.DeviceStatus.ApplicationCurrentMemoryUsage;
+            //var info02 = Microsoft.Phone.Info.DeviceStatus.ApplicationMemoryUsageLimit;
+            //var info03 = Microsoft.Phone.Info.DeviceStatus.ApplicationPeakMemoryUsage;
+            ////var info04 = Microsoft.Phone.Info.DeviceStatus.DeviceFirmwareVersion;
+            ////var info05 = Microsoft.Phone.Info.DeviceStatus.DeviceHardwareVersion;
+            ////var info06 = Microsoft.Phone.Info.DeviceStatus.DeviceManufacturer;
+            ////var info07 = Microsoft.Phone.Info.DeviceStatus.DeviceName;
+            ////var info08 = Microsoft.Phone.Info.DeviceStatus.DeviceTotalMemory;
+            //var info09 = Microsoft.Phone.Info.DeviceStatus.IsKeyboardDeployed;
+            //var info10 = Microsoft.Phone.Info.DeviceStatus.IsKeyboardPresent;
+            ////var info11 = Microsoft.Phone.Info.DeviceStatus.PowerSource;
+            ////var info13 = Microsoft.Phone.Info.DeviceExtendedProperties.GetValue("DeviceUniqueId");
+            ////var info14 = Microsoft.Phone.Info.UserExtendedProperties.GetValue("ANID2");
+            ////var info15 = System.Environment.OSVersion.Version.Major;
+            ////var info16 = System.Environment.OSVersion.Version.Minor;
+            //var info15 = System.Environment.OSVersion.ToString();
        
 
-            //var info17 = System.Environment.OSVersion.Platform;
-            //var info18 = System.Environment.ProcessorCount.ToString();
-            var info19 = System.Environment.Version.Build;
+            ////var info17 = System.Environment.OSVersion.Platform;
+            ////var info18 = System.Environment.ProcessorCount.ToString();
+            //var info19 = System.Environment.Version.Build;
 #if DEBUG
             PeriodicTask periodicTask;
             ResourceIntensiveTask resourceIntensiveTask;
