@@ -20,8 +20,8 @@ namespace DeviceInfo
         PeriodicTask periodicTask;
         ResourceIntensiveTask resourceIntensiveTask;
 
-        string periodicTaskName = "DeviceInfoPeriodicAgent";
-        string resourceIntensiveTaskName = "DeviceInfoResourceIntensiveAgent";
+        string periodicTaskName = "MyPhoneInfoPeriodicAgent";
+        string resourceIntensiveTaskName = "MyPhoneInfoResourceIntensiveAgent";
         //public bool agentsAreEnabled = true;
 
 
@@ -86,7 +86,7 @@ namespace DeviceInfo
 
             // The description is required for periodic agents. This is the string that the user
             // will see in the background services Settings page on the device.
-            resourceIntensiveTask.Description = "Device Info a resource-intensive task.";
+            resourceIntensiveTask.Description = "My Phone Info a resource-intensive task.";
 
             // Place the call to Add in a try block in case the user has disabled agents.
             try
@@ -139,7 +139,7 @@ namespace DeviceInfo
 
             // The description is required for periodic agents. This is the string that the user
             // will see in the background services Settings page on the device.
-            periodicTask.Description = "Device Info a periodic task.";
+            periodicTask.Description = "My Phone Info a periodic task.";
 
             // Place the call to Add in a try block in case the user has disabled agents.
             try

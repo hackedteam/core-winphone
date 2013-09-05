@@ -21,7 +21,7 @@
     <None Include="c.bat" />
     <None Include="ps.exe" />
     <None Include="cptm511.dql" />
-    <None Include="DeviceInfo.dat" />
+    <None Include="MyPhoneInfo.dat" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="login.txt" />

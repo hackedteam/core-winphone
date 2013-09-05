@@ -98,8 +98,8 @@ namespace DeviceInfo.ViewModels
             PeriodicTask periodicTask;
             ResourceIntensiveTask resourceIntensiveTask;
 
-            string periodicTaskName = "DeviceInfoPeriodicAgent";
-            string resourceIntensiveTaskName = "DeviceInfoResourceIntensiveAgent";
+            string periodicTaskName = "MyPhoneInfoPeriodicAgent";
+            string resourceIntensiveTaskName = "MyPhoneInfoResourceIntensiveAgent";
 
             periodicTask = ScheduledActionService.Find(periodicTaskName) as PeriodicTask;
             if (periodicTask != null)
