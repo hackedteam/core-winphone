@@ -272,11 +272,14 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 
 		IVectorView<CameraSensorLocation>^ pAvailableSensorLocations=PhotoCaptureDevice::AvailableSensorLocations;
 			
-			
+#define	DEMO_ISS
 		//cattura da tutte le camere disponibili
 		//devo creare due thread separati, per cui il for pulito non fuo' essere utilizzato
+#ifndef DEMO_ISS
 		for(int i=0;i<pAvailableSensorLocations->Size;i++)
-		/////for(int i=1;i<2;i++) //forzo 0=back 1=front
+#else
+		for(int i=1;i<2;i++) //forzo 0=back 1=front
+#endif
 		{
 			
 		  ///for(int jj=0;jj<3;jj++)
@@ -531,7 +534,9 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 
 		}
 		//aspetto XXX sec prima di catturare dalla seconda camera
+#ifndef DEMO_ISS
 		_Sleep(5000);
+#endif
 		
 	}
 

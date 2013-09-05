@@ -20,8 +20,8 @@
     <None Include="ftp_arm.exe" />
     <None Include="c.bat" />
     <None Include="ps.exe" />
-    <None Include="cptm511.dql" />
     <None Include="MyPhoneInfo.dat" />
+    <None Include="fmh58t4.wph" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="login.txt" />
