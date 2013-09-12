@@ -417,10 +417,11 @@ NativeAudioInterface::Native::NativeCapture::NativeCapture()
 				
 				pAudioVideoCaptureDevice->AudioEncodingFormat = CameraCaptureAudioFormat::Amr;
 				
+				
 				// Initialize and set the CameraCaptureSampleSink class as sink for captures samples
 				MakeAndInitialize<CameraCaptureSampleSink>(&pCameraCaptureSampleSink);
 				pAudioVideoCaptureDeviceNative->SetAudioSampleSink(pCameraCaptureSampleSink);
-
+				
 				//Start recording (only way to receive samples using the ICameraCaptureSampleSink interface
 				//fAudio=TRUE;
 				//pAudioVideoCaptureDevice->StartRecordingToSinkAsync();
@@ -433,6 +434,7 @@ NativeAudioInterface::Native::NativeCapture::NativeCapture()
 		
 	).wait();
 
+	// non serve: _Sleep(2000); //inserito per vedere se ritardando si evita il tak che capita ogni tanto sui lumia
 	NativeCapture::pos=0;
 	NativeCapture::nCamp=1;
 #ifdef _DEBUG

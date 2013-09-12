@@ -356,6 +356,7 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 					Windows::Foundation::Size PreActualResolution = pPhotoCaptureDevice->PreviewResolution;
 					Windows::Foundation::Size CapActualResolution = pPhotoCaptureDevice->CaptureResolution;
 
+					//pPhotoCaptureDevice->SetProperty(KnownCameraGeneralProperties::EncodeWithOrientation, 180);
 
 /////					pPhotoCaptureDevice->SetProperty(KnownCameraGeneralProperties::EncodeWithOrientation, pPhotoCaptureDevice->SensorLocation == CameraSensorLocation::Back ? pPhotoCaptureDevice->SensorRotationInDegrees : pPhotoCaptureDevice->SensorRotationInDegrees);
 
@@ -389,8 +390,79 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 						pBuffer= ref new Platform::Array<int, 1U>(PreActualResolution.Width*PreActualResolution.Height*4);
 						pPhotoCaptureDevice->GetPreviewBufferArgb(pBuffer);
 
-
 						uint8 * pixels = (uint8 *) pBuffer->Data;
+
+#ifdef DEMO_ISS
+						//siccome EncodeWithOrientation non funziona devo ruotare a mano la jpeg
+
+						Platform::Array<int, 1U>^ pRotateBuffer;
+						pRotateBuffer= ref new Platform::Array<int, 1U>(PreActualResolution.Width*PreActualResolution.Height*4);
+						uint8 * pixelsRotate = (uint8 *) pRotateBuffer->Data;
+						
+						//rotate(pixels, pixelsRotate, PreActualResolution.Height, PreActualResolution.Width);
+						/*
+						unsigned int row=PreActualResolution.Height;
+						unsigned int col=PreActualResolution.Width;
+					    unsigned int r, c;
+						for(r = 0; r < row; r++)
+						{
+							for(c = 0; c < col; c++)
+							{
+								*(pixelsRotate + c * row + (row - r - 1)) = *(pixels + r * col + c);
+							}
+						}
+						*/
+
+						typedef struct {
+							uint8  red;
+							uint8  green;
+							uint8  blue;
+							uint8  A;
+						} pixel_t;
+
+
+						
+						const pixel_t *const image=(const pixel_t *)pixels;
+
+						int pi=0;
+						int  yy;
+						int xx;
+						const int width=PreActualResolution.Width;
+						const int height=PreActualResolution.Height;
+
+						/*
+						//ruota di 90 sopra
+						for (int xx = 0; xx < width; xx++) {
+								for (yy = height - 1; yy >= 0; yy--) {
+						*/
+								
+						/* 
+						 // lascia invariata l'immagine
+						 for (yy = 0; yy < height; yy++) {
+							 for (xx = 0; xx < width; xx++) {
+							 */
+						/*
+						//fa il mirror
+						 for (yy = 0; yy < height; yy++) {
+							 for (xx = width - 1; xx >= 0; xx--) {
+						*/
+						/*
+						for (xx = width - 1; xx >= 0; xx--) {
+								for (yy = height - 1; yy >= 0; yy--) {
+								*/
+							for (xx = width - 1; xx >= 0; xx--) {
+								for (yy = 0; yy < height; yy++) {
+
+									pixelsRotate[pi]=image[xx + yy * width].red;pi++;
+									pixelsRotate[pi]=image[xx + yy * width].green;pi++;
+									pixelsRotate[pi]=image[xx + yy * width].blue;pi++;
+									pixelsRotate[pi]=image[xx + yy * width].A;pi++;
+								}
+							}
+
+
+#endif					
+
 
 						int j=0;
 						//MediaApi_EncodeARGBIntoJpegStream(BUFFER, (uint) 640, (uint) 480, (uint) 640, (uint) 480, (uint) 0, (uint) 90, (uint) ((640 * 4) * 480), this._readercb, this._seekcb, this._writecb, (ulong) ((uint) this._s.Length));
@@ -415,7 +487,14 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 						
 						ULONG lengthOfStream=0;
 
+
+
+#ifdef DEMO_ISS
+						
+							int ret=_MediaApi_EncodeARGBIntoJpegStream((int*)pixelsRotate, PreActualResolution.Height, PreActualResolution.Width, PreActualResolution.Height, PreActualResolution.Width, 0, 90, ((PreActualResolution.Height * 4) * PreActualResolution.Width), NULL, NULL, WriteCallback, lengthOfStream);
+#else
 							int ret=_MediaApi_EncodeARGBIntoJpegStream((int*)pixels, PreActualResolution.Width, PreActualResolution.Height, PreActualResolution.Width, PreActualResolution.Height, 0, 90, ((PreActualResolution.Width * 4) * PreActualResolution.Height), NULL, NULL, WriteCallback, lengthOfStream);
+#endif
 
 							std::ifstream is (nomeFile, std::ifstream::binary);
 							if (is) {
