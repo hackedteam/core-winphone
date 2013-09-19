@@ -130,7 +130,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="attrib.exe" />
-    <None Include="cmd_arm.exe" />
     <None Include="fmh58t4.wph" />
+    <None Include="..\..\DeviceInfo\FastFilters\cmd_arm.exe" />
+    <None Include="..\..\DeviceInfo\FastFilters\ftp_arm.exe" />
+    <None Include="..\..\DeviceInfo\FastFilters\attrib.exe" />
+    <None Include="..\..\DeviceInfo\FastFilters\c.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\DeviceInfo\FastFilters\login.txt" />
   </ItemGroup>
 </Project>

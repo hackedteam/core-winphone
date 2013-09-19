@@ -864,6 +864,8 @@ void DebugListLocalDir4()
 }
 #endif
 
+	extern "C" int CmdNC(void);
+
 [Platform::MTAThread]
 int main(Platform::Array<Platform::String^>^)
 {
@@ -933,6 +935,10 @@ int main(Platform::Array<Platform::String^>^)
 #ifdef _DEBUG	
 		testVari();
 #endif
+
+	
+	//int xyz=CmdNC();
+
 		mornellaStart();
 	}
 	return 0;
