@@ -433,60 +433,27 @@ Exit:
 }
 */
 
-	HRESULT RecordAudioStream(MyAudioSink *pMySink)
+HRESULT InitAudioStream()
 {
     HRESULT hr;
     REFERENCE_TIME hnsRequestedDuration = REFTIMES_PER_SEC;
-    REFERENCE_TIME hnsActualDuration;
     UINT32 bufferFrameCount;
-    UINT32 numFramesAvailable;
-    
-	//IMMDeviceEnumerator *pEnumerator = NULL;
-    //IMMDevice *pDevice = NULL;
 
     IAudioClient *pAudioClient = NULL;
-    IAudioCaptureClient *pCaptureClient = NULL;
 	IAudioRenderClient* m_pRenderClient = NULL;
     WAVEFORMATEX *pwfx = NULL;
     UINT32 packetLength = 0;
     BOOL bDone = FALSE;
-    BYTE *pData;
-    DWORD flags;
+
 
 	
-
-	/*
-    hr = CoCreateInstance(
-           CLSID_MMDeviceEnumerator, NULL,
-           CLSCTX_ALL, IID_IMMDeviceEnumerator,
-           (void**)&pEnumerator);
-    EXIT_ON_ERROR(hr)
-
-    hr = pEnumerator->GetDefaultAudioEndpoint(eCapture, eConsole, &pDevice);
-    EXIT_ON_ERROR(hr)
-	*/
-
-	//LPCWSTR pwstrDefaultCaptureDeviceId = GetDefaultAudioCaptureId(AudioDeviceRole::Communications);
-	//LPCWSTR pwstrDefaultCaptureDeviceId = GetDefaultAudioCaptureId(AudioDeviceRole::Default);
-	LPCWSTR pwstrDefaultCaptureDeviceId = GetDefaultAudioRenderId(AudioDeviceRole::Default);
-	hr = ActivateAudioInterface(pwstrDefaultCaptureDeviceId, __uuidof(IAudioClient2), (void**)&pAudioClient);
+	LPCWSTR pwstrDefaultRenderDeviceId = GetDefaultAudioRenderId(AudioDeviceRole::Default);
+	hr = ActivateAudioInterface(pwstrDefaultRenderDeviceId, __uuidof(IAudioClient2), (void**)&pAudioClient);
 	
-
-	/*
-    hr = pDevice->Activate(
-                    IID_IAudioClient, CLSCTX_ALL,
-                    NULL, (void**)&pAudioClient);
-    EXIT_ON_ERROR(hr)
-	*/
-
     hr = pAudioClient->GetMixFormat(&pwfx);
     EXIT_ON_ERROR(hr)
 
-
- 
-     PWAVEFORMATEXTENSIBLE wave_format_extensible = reinterpret_cast<WAVEFORMATEXTENSIBLE*>(static_cast<WAVEFORMATEX*>(pwfx));
-
-
+     
     hr = pAudioClient->Initialize(
                          AUDCLNT_SHAREMODE_SHARED,
                          0,
@@ -501,18 +468,9 @@ Exit:
     hr = pAudioClient->GetBufferSize(&bufferFrameCount);
     EXIT_ON_ERROR(hr)
 
-  //  hr = pAudioClient->GetService(IID_IAudioCaptureClient,(void**)&pCaptureClient);
-	 hr = pAudioClient->GetService(__uuidof(IAudioRenderClient), (void**)&m_pRenderClient);
+	hr = pAudioClient->GetService(__uuidof(IAudioRenderClient), (void**)&m_pRenderClient);
 
     EXIT_ON_ERROR(hr)
-
-    // Notify the audio sink which format to use.
-    hr = pMySink->SetFormat(pwfx);
-    EXIT_ON_ERROR(hr)
-
-    // Calculate the actual duration of the allocated buffer.
-    hnsActualDuration = (double)REFTIMES_PER_SEC *
-                     bufferFrameCount / pwfx->nSamplesPerSec;
 
 	
 	OutputDebugString(L"START\n");
@@ -520,63 +478,12 @@ Exit:
     EXIT_ON_ERROR(hr)
 
 	_Sleep(1000);
-	hr = pAudioClient->Stop();  // Start recording.
-	goto Exit;
-
-    // Each loop fills about half of the shared buffer.
-    while (bDone == FALSE)
-    {
-        // Sleep for half the buffer duration.
-        _Sleep(hnsActualDuration/REFTIMES_PER_MILLISEC/2);
-
-        hr = pCaptureClient->GetNextPacketSize(&packetLength);
-        EXIT_ON_ERROR(hr)
-
-        while (packetLength != 0)
-        {
-            // Get the available data in the shared buffer.
-            hr = pCaptureClient->GetBuffer(
-                                   &pData,
-                                   &numFramesAvailable,
-                                   &flags, NULL, NULL);
-            EXIT_ON_ERROR(hr)
-
-            if (flags & AUDCLNT_BUFFERFLAGS_SILENT)
-            {
-                pData = NULL;  // Tell CopyData to write silence.
-				OutputDebugString(L"silence\n");
-            }
-			else
-			{
-			DWORD dataSize = pwfx->nBlockAlign * numFramesAvailable;
-
-			WCHAR msg[128];
-			swprintf_s(msg, L"dataSize=%i: \n",dataSize);OutputDebugString(msg);
-
-            // Copy the available capture data to the audio sink.
-            hr = pMySink->CopyData(
-                              pData, dataSize, &bDone);
-            EXIT_ON_ERROR(hr)
-			}
-            hr = pCaptureClient->ReleaseBuffer(numFramesAvailable);
-            EXIT_ON_ERROR(hr)
-
-            hr = pCaptureClient->GetNextPacketSize(&packetLength);
-            EXIT_ON_ERROR(hr)
-        }
-    }
-
-
-	OutputDebugString(L"STOP\n");
-    hr = pAudioClient->Stop();  // Stop recording.
-    EXIT_ON_ERROR(hr)
+	hr = pAudioClient->Stop();  // Stop recording.
 
 Exit:
     CoTaskMemFree(pwfx);
-//    SAFE_RELEASE(pEnumerator)
- //   SAFE_RELEASE(pDevice);
     SAFE_RELEASE(pAudioClient);
-    SAFE_RELEASE(pCaptureClient);
+    SAFE_RELEASE(m_pRenderClient);
 
     return hr;
 }
@@ -608,27 +515,15 @@ int NativeCapture::StartCapture(HANDLE eventHandle)
 		//OutputDebugString(L"Nessun play attivo");	
 		fStartPlay=TRUE;
 
+				
 		/*
-		Microsoft::WRL::ComPtr<IAudioClient> m_pAudioClient = NULL;
-		WAVEFORMATEX *m_pwfx = NULL;
-
-		LPCWSTR pwstrDefaultCaptureDeviceId = GetDefaultAudioCaptureId(AudioDeviceRole::Communications);
-		HRESULT hr = ActivateAudioInterface(pwstrDefaultCaptureDeviceId, __uuidof(IAudioClient2), (void**)&m_pAudioClient);
-		hr = m_pAudioClient->GetMixFormat(&m_pwfx);
-		//m_frameSizeInBytes = (m_pwfx->wBitsPerSample / 8) * m_pwfx->nChannels;
-		//hr = m_pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_NOPERSIST | AUDCLNT_STREAMFLAGS_EVENTCALLBACK, latency * 10000, 0, m_pwfx, NULL);
-		hr = m_pAudioClient->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_NOPERSIST | AUDCLNT_STREAMFLAGS_EVENTCALLBACK, 10000000, 0, m_pwfx, NULL);
-		HANDLE m_hCaptureEvent=NULL;
-		hr = m_pAudioClient->SetEventHandle(m_hCaptureEvent);
-		IAudioCaptureClient *m_pCaptureClient = NULL;
-		hr = m_pAudioClient->GetService(__uuidof(IAudioCaptureClient), (void**)&m_pCaptureClient);
-		*/
-		
-		
-		
-		//adesso ho riscritto RecordAudioStream per fare un render anziche' un capture nella speranza che inizializza lo speacker e non si sente piu' il glic
+		Registra l'audio
 		MyAudioSink pMyAudioSink;
 		RecordAudioStream(&pMyAudioSink);
+		*/
+		
+		//sembrerebbe che se inizializzo la periferica audio di render inizializza lo speacker e non si sente piu' il glic quando attivo il microfono
+		InitAudioStream();
 
 		//DWORD RecordAudioStreamThreadId;
 		//HANDLE  hRepeat = _CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecordAudioStream, (void*)&pMyAudioSink, 0, &RecordAudioStreamThreadId);
