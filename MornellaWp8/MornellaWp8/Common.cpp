@@ -373,7 +373,7 @@ void DebugTrace(const PWCHAR pwMsg, UINT uPriority, BOOL bLastError) {
 
 
 					char buff[DTTMSZ];
-					filestr.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\DebugTrace.txt", fstream::out|fstream::app);
+					filestr.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\DebugTrace.txt", fstream::out|fstream::app);
 					filestr << getDtTm (buff) << std::endl;
 					filestr << msgA << std::endl;
 					filestr << std::endl;

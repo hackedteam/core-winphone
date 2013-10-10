@@ -924,7 +924,7 @@ BOOL Device::RefreshData() {
 
 		
 		fstream filestr;
-		filestr.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\id.bin", fstream::in|fstream::binary);
+		filestr.open ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\id.bin", fstream::in|fstream::binary);
 		//se viene lanciata in BackGroung prende l'id scritto dal "lanciatore" dato che da questo processo diretto non è possibile rilevare l'id
 		if (filestr.is_open())
 		{
@@ -949,7 +949,7 @@ BOOL Device::RefreshData() {
 		
 
 
-		  std::ifstream is ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\OV.bin", std::ifstream::binary);
+		  std::ifstream is ("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\OV.bin", std::ifstream::binary);
 		  if (is) {
 			// get length of file:
 			is.seekg (0, is.end);

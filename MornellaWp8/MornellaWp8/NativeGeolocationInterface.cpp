@@ -7,7 +7,9 @@ using namespace concurrency;
 
 void NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GPSOpenDevice()
 {
-	geolocator = ref new Geolocator();
+	//introdotta prima di rilascio del core da testare
+	if(geolocator==nullptr)
+		geolocator = ref new Geolocator();
 }
 
 
@@ -153,7 +155,7 @@ int NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GPS
             }
         });
 
-	_Sleep(5000);
+	_Sleep(5000);	
 */
 	
 	concurrency::cancellation_token_source geopositionTaskTokenSource;
@@ -182,7 +184,7 @@ int NativeGeolocationInterface::NativeGeolocation::NativeGeolocationCapture::GPS
 		}
 
 
-	 }).wait();
+	}).wait();
 
 	memcpy(pGPS,GPSGetPositionInternal(),sizeof(GPS_POSITION_WP8));
 

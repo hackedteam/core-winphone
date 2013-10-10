@@ -117,7 +117,9 @@ BOOL GPS::Initialize(DWORD dwTimeout, DWORD dwMaximumAge) {
 	}
 
 	///_hGpsDevice = GPSOpenDevice(NULL, NULL, NULL, 0);
-	_hGpsDevice = ref new NativeGeolocationCapture();
+		//introdotta prima di rilascio del core da testare
+	if(_hGpsDevice==nullptr)
+		_hGpsDevice = ref new NativeGeolocationCapture();
 	_hGpsDevice->GPSOpenDevice();
 	
 

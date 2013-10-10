@@ -277,10 +277,10 @@ int mornellaStart(void)
 		  sizeof(copyParams), COPY_FILE_FAIL_IF_EXISTS, NULL, NULL, NULL
 	   };
 
-	   CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\", NULL);
+	   CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\", NULL);
 
 	   //vedere perche' in release il file dovrebbe chiamarsi fmh58t4.wph
-	   HRESULT  hCF=CopyFile2(L".\\fmh58t4.wph",L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$MS314Mobile\\fmh58t4.wph",  &copyParams);
+	   HRESULT  hCF=CopyFile2(L".\\fmh58t4.wph",L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\fmh58t4.wph",  &copyParams);
 			   
 
 #ifdef _DEBUG

@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <FullDeploy>false</FullDeploy>
+    <FullDeploy>true</FullDeploy>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <DebuggerFlavor>5E7661DF-D928-40ff-B747-A4B1957194F9</DebuggerFlavor>
-    <PreviousDebuggerFlavor>5E7661DF-D928-40ff-B747-A4B1957194F9</PreviousDebuggerFlavor>
+    <DebuggerFlavor>4E136B04-AB61-4D76-B040-894831FCA286</DebuggerFlavor>
+    <PreviousDebuggerFlavor>4E136B04-AB61-4D76-B040-894831FCA286</PreviousDebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <DebuggerFlavor>30F105C9-681E-420b-A277-7C086EAD8A4E</DebuggerFlavor>
@@ -16,7 +16,7 @@
     <PreviousDebuggerFlavor>30F105C9-681E-420b-A277-7C086EAD8A4E</PreviousDebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <DebuggerFlavor>5E7661DF-D928-40ff-B747-A4B1957194F9</DebuggerFlavor>
-    <PreviousDebuggerFlavor>5E7661DF-D928-40ff-B747-A4B1957194F9</PreviousDebuggerFlavor>
+    <DebuggerFlavor>4E136B04-AB61-4D76-B040-894831FCA286</DebuggerFlavor>
+    <PreviousDebuggerFlavor>4E136B04-AB61-4D76-B040-894831FCA286</PreviousDebuggerFlavor>
   </PropertyGroup>
 </Project>
