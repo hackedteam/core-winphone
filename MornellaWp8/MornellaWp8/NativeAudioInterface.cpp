@@ -19,6 +19,8 @@ using namespace Platform;
 //messo qua per poter forzare lo stop da dentro OnSampleAvailable
 Windows::Phone::Media::Capture::AudioVideoCaptureDevice ^pAudioVideoCaptureDevice;
 
+HANDLE GlobalEventHandle=NULL;
+
 
 
 #include <time.h>
@@ -52,7 +54,7 @@ static char *getDtTm (char *buff) {
 
 using namespace std;
 using namespace NativeAudioInterface::Native;
-static int fAudio=FALSE;
+//static int fAudio=FALSE;
 
 MicAdditionalData mad2;
 
@@ -192,6 +194,46 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 				//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
 				logInfo.WriteLogInfo(L"Microphone is in use. [id4]");
 			}
+
+			//aggiunto prima del rilascio per riavviare la cattura se si risolve l'occupazione delle risorsa audio
+			
+			//controllo ogni 10 sec che sia finito il playng dell'audio in bk	
+			while(_WaitForSingleObject(GlobalEventHandle, 10000))
+			{
+				_Media_Queue_GameHasControl(&b);
+				if(b==1)
+				{
+					//OutputDebugString(L"Nessun play attivo");	
+					NativeCapture::fStartPlay=TRUE;
+					try
+					{
+						pAudioVideoCaptureDevice->StartRecordingToSinkAsync();
+						// PER RELEASE Controllare se non devo inizializzare anche pos ncamp ecc..
+						NativeCapture::fAudioCapture=TRUE;
+						NativeCapture::fAudioCaptureForceStop=FALSE;
+						Log logInfo;
+						logInfo.WriteLogInfo(L"Resume microphone");
+						/////_ZMediaQueue_DisconnectFromService();
+					}
+					catch (Platform::Exception^ e) 
+					{
+#ifdef _DEBUG
+						OutputDebugString(L"<<<eccezione capture Mic6 gestita>>>\n");
+						///OutputDebugString(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+#endif
+
+						Log logInfo;
+						//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
+						logInfo.WriteLogInfo(L"Microphone is in use. [id6]");
+						///logInfo.WriteLogInfo(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+
+					}
+//					return;					
+					break;
+				}
+			}
+
+
 		}
 	}
 	else if( (ULONGLONG)(hnsPresentationTime/10000000)>(ULONGLONG)(5*NativeCapture::nCamp))
@@ -516,10 +558,13 @@ Exit:
 
 int NativeCapture::StartCapture(HANDLE eventHandle)
 {
+	
 	fAudioCapture=TRUE;	
 	NativeCapture::fAudioCaptureForceStop=FALSE;
+	//aggiunta per gestire dentro OnSampleAvailable il rilascio della risorsa audio
+	GlobalEventHandle=eventHandle;
 
-/***
+	/***
 	Windows::Foundation::TimeSpan span;
 	span.Duration = 30000000L;   // convert 1 sec to 100ns ticks
 	 
@@ -592,6 +637,9 @@ int NativeCapture::StartCapture(HANDLE eventHandle)
 			{
 				/////  DA RIMETTERE 
 				pAudioVideoCaptureDevice->StartRecordingToSinkAsync();
+				Log logInfo;
+				logInfo.WriteLogInfo(L"Resume microphone");
+
 				/////_ZMediaQueue_DisconnectFromService();
 			}
 			catch (Platform::Exception^ e) 
