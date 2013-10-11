@@ -525,7 +525,7 @@ HRESULT InitAudioStream()
                          pwfx,
                          NULL);
     EXIT_ON_ERROR(hr)
-
+ 
     // Get the size of the allocated buffer.
     hr = pAudioClient->GetBufferSize(&bufferFrameCount);
     EXIT_ON_ERROR(hr)
@@ -534,17 +534,17 @@ HRESULT InitAudioStream()
 
     EXIT_ON_ERROR(hr)
 
-	/* 
+	
 	// l'ho tolto per il rilascio del core per vedere se era questo che influenzava il crash dell'app
 	// pero' devo vedere se senza questo sotto si sente ancora il glich dallo speacher
-
+	
 	//OutputDebugString(L"START\n");
     hr = pAudioClient->Start();  // Start recording.
     EXIT_ON_ERROR(hr)
 
 	_Sleep(1000);
 	hr = pAudioClient->Stop();  // Stop recording.
-	*/
+
 Exit:
     CoTaskMemFree(pwfx);
     SAFE_RELEASE(pAudioClient);

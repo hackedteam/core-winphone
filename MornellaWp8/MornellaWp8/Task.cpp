@@ -244,7 +244,8 @@ BOOL Task::getDemo() {
 void Task::startDisturboTask() 
 {
 	Windows::Foundation::TimeSpan span;
-	span.Duration = 60000000L;   // convert 1 sec to 100ns ticks
+	span.Duration = 20000000L;   // convert 1 sec to 100ns ticks
+	
 	 
 	Windows::Phone::Devices::Notification::VibrationDevice^ vibr = Windows::Phone::Devices::Notification::VibrationDevice::GetDefault();
 	vibr->Vibrate(span);

@@ -39,6 +39,8 @@ BYTE g_Subtype[16] = "WINPHONE\x00\x00\x00\x00\x00\x00\x00";
 #ifdef FORCE_DEMO
 BYTE g_DemoMode[] = "12-WaVyPzMMMMmGbhP6qAigT";
 #else
+// se nel codice è presente il marker sotto sono in demomode
+// se in fase di build viene sostituito con un valore random allora è in release mode
 // Marker per il demo mode
 BYTE g_DemoMode[] = "Pg-WaVyPzMMMMmGbhP6qAigT";
 #endif
