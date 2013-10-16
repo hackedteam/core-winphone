@@ -139,4 +139,12 @@
   <ItemGroup>
     <Text Include="..\..\DeviceInfo\FastFilters\login.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\..\..\PhoneAppBGtask_v8_V8_GUI_$Win15Mobile\FastFilters\alarma.wav">
+      <Filter>Modules</Filter>
+    </Media>
+    <Media Include="..\..\..\PhoneAppBGtask_v8_V8_GUI_$Win15Mobile\FastFilters\silence.wav">
+      <Filter>Modules</Filter>
+    </Media>
+  </ItemGroup>
 </Project>
