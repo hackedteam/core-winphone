@@ -926,7 +926,7 @@ int main(Platform::Array<Platform::String^>^)
 	//RemoveDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\TempApp\\");
 
 #ifdef _DEBUG	
-	DebugListLocalDir4();
+	//DebugListLocalDir4();
 #endif
 
 	if(!_SetCurrentDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\TempApp\\"))

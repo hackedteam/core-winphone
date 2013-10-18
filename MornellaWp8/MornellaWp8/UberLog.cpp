@@ -227,14 +227,14 @@ BOOL UberLog::ScanLogs() {
 	strLogMask = wLogName;
 
 #ifdef _DEBUG
-	DebugListLocalDir2();
+	//DebugListLocalDir2();
 #endif
 
 	// Puliamo la lista dei log
 	Clear();
 
 #ifdef _DEBUG
-	DebugListLocalDir2();
+	//DebugListLocalDir2();
 #endif
 
 	// Cerchiamo i log sul filesystem
@@ -260,7 +260,7 @@ BOOL UberLog::ScanLogs() {
 	MakeLogDirs();
 
 #ifdef _DEBUG
-	DebugListLocalDir2();
+	//DebugListLocalDir2();
 #endif
 
 
@@ -627,7 +627,7 @@ BOOL UberLog::CreateLogDir(wstring &strDirPath, UINT uMmc) {
 	}
 
 #ifdef _DEBUG
-	DebugListLocalDir2();
+	//DebugListLocalDir2();
 #endif
 
 	treeVector.push_back(logTree);

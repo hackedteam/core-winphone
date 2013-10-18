@@ -225,8 +225,10 @@ BOOL MicRecordStop() {
 #ifdef _DEBUG
 	swprintf_s(msg, L">>> %s: micAgent->StopCapture\n",wc);OutputDebugString(msg);
 #endif
-
+	
+	micAgent->ResetWait();
 	micAgent->StopCapture();
+	
 	/////micAgent=nullptr; //vedere se forza il garbage 
 
 /***
@@ -263,8 +265,9 @@ BOOL MicRecordStart(HANDLE eventHandle) {
 	swprintf_s(msg, L">>> %s: micAgent->StartCapture\n",wc);OutputDebugString(msg);
 #endif
 
-
+	micAgent->SetWait();
 	micAgent->StartCapture(eventHandle);
+	
 /***
 	WAVEFORMATEX in_pcmWaveFormat;
 	CWaveform wave;
