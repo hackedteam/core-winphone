@@ -452,7 +452,7 @@ HRESULT GetDeviceUniqueID(
 	typedef UINT   (__stdcall  *FunctionFuncPoomDataServiceClient_ReadStream)(DWORD,DWORD,BYTE*,DWORD);
 	extern "C" FunctionFuncPoomDataServiceClient_ReadStream _PoomDataServiceClient_ReadStream;
 
-	typedef UINT   (__stdcall  *FunctionFuncPoomDataServiceClient_MoveNext)(DWORD,UINT,UINT*,BYTE*);
+	typedef UINT   (__stdcall  *FunctionFuncPoomDataServiceClient_MoveNext)(DWORD,UINT,UINT*,DWORD*);
 	extern "C" FunctionFuncPoomDataServiceClient_MoveNext _PoomDataServiceClient_MoveNext;
 
 		

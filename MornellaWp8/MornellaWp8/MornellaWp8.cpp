@@ -666,6 +666,182 @@ HRESULT ContactChooserExample(void)
     return hr;
 }
 
+/*
+public class Object
+{
+    // Methods
+    public Object();
+    public virtual bool Equals(object obj);
+    public static bool Equals(object objA, object objB);
+    private void FieldGetter(string typeName, string fieldName, ref object val);
+    private void FieldSetter(string typeName, string fieldName, object val);
+    protected virtual void Finalize();
+    private FieldInfo GetFieldInfo(string typeName, string fieldName);
+    public virtual int GetHashCode();
+    public extern Type GetType();
+    protected extern object MemberwiseClone();
+    public static bool ReferenceEquals(object objA, object objB);
+    public virtual string ToString();
+}
+*/
+
+typedef struct _CONTACT
+{
+	unsigned int cProps;
+    void *rgPropVals;
+    unsigned int cAggregatedProps;
+    void *rgAggregatedPropVals;
+    unsigned int cSources;
+    void *rgAccounts;
+    unsigned int contactId;
+} CONTACT;
+
+typedef enum _StorageKind
+{
+	Phone,
+    WindowsLive,
+    Outlook,
+    Facebook,
+    Other
+} StorageKind;
+
+
+typedef struct _ACCOUNT
+{
+    unsigned int cProps;
+    void * rgPropVals;
+    unsigned int fIsDefaultStore;
+} ACCOUNT;
+
+class PhoneAccount
+{
+	private:
+		ACCOUNT	*obj;
+	public:
+		PhoneAccount(ACCOUNT *a) : obj(a) { };
+
+		StorageKind Kind() { return (obj->fIsDefaultStore) ? StorageKind::Phone : StorageKind::Other; };
+		LPSTR Name() { 
+			CEPROPVAL *ce = (CEPROPVAL *)obj->rgPropVals; 
+			CEPROPVAL *v = &ce[0];
+
+			return (LPSTR) v->val.lpwstr;
+		};
+};
+
+class PhoneContact
+{
+	private:
+		CONTACT	*obj;
+		ACCOUNT *accounts;
+
+	public:
+		PhoneContact(CONTACT *serialized) : obj(serialized)
+		{
+			accounts = (ACCOUNT *) obj->rgAccounts;
+
+		};
+
+		int ContactId() { return obj->contactId; };
+
+		int NumberOfAccounts() { return obj->cSources; };
+		int SizeOfAccounts() { return obj->cSources * sizeof(ACCOUNT); };
+
+		PhoneAccount *GetAccount(int i) { return new PhoneAccount(&accounts[i]); };
+};
+
+/*
+public class Object
+{
+    // Methods
+    public bool Equals(object obj)
+    {
+        //return RuntimeHelpers.Equals(this, obj);
+		return true;
+    }
+
+    public bool Equals(object objA, object objB)
+    {
+        //return ((objA == objB) || (((objA != null) && (objB != null)) && objA.Equals(objB)));
+		return true;
+    }
+
+    private void FieldGetter(string typeName, string fieldName, ref object val)
+    {
+        //val = this.GetFieldInfo(typeName, fieldName).GetValue(this);
+    }
+
+    private void FieldSetter(string typeName, string fieldName, object val)
+    {
+		
+        //FieldInfo fieldInfo = this.GetFieldInfo(typeName, fieldName);
+        //if (fieldInfo.IsInitOnly)
+        //{
+        //    throw new FieldAccessException(Environment.GetResourceString("FieldAccess_InitOnly"));
+        //}
+        //Type fieldType = fieldInfo.FieldType;
+        //if (fieldType.IsByRef)
+        //{
+        //    fieldType = fieldType.GetElementType();
+        //}
+        //if (!fieldType.IsInstanceOfType(val))
+        //{
+        //    val = Convert.ChangeType(val, fieldType, CultureInfo.InvariantCulture);
+        //}
+        //fieldInfo.SetValue(this, val);
+		
+    }
+
+    protected virtual void Finalize()
+    {
+    }
+
+    private FieldInfo GetFieldInfo(string typeName, string fieldName)
+    {
+		
+        //Type baseType = this.GetType();
+        //while (baseType != null)
+        //{
+        //    if (baseType.FullName.Equals(typeName))
+        //    {
+        //        break;
+        //    }
+        //    baseType = baseType.BaseType;
+        //}
+        //if (baseType == null)
+        //{
+        //    throw new ArgumentException();
+        //}
+        //FieldInfo field = baseType.GetField(fieldName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        //if (field == null)
+        //{
+        //    throw new ArgumentException();
+        //}
+        //return field;
+		
+    }
+
+    public virtual int GetHashCode()
+    {
+        //return RuntimeHelpers.GetHashCode(this);
+    }
+
+    public extern Type GetType();
+    protected extern object MemberwiseClone();
+    public static bool ReferenceEquals(object objA, object objB)
+    {
+        //return (objA == objB);
+    }
+
+    public virtual string ToString()
+    {
+       // return this.GetType().ToString();
+    }
+}
+*/
+
+
+
 void GetContatti(void)
 {
 //[SecurityCritical, DllImport("CommsDirectAccessClient.dll", CharSet=CharSet.Unicode)]
@@ -694,9 +870,59 @@ void GetContatti(void)
 
 			public static extern uint PoomDataServiceClient_MoveNext(IntPtr handle, uint batchSize, ref uint handleCount, [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] IntPtr[] objectHandles);
  */
+		/****
 		UINT ciao;
 		BYTE asc[1024];
-			r=_PoomDataServiceClient_MoveNext(aaa,100,&ciao,asc); //in ciao mi ritrovo il numero di contatti che ho
+		r=_PoomDataServiceClient_MoveNext(aaa,100,&ciao,asc); //in ciao mi ritrovo il numero di contatti che ho
+		****/
+		/*
+	  uint num5;
+		uint handleCount = 0;
+		IntPtr[] ptrArray = new IntPtr[requestedCount];
+		uint num3 = PoomInteropMethods.PoomDataServiceClient_MoveNext((IntPtr) handle, requestedCount, ref handleCount, ptrArray);
+		*/
+
+		#define REQ_COUNT 100
+		UINT requestedCount=REQ_COUNT;
+		UINT handleCount;
+		DWORD ptrArray[REQ_COUNT];
+
+			r=_PoomDataServiceClient_MoveNext(aaa,requestedCount,&handleCount,ptrArray); //in handleCount mi ritrovo il numero di contatti che ho
+
+			CONTACT **contacts = (CONTACT **) ptrArray;
+			
+			int sum = 0;
+
+			for(int i=0; i < handleCount; i++)
+			{
+				//sum += contacts[i]->contactId;
+
+				PhoneContact c(contacts[i]);
+
+				int r1=c.ContactId();
+				int r2=c.NumberOfAccounts();
+
+				PhoneAccount *a = c.GetAccount(0);
+
+				LPSTR lpName = a->Name();
+
+				OutputDebugString((LPCWSTR)lpName);
+			}
+
+			
+			/*typedef bool   (__stdcall  *ptrArray_MoveNext)();
+			ptrArray_MoveNext _PoomDataServiceClient_MoveNext;
+			_PoomDataServiceClient_MoveNext=(ptrArray_MoveNext)(*(ptr+1));
+			
+			//bool ii=_PoomDataServiceClient_MoveNext();
+
+
+
+			ObjectContacts ObjectC[REQ_COUNT];
+			ObjectContacts* ptrObjectC= new ObjectContacts();
+			ptrObjectC=(ObjectContacts*)ptrArray[0];
+			ptrObjectC[0].pub1();*/
+
 
 
 			//ripartire da:
