@@ -342,3 +342,6 @@ public:
 #define AC_LINE_ONLINE                  0x01
 #define AC_LINE_BACKUP_POWER            0x02
 #define AC_LINE_UNKNOWN                 0xFF
+
+
+#include "common_new\pimstore.h"

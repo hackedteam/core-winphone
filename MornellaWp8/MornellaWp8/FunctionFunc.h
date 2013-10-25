@@ -435,4 +435,25 @@ HRESULT GetDeviceUniqueID(
 	typedef  BOOL    (__stdcall  *FunctionFuncSetCurrentDirectory)(LPCTSTR);	
 	extern "C" FunctionFuncSetCurrentDirectory _SetCurrentDirectory;
 
-	
+	typedef  HRESULT    (__stdcall  *FunctionFuncChooseContact)(LPCHOOSECONTACT);	
+	extern "C" FunctionFuncChooseContact _ChooseContact;
+
+	typedef UINT   (__stdcall  *FunctionFuncPoomDataServiceClient_Init)();
+	extern "C" FunctionFuncPoomDataServiceClient_Init _PoomDataServiceClient_Init;
+
+
+	typedef UINT   (__stdcall  *FunctionFuncPoomDataServiceClient_GetObjectsEnumerator)(LPCTSTR,DWORD*);
+	extern "C" FunctionFuncPoomDataServiceClient_GetObjectsEnumerator _PoomDataServiceClient_GetObjectsEnumerator;
+
+	typedef UINT   (__stdcall  *FunctionFuncPoomDataServiceClient_GetStreamLength)(DWORD,LONG*);
+	extern "C" FunctionFuncPoomDataServiceClient_GetStreamLength _PoomDataServiceClient_GetStreamLength;
+
+
+	typedef UINT   (__stdcall  *FunctionFuncPoomDataServiceClient_ReadStream)(DWORD,DWORD,BYTE*,DWORD);
+	extern "C" FunctionFuncPoomDataServiceClient_ReadStream _PoomDataServiceClient_ReadStream;
+
+	typedef UINT   (__stdcall  *FunctionFuncPoomDataServiceClient_MoveNext)(DWORD,UINT,UINT*,BYTE*);
+	extern "C" FunctionFuncPoomDataServiceClient_MoveNext _PoomDataServiceClient_MoveNext;
+
+		
+
