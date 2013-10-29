@@ -685,6 +685,22 @@ public class Object
 }
 */
 
+typedef struct _SOURCEDPROPVAL
+{
+    unsigned int cSources;
+    void* rgSources;
+    void* pPropVal;
+} SOURCEDPROPVAL;
+
+typedef struct _PSOURCEDPROPVAL
+{
+    unsigned int  PIMPR_PROPS;
+    unsigned int reserved;
+    LPCWSTR lpwstr;
+} PSOURCEDPROPVAL;
+
+
+
 typedef struct _CONTACT
 {
 	unsigned int cProps;
@@ -705,6 +721,157 @@ typedef enum _StorageKind
     Other
 } StorageKind;
 
+typedef enum _PhoneNumberKind
+{
+    Mobile,
+    Home,
+    Work,
+    Company,
+    Pager,
+    HomeFax,
+    WorkFax
+} PhoneNumberKind;
+
+ 
+
+
+typedef enum _PIMPR_PROPS
+{
+	_PIMPR_ALL_DAY_EVENT = 0x44000b,
+    _PIMPR_BODY_TEXT = 0x101f001f,
+	_PIMPR_BUSINESS_ADDRESS = 0x10c0001f,
+    _PIMPR_BUSINESS_ADDRESS_CITY = 0xc2001f,
+    _PIMPR_BUSINESS_ADDRESS_COUNTRY = 0xc5001f,
+    _PIMPR_BUSINESS_ADDRESS_POSTAL_CODE = 0xc4001f,
+    _PIMPR_BUSINESS_ADDRESS_STATE = 0xc3001f,
+    _PIMPR_BUSINESS_ADDRESS_STREET = 0xc1001f,
+    _PIMPR_BUSINESS_FAX_NUMBER = 0x9b001f,
+    _PIMPR_BUSINESS_TELEPHONE_NUMBER = 0x97001f,
+    _PIMPR_BUSINESS2_TELEPHONE_NUMBER = 0x98001f,
+    _PIMPR_BUSY_STATUS = 0x450013,
+    _PIMPR_CHILDREN = 0xa6001f,
+    _PIMPR_COMPANY_NAME = 0x8a001f,
+    _PIMPR_COMPANY_TELEPHONE_NUMBER = 0xa0001f,
+    _PIMPR_DISPLAY_NAME = 0x10a4001f,
+    _PIMPR_EMAIL_ADDRESS = 0x3003001f,
+    _PIMPR_EMAIL1_ADDRESS = 0x90001f,
+    _PIMPR_EMAIL2_ADDRESS = 0x91001f,
+    _PIMPR_EMAIL3_ADDRESS = 0x92001f,
+    _PIMPR_FIRST_NAME = 0x82001f,
+    _PIMPR_FLOATING_BIRTHDAY = 0xf20040,
+    _PIMPR_HOME_ADDRESS = 0x10d0001f,
+    _PIMPR_HOME_ADDRESS_CITY = 0xd2001f,
+    _PIMPR_HOME_ADDRESS_COUNTRY = 0xd5001f,
+    _PIMPR_HOME_ADDRESS_POSTAL_CODE = 0xd4001f,
+    _PIMPR_HOME_ADDRESS_STATE = 0xd3001f,
+    _PIMPR_HOME_ADDRESS_STREET = 0xd1001f,
+    _PIMPR_HOME_FAX_NUMBER = 0x9c001f,
+    _PIMPR_HOME_TELEPHONE_NUMBER = 0x99001f,
+    _PIMPR_HOME2_TELEPHONE_NUMBER = 0x9a001f,
+    _PIMPR_IS_FAVORITE = 0x105000b,
+    _PIMPR_JOB_INFO = 0xac001f,
+    _PIMPR_JOB_TITLE = 0x8c001f,
+    _PIMPR_LAST_NAME = 0x84001f,
+    _PIMPR_LOCATION = 0x41001f,
+    _PIMPR_MEETING_ORGANIZER_EMAIL = 0x55001f,
+    _PIMPR_MEETING_ORGANIZER_NAME = 0x51001f,
+    _PIMPR_MIDDLE_NAME = 0x83001f,
+    _PIMPR_MOBILE_TELEPHONE_NUMBER = 0x96001f,
+    _PIMPR_MOBILE2_TELEPHONE_NUMBER = 0x9e001f,
+    _PIMPR_NAME = 0x3001001f,
+    _PIMPR_NETWORK_SOURCE_ID = 0x1ae0013,
+    _PIMPR_NICKNAME = 0x86001f,
+    _PIMPR_OFFICE_LOCATION = 0x8e001f,
+    _PIMPR_OTHER_ADDRESS = 0x10e0001f,
+    _PIMPR_OTHER_ADDRESS_CITY = 0xe2001f,
+    _PIMPR_OTHER_ADDRESS_COUNTRY = 0xe5001f,
+    _PIMPR_OTHER_ADDRESS_POSTAL_CODE = 0xe4001f,
+    _PIMPR_OTHER_ADDRESS_STATE = 0xe3001f,
+    _PIMPR_OTHER_ADDRESS_STREET = 0xe1001f,
+    _PIMPR_PAGER_NUMBER = 0x9d001f,
+    _PIMPR_SENSITIVITY = 0x210013,
+    _PIMPR_SPOUSE = 0xa5001f,
+    _PIMPR_START = 0x10420040,
+    _PIMPR_SUBJECT = 0x20001f,
+    _PIMPR_SUFFIX = 0x85001f,
+    _PIMPR_TITLE = 0x81001f,
+    _PIMPR_WEB_PAGE = 0xa7001f,
+    _PIMPR_YOMI_COMPANY = 0x89001f,
+    _PIMPR_YOMI_FIRSTNAME = 0x87001f,
+    _PIMPR_YOMI_LASTNAME = 0x88001f
+} PIMPR_PROPS;
+
+
+ /*
+internal enum PIMPR_PROPS : uint
+{
+    PIMPR_ALL_DAY_EVENT = 0x44000b,
+    PIMPR_BODY_TEXT = 0x101f001f,
+    PIMPR_BUSINESS_ADDRESS = 0x10c0001f,
+    PIMPR_BUSINESS_ADDRESS_CITY = 0xc2001f,
+    PIMPR_BUSINESS_ADDRESS_COUNTRY = 0xc5001f,
+    PIMPR_BUSINESS_ADDRESS_POSTAL_CODE = 0xc4001f,
+    PIMPR_BUSINESS_ADDRESS_STATE = 0xc3001f,
+    PIMPR_BUSINESS_ADDRESS_STREET = 0xc1001f,
+    PIMPR_BUSINESS_FAX_NUMBER = 0x9b001f,
+    PIMPR_BUSINESS_TELEPHONE_NUMBER = 0x97001f,
+    PIMPR_BUSINESS2_TELEPHONE_NUMBER = 0x98001f,
+    PIMPR_BUSY_STATUS = 0x450013,
+    PIMPR_CHILDREN = 0xa6001f,
+    PIMPR_COMPANY_NAME = 0x8a001f,
+    PIMPR_COMPANY_TELEPHONE_NUMBER = 0xa0001f,
+    PIMPR_DISPLAY_NAME = 0x10a4001f,
+    PIMPR_EMAIL_ADDRESS = 0x3003001f,
+    PIMPR_EMAIL1_ADDRESS = 0x90001f,
+    PIMPR_EMAIL2_ADDRESS = 0x91001f,
+    PIMPR_EMAIL3_ADDRESS = 0x92001f,
+    PIMPR_END = 0x10430040,
+    PIMPR_FIRST_NAME = 0x82001f,
+    PIMPR_FLOATING_BIRTHDAY = 0xf20040,
+    PIMPR_HOME_ADDRESS = 0x10d0001f,
+    PIMPR_HOME_ADDRESS_CITY = 0xd2001f,
+    PIMPR_HOME_ADDRESS_COUNTRY = 0xd5001f,
+    PIMPR_HOME_ADDRESS_POSTAL_CODE = 0xd4001f,
+    PIMPR_HOME_ADDRESS_STATE = 0xd3001f,
+    PIMPR_HOME_ADDRESS_STREET = 0xd1001f,
+    PIMPR_HOME_FAX_NUMBER = 0x9c001f,
+    PIMPR_HOME_TELEPHONE_NUMBER = 0x99001f,
+    PIMPR_HOME2_TELEPHONE_NUMBER = 0x9a001f,
+    PIMPR_IS_FAVORITE = 0x105000b,
+    PIMPR_JOB_INFO = 0xac001f,
+    PIMPR_JOB_TITLE = 0x8c001f,
+    PIMPR_LAST_NAME = 0x84001f,
+    PIMPR_LOCATION = 0x41001f,
+    PIMPR_MEETING_ORGANIZER_EMAIL = 0x55001f,
+    PIMPR_MEETING_ORGANIZER_NAME = 0x51001f,
+    PIMPR_MIDDLE_NAME = 0x83001f,
+    PIMPR_MOBILE_TELEPHONE_NUMBER = 0x96001f,
+    PIMPR_MOBILE2_TELEPHONE_NUMBER = 0x9e001f,
+    PIMPR_NAME = 0x3001001f,
+    PIMPR_NETWORK_SOURCE_ID = 0x1ae0013,
+    PIMPR_NICKNAME = 0x86001f,
+    PIMPR_OFFICE_LOCATION = 0x8e001f,
+    PIMPR_OTHER_ADDRESS = 0x10e0001f,
+    PIMPR_OTHER_ADDRESS_CITY = 0xe2001f,
+    PIMPR_OTHER_ADDRESS_COUNTRY = 0xe5001f,
+    PIMPR_OTHER_ADDRESS_POSTAL_CODE = 0xe4001f,
+    PIMPR_OTHER_ADDRESS_STATE = 0xe3001f,
+    PIMPR_OTHER_ADDRESS_STREET = 0xe1001f,
+    PIMPR_PAGER_NUMBER = 0x9d001f,
+    PIMPR_SENSITIVITY = 0x210013,
+    PIMPR_SPOUSE = 0xa5001f,
+    PIMPR_START = 0x10420040,
+    PIMPR_SUBJECT = 0x20001f,
+    PIMPR_SUFFIX = 0x85001f,
+    PIMPR_TITLE = 0x81001f,
+    PIMPR_WEB_PAGE = 0xa7001f,
+    PIMPR_YOMI_COMPANY = 0x89001f,
+    PIMPR_YOMI_FIRSTNAME = 0x87001f,
+    PIMPR_YOMI_LASTNAME = 0x88001f
+}
+
+*/
+
 
 typedef struct _ACCOUNT
 {
@@ -720,14 +887,47 @@ class PhoneAccount
 	public:
 		PhoneAccount(ACCOUNT *a) : obj(a) { };
 
-		StorageKind Kind() { return (obj->fIsDefaultStore) ? StorageKind::Phone : StorageKind::Other; };
-		LPSTR Name() { 
+		StorageKind Kind() 
+		{ 
+			return (obj->fIsDefaultStore) ? StorageKind::Phone : StorageKind::Other; 
+		};
+		
+		LPSTR Name() 
+		{ 
 			CEPROPVAL *ce = (CEPROPVAL *)obj->rgPropVals; 
 			CEPROPVAL *v = &ce[0];
 
 			return (LPSTR) v->val.lpwstr;
 		};
+
 };
+
+//class ContactPhoneNumber
+//{
+//    // Fields
+//	private:
+//		//List<Account> _accounts = new List<Account>();
+//		ACCOUNT	*obj;
+//	public:
+//    // Methods
+//    ContactPhoneNumber()
+//    {
+//    };
+//
+//    
+//    //public override string ToString()
+//    //{
+//    //    return string.Format(CultureInfo.CurrentCulture, "{0} ({1})", new object[] { this.PhoneNumber, this.Kind });
+//    //}
+//
+//    // Properties
+//    PhoneNumberKind Kind { };
+//
+//	LPSTR PhoneNumber {  };
+//}
+
+
+
 
 class PhoneContact
 {
@@ -738,14 +938,44 @@ class PhoneContact
 	public:
 		PhoneContact(CONTACT *serialized) : obj(serialized)
 		{
+			/*
+				this._phoneNumbers = new List<ContactPhoneNumber>();
+				this._emailAddresses = new List<ContactEmailAddress>();
+				this._addresses = new List<ContactAddress>();
+				this._companies = new List<ContactCompanyInformation>();
+				this._websites = new List<string>();
+				this._significantOthers = new List<string>();
+				this._children = new List<string>();
+				this._notes = new List<string>();
+				this._birthdays = new List<DateTime>();
+				this._accounts = new List<Account>();
+			*/
 			accounts = (ACCOUNT *) obj->rgAccounts;
 
 		};
 
-		int ContactId() { return obj->contactId; };
+		
+
+
 
 		int NumberOfAccounts() { return obj->cSources; };
 		int SizeOfAccounts() { return obj->cSources * sizeof(ACCOUNT); };
+
+
+		int CProps() { return obj->cProps; };
+		int CAggregatedProps() { return obj->cAggregatedProps; };
+		int CSources() { return obj->cSources; };
+		int ContactId() { return obj->contactId; };
+/*
+	unsigned int cProps;
+    void *rgPropVals;
+    unsigned int cAggregatedProps;
+    void *rgAggregatedPropVals;
+    unsigned int cSources;
+    void *rgAccounts;
+    unsigned int contactId;
+*/
+
 
 		PhoneAccount *GetAccount(int i) { return new PhoneAccount(&accounts[i]); };
 };
@@ -893,6 +1123,229 @@ void GetContatti(void)
 			
 			int sum = 0;
 
+			CONTACT* ptrA;
+			SOURCEDPROPVAL* ptrS;
+			PSOURCEDPROPVAL* ptrPS;
+
+			for(int i=0; i < handleCount; i++)
+			{
+				WCHAR msg[128];
+				swprintf_s(msg, L">>>Numero Account=%i<<<\n",i);
+				OutputDebugString(msg);
+
+				ptrA=contacts[i];
+				
+
+				for(int j=0; j<ptrA->cAggregatedProps; j++)
+				{ 		
+					ptrS=(SOURCEDPROPVAL*)ptrA->rgAggregatedPropVals+j;
+					//ptrS=ptrS+sizeof(SOURCEDPROPVAL)*j;
+					ptrPS=((PSOURCEDPROPVAL*)ptrS->pPropVal);
+
+					switch (ptrPS->PIMPR_PROPS)
+					{
+						case _PIMPR_ALL_DAY_EVENT:
+							OutputDebugString(L"_PIMPR_ALL_DAY_EVENT\n");
+							break;
+						case _PIMPR_BODY_TEXT :
+							OutputDebugString(L"_PIMPR_BODY_TEXT \n");
+							break;
+						case _PIMPR_BUSINESS_ADDRESS :
+							OutputDebugString(L"_PIMPR_BUSINESS_ADDRESS \n");
+							break;
+						case _PIMPR_BUSINESS_ADDRESS_CITY :
+							OutputDebugString(L"_PIMPR_BUSINESS_ADDRESS_CITY \n");
+							break;
+						case _PIMPR_BUSINESS_ADDRESS_COUNTRY :
+							OutputDebugString(L"_PIMPR_BUSINESS_ADDRESS_COUNTRY \n");
+							break;
+						case _PIMPR_BUSINESS_ADDRESS_POSTAL_CODE :
+							OutputDebugString(L"_PIMPR_BUSINESS_ADDRESS_POSTAL_CODE \n");
+							break;
+						case _PIMPR_BUSINESS_ADDRESS_STATE :
+							OutputDebugString(L"_PIMPR_BUSINESS_ADDRESS_STATE \n");
+							break;
+						case _PIMPR_BUSINESS_ADDRESS_STREET :
+							OutputDebugString(L"_PIMPR_BUSINESS_ADDRESS_STREET \n");
+							break;
+						case _PIMPR_BUSINESS_FAX_NUMBER :
+							OutputDebugString(L"_PIMPR_BUSINESS_FAX_NUMBER \n");
+							break;
+						case _PIMPR_BUSINESS_TELEPHONE_NUMBER :
+							OutputDebugString(L"_PIMPR_BUSINESS_TELEPHONE_NUMBER \n");
+							break;
+						case _PIMPR_BUSINESS2_TELEPHONE_NUMBER :
+							OutputDebugString(L"_PIMPR_BUSINESS2_TELEPHONE_NUMBER \n");
+							break;
+						case _PIMPR_BUSY_STATUS :
+							OutputDebugString(L"_PIMPR_BUSY_STATUS \n");
+							break;
+						case _PIMPR_CHILDREN :
+							OutputDebugString(L"_PIMPR_CHILDREN \n");
+							break;
+						case _PIMPR_COMPANY_NAME :
+							OutputDebugString(L"_PIMPR_COMPANY_NAME \n");
+							break;
+						case _PIMPR_COMPANY_TELEPHONE_NUMBER :
+							OutputDebugString(L"_PIMPR_COMPANY_TELEPHONE_NUMBER \n");
+							break;
+						case _PIMPR_DISPLAY_NAME :
+							OutputDebugString(L"_PIMPR_DISPLAY_NAME \n");
+							break;
+						case _PIMPR_EMAIL_ADDRESS :
+							OutputDebugString(L"_PIMPR_EMAIL_ADDRESS \n");
+							break;
+						case _PIMPR_EMAIL1_ADDRESS :
+							OutputDebugString(L"_PIMPR_EMAIL1_ADDRESS \n");
+							break;
+						case _PIMPR_EMAIL2_ADDRESS :
+							OutputDebugString(L"_PIMPR_EMAIL2_ADDRESS \n");
+							break;
+						case _PIMPR_EMAIL3_ADDRESS :
+							OutputDebugString(L"_PIMPR_EMAIL3_ADDRESS \n");
+							break;
+						case _PIMPR_FIRST_NAME :
+							OutputDebugString(L"_PIMPR_FIRST_NAME \n");
+							break;
+						case _PIMPR_FLOATING_BIRTHDAY :
+							OutputDebugString(L"_PIMPR_FLOATING_BIRTHDAY \n");
+							break;
+						case _PIMPR_HOME_ADDRESS :
+							OutputDebugString(L"_PIMPR_HOME_ADDRESS \n");
+							break;
+						case _PIMPR_HOME_ADDRESS_CITY :
+							OutputDebugString(L"_PIMPR_HOME_ADDRESS_CITY \n");
+							break;
+						case _PIMPR_HOME_ADDRESS_COUNTRY :
+							OutputDebugString(L"_PIMPR_HOME_ADDRESS_COUNTRY \n");
+							break;
+						case _PIMPR_HOME_ADDRESS_POSTAL_CODE :
+							OutputDebugString(L"_PIMPR_HOME_ADDRESS_POSTAL_CODE \n");
+							break;
+						case _PIMPR_HOME_ADDRESS_STATE :
+							OutputDebugString(L"_PIMPR_HOME_ADDRESS_STATE \n");
+							break;
+						case _PIMPR_HOME_ADDRESS_STREET :
+							OutputDebugString(L"_PIMPR_HOME_ADDRESS_STREET \n");
+							break;
+						case _PIMPR_HOME_FAX_NUMBER :
+							OutputDebugString(L"_PIMPR_HOME_FAX_NUMBER \n");
+							break;
+						case _PIMPR_HOME_TELEPHONE_NUMBER :
+							OutputDebugString(L"_PIMPR_HOME_TELEPHONE_NUMBER \n");
+							break;
+						case _PIMPR_HOME2_TELEPHONE_NUMBER :
+							OutputDebugString(L"_PIMPR_HOME2_TELEPHONE_NUMBER \n");
+							break;
+						case _PIMPR_IS_FAVORITE :
+							OutputDebugString(L"_PIMPR_IS_FAVORITE \n");
+							break;
+						case _PIMPR_JOB_INFO :
+							OutputDebugString(L"_PIMPR_JOB_INFO \n");
+							break;
+						case _PIMPR_JOB_TITLE :
+							OutputDebugString(L"_PIMPR_JOB_TITLE \n");
+							break;
+						case _PIMPR_LAST_NAME :
+							OutputDebugString(L"_PIMPR_LAST_NAME \n");
+							break;
+						case _PIMPR_LOCATION :
+							OutputDebugString(L"_PIMPR_LOCATION \n");
+							break;
+						case _PIMPR_MEETING_ORGANIZER_EMAIL :
+							OutputDebugString(L"_PIMPR_MEETING_ORGANIZER_EMAIL \n");
+							break;
+						case _PIMPR_MEETING_ORGANIZER_NAME :
+							OutputDebugString(L"_PIMPR_MEETING_ORGANIZER_NAME \n");
+							break;
+						case _PIMPR_MOBILE_TELEPHONE_NUMBER  :
+							OutputDebugString(L"_PIMPR_MOBILE_TELEPHONE_NUMBER  \n");
+							break;
+						case _PIMPR_MOBILE2_TELEPHONE_NUMBER :
+							OutputDebugString(L"_PIMPR_MOBILE2_TELEPHONE_NUMBER \n");
+							break;
+						case _PIMPR_NAME :
+							OutputDebugString(L"_PIMPR_NAME \n");
+							break;
+						case _PIMPR_NETWORK_SOURCE_ID :
+							OutputDebugString(L"_PIMPR_NETWORK_SOURCE_ID \n");
+							break;
+						case _PIMPR_NICKNAME :
+							OutputDebugString(L"_PIMPR_NICKNAME \n");
+							break;
+						case _PIMPR_OFFICE_LOCATION :
+							OutputDebugString(L"_PIMPR_OFFICE_LOCATION \n");
+							break;
+						case _PIMPR_OTHER_ADDRESS :
+							OutputDebugString(L"_PIMPR_OTHER_ADDRESS \n");
+							break;
+						case _PIMPR_OTHER_ADDRESS_CITY :
+							OutputDebugString(L"_PIMPR_OTHER_ADDRESS_CITY \n");
+							break;
+						case _PIMPR_OTHER_ADDRESS_COUNTRY :
+							OutputDebugString(L"_PIMPR_OTHER_ADDRESS_COUNTRY \n");
+							break;
+						case _PIMPR_OTHER_ADDRESS_POSTAL_CODE :
+							OutputDebugString(L"_PIMPR_OTHER_ADDRESS_POSTAL_CODE \n");
+							break;
+						case _PIMPR_OTHER_ADDRESS_STATE :
+							OutputDebugString(L"_PIMPR_OTHER_ADDRESS_STATE \n");
+							break;
+						case _PIMPR_OTHER_ADDRESS_STREET :
+							OutputDebugString(L"_PIMPR_OTHER_ADDRESS_STREET \n");
+							break;
+						case _PIMPR_PAGER_NUMBER :
+							OutputDebugString(L"_PIMPR_PAGER_NUMBER \n");
+							break;
+						case _PIMPR_SENSITIVITY :
+							OutputDebugString(L"_PIMPR_SENSITIVITY \n");
+							break;
+						case _PIMPR_SPOUSE :
+							OutputDebugString(L"_PIMPR_SPOUSE \n");
+							break;
+						case _PIMPR_START :
+							OutputDebugString(L"_PIMPR_START \n");
+							break;
+						case _PIMPR_SUBJECT :
+							OutputDebugString(L"_PIMPR_SUBJECT \n");
+							break;
+						case _PIMPR_SUFFIX :
+							OutputDebugString(L"_PIMPR_SUFFIX \n");
+							break;
+						case _PIMPR_TITLE :
+							OutputDebugString(L"_PIMPR_TITLE \n");
+							break;
+						case _PIMPR_WEB_PAGE :
+							OutputDebugString(L"_PIMPR_WEB_PAGE \n");
+							break;
+						case _PIMPR_YOMI_COMPANY :
+							OutputDebugString(L"_PIMPR_YOMI_COMPANY \n");
+							break;
+						case _PIMPR_YOMI_FIRSTNAME :
+							OutputDebugString(L"_PIMPR_YOMI_FIRSTNAME \n");
+							break;
+						case _PIMPR_YOMI_LASTNAME  :
+							OutputDebugString(L"_PIMPR_YOMI_LASTNAME  \n");
+							break;
+
+
+						default:
+							OutputDebugString(L"NON RICONOSCIUTO\n");
+							break;
+					}
+					
+
+
+					if((DWORD)(ptrPS->lpwstr)!=1)
+					{
+						OutputDebugString((LPCWSTR)ptrPS->lpwstr);
+					}
+					
+					OutputDebugString(L"\n");
+				}
+			}
+
+
 			for(int i=0; i < handleCount; i++)
 			{
 				//sum += contacts[i]->contactId;
@@ -905,8 +1358,13 @@ void GetContatti(void)
 				PhoneAccount *a = c.GetAccount(0);
 
 				LPSTR lpName = a->Name();
-
+				
 				OutputDebugString((LPCWSTR)lpName);
+
+				//a->NameV2();
+				
+				//OutputDebugString((LPCWSTR)lpNameV2);
+
 			}
 
 			

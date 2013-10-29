@@ -19,6 +19,7 @@
       <Capability Name="ID_CAP_PROXIMITY" />
       <Capability Name="ID_CAP_SENSORS" />
       <Capability Name="ID_CAP_VOIP" />
+      <Capability Name="ID_CAP_REMOVABLE_STORAGE" />
     </Capabilities>
     <Tasks>
       <DefaultTask Name="_default" ImagePath="MornellaWp8.exe" ImageParams="" />
