@@ -732,7 +732,16 @@ typedef enum _PhoneNumberKind
     WorkFax
 } PhoneNumberKind;
 
+
+typedef enum _NETWORK_SOURCE_ID
+{
+    NFacebook = 7,
+    NOutlook = 0x11,
+    NWindowsLive = 1
+} NETWORK_SOURCE_ID;
+
  
+
 
 
 typedef enum _PIMPR_PROPS
@@ -1072,6 +1081,119 @@ public class Object
 
 
 
+typedef struct _COMPLETENAMEACC
+{
+    LPCWSTR FirstName;
+    LPCWSTR LastName;
+    LPCWSTR MiddleName;
+    LPCWSTR Nickname;
+    LPCWSTR Suffix;
+    LPCWSTR Title;
+    LPCWSTR YomiFirstName;
+    LPCWSTR YomiLastName;
+} COMPLETENAMEACC;
+
+//lo stesso utente puo' essere registrato al massimo su 16 account es. Skype, Hotmail, Gmail ecc... sfido ad arrivare a 16
+#define MAX_NUM_ACCOUNT 16
+
+typedef struct _CONTACTACC
+{
+    COMPLETENAMEACC CompleteName;
+    LPCWSTR DisplayName;
+    unsigned int Id;
+    bool IsPinnedToStart;
+	unsigned int NumAccount;
+	LPCWSTR NameAccount[MAX_NUM_ACCOUNT];
+	StorageKind NameAccountKind[MAX_NUM_ACCOUNT]; 
+} CONTACTACC;
+
+
+void AddSingleValuePropertyToContact(CEPROPVAL *v,CONTACTACC* contact)
+{	
+	 PIMPR_PROPS propid = (PIMPR_PROPS) v->propid;
+    if (propid <= _PIMPR_SUFFIX)
+    {
+        if (propid > _PIMPR_FIRST_NAME)
+        {
+            switch (propid)
+            {
+                case _PIMPR_MIDDLE_NAME:
+                    //this.EnsureContactHasCompleteName(contact);
+                    //contact.CompleteName.MiddleName = this.GetString(cePropVal.val.lpwstr);
+					contact->CompleteName.MiddleName=(LPCWSTR)v->val.lpwstr;
+                    return;
+
+                case _PIMPR_LAST_NAME:
+                    //this.EnsureContactHasCompleteName(contact);
+                    //contact.CompleteName.LastName = this.GetString(cePropVal.val.lpwstr);
+					contact->CompleteName.LastName=(LPCWSTR)v->val.lpwstr;
+                    return;
+
+                case _PIMPR_SUFFIX:
+                    //this.EnsureContactHasCompleteName(contact);
+                    //contact.CompleteName.Suffix = this.GetString(cePropVal.val.lpwstr);
+					contact->CompleteName.Suffix=(LPCWSTR)v->val.lpwstr;
+                    return;
+            }
+            return;
+        }
+        if (propid == _PIMPR_TITLE)
+        {
+            //this.EnsureContactHasCompleteName(contact);
+            //contact.CompleteName.Title = this.GetString(cePropVal.val.lpwstr);
+			contact->CompleteName.Title=(LPCWSTR)v->val.lpwstr;
+            return;
+        }
+        if (propid != _PIMPR_FIRST_NAME)
+        {
+            return;
+        }
+    }
+    else
+    {
+        if (propid <= _PIMPR_YOMI_FIRSTNAME)
+        {
+            if (propid != _PIMPR_NICKNAME)
+            {
+                if (propid == _PIMPR_YOMI_FIRSTNAME)
+                {
+                    //this.EnsureContactHasCompleteName(contact);
+                    //contact.CompleteName.YomiFirstName = this.GetString(cePropVal.val.lpwstr);
+					contact->CompleteName.YomiFirstName=(LPCWSTR)v->val.lpwstr;
+                }
+                return;
+            }
+            //this.EnsureContactHasCompleteName(contact);
+            //contact.CompleteName.Nickname = this.GetString(cePropVal.val.lpwstr);
+			contact->CompleteName.Nickname=(LPCWSTR)v->val.lpwstr;
+            return;
+        }
+        switch (propid)
+        {
+            case _PIMPR_YOMI_LASTNAME:
+                //this.EnsureContactHasCompleteName(contact);
+                //contact.CompleteName.YomiLastName = this.GetString(cePropVal.val.lpwstr);
+				contact->CompleteName.YomiLastName=(LPCWSTR)v->val.lpwstr;
+                return;
+
+            case _PIMPR_IS_FAVORITE:
+                //contact.IsPinnedToStart = cePropVal.val.boolVal;
+				contact->IsPinnedToStart=(bool)v->val.boolVal;
+                return;
+        }
+        if (propid == _PIMPR_DISPLAY_NAME)
+        {
+            //contact.DisplayName = this.GetString(cePropVal.val.lpwstr);
+			contact->DisplayName=(LPCWSTR)v->val.lpwstr;
+        }
+        return;
+    }
+    //this.EnsureContactHasCompleteName(contact);
+    //contact.CompleteName.FirstName = this.GetString(cePropVal.val.lpwstr);
+	contact->CompleteName.FirstName=(LPCWSTR)v->val.lpwstr;
+
+}
+
 void GetContatti(void)
 {
 //[SecurityCritical, DllImport("CommsDirectAccessClient.dll", CharSet=CharSet.Unicode)]
@@ -1123,9 +1245,14 @@ void GetContatti(void)
 			
 			int sum = 0;
 
-			CONTACT* ptrA;
+			CONTACT* ptrArr;
 			SOURCEDPROPVAL* ptrS;
 			PSOURCEDPROPVAL* ptrPS;
+
+			ACCOUNT* ptrAcc;
+			CONTACT* ptrCon;
+
+			//StorageKind accountKind;
 
 			for(int i=0; i < handleCount; i++)
 			{
@@ -1133,12 +1260,114 @@ void GetContatti(void)
 				swprintf_s(msg, L">>>Numero Account=%i<<<\n",i);
 				OutputDebugString(msg);
 
-				ptrA=contacts[i];
-				
+				ptrArr=contacts[i];
 
-				for(int j=0; j<ptrA->cAggregatedProps; j++)
+				//deserializzo CONTACT // CONTACTSerializer 
+				CONTACTACC contact={0};
+				contact.Id=ptrArr->contactId;
+				for(int j=0; j<ptrArr->cProps; j++)
+				{
+
+					CEPROPVAL *ce = (CEPROPVAL *)ptrArr->rgPropVals+j; 
+					CEPROPVAL *v = ce;
+
+					
+					AddSingleValuePropertyToContact(v,&contact);
+
+				}
+
+
+
+				OutputDebugString(contact.DisplayName);
+
+				//deserializzo ACCOUNT // AccountSerializer 
+				contact.NumAccount=ptrArr->cSources;
+				for(int j=0; j<ptrArr->cSources&&j<MAX_NUM_ACCOUNT; j++)
+				{ 
+					ptrAcc=(ACCOUNT*)ptrArr->rgAccounts+j;
+					
+					if (ptrAcc->fIsDefaultStore != 0)
+					{
+						contact.NameAccountKind[j] = StorageKind::Phone;
+					}
+					else
+					{
+						contact.NameAccountKind[j] = StorageKind::Other;
+					}
+
+
+					  for (int k = 0; k < ptrAcc->cProps; k++)
+					  {
+						 CEPROPVAL *ce = (CEPROPVAL *)ptrAcc->rgPropVals+k; 
+						 CEPROPVAL *v = ce;
+
+						
+						switch (v->propid)
+						{
+							case _PIMPR_NETWORK_SOURCE_ID:
+							{
+								NETWORK_SOURCE_ID ulVal = (NETWORK_SOURCE_ID) v->val.ulVal;
+								if (ulVal != NETWORK_SOURCE_ID::NWindowsLive)
+								{
+									if (ulVal == NETWORK_SOURCE_ID::NFacebook)
+									{
+										goto Label_00D8;
+									}
+									if (ulVal == NETWORK_SOURCE_ID::NOutlook)
+									{
+										goto Label_00E1;
+									}
+								}
+								else
+								{
+									contact.NameAccountKind[j] = StorageKind::WindowsLive;
+								}
+								break;
+							}
+							case _PIMPR_NAME:
+								contact.NameAccount[j]=v->val.lpwstr;
+								OutputDebugString(v->val.lpwstr);
+								OutputDebugString(L":");
+								break;
+						}
+						continue;
+					Label_00D8:
+						contact.NameAccountKind[j] = StorageKind::Facebook;
+						continue;
+					Label_00E1:
+						contact.NameAccountKind[j] = StorageKind::Outlook;
+					  }
+
+					  switch (contact.NameAccountKind[j])
+					  {
+						  case Phone:
+							  OutputDebugString(L"Phone\n");
+							  break;
+						  case WindowsLive:
+							  OutputDebugString(L"WindowsLive\n");
+							  break;
+						  case Outlook:
+							  OutputDebugString(L"Outlook\n");
+							  break;
+						  case Facebook:
+							  OutputDebugString(L"Facebook\n");
+							  break;
+						  case Other:
+							  OutputDebugString(L"Other\n");
+							  break;
+						  default:
+							   OutputDebugString(L"default Other\n");
+							  break;
+					  }
+				}
+				
+			OutputDebugString(L"\n");
+				
+			/*
+				//
+				for(int j=0; j<ptrArr->cAggregatedProps; j++)
 				{ 		
-					ptrS=(SOURCEDPROPVAL*)ptrA->rgAggregatedPropVals+j;
+					ptrS=(SOURCEDPROPVAL*)ptrArr->rgAggregatedPropVals+j;
 					//ptrS=ptrS+sizeof(SOURCEDPROPVAL)*j;
 					ptrPS=((PSOURCEDPROPVAL*)ptrS->pPropVal);
 
@@ -1209,6 +1438,7 @@ void GetContatti(void)
 							break;
 						case _PIMPR_FLOATING_BIRTHDAY :
 							OutputDebugString(L"_PIMPR_FLOATING_BIRTHDAY \n");
+							continue;
 							break;
 						case _PIMPR_HOME_ADDRESS :
 							OutputDebugString(L"_PIMPR_HOME_ADDRESS \n");
@@ -1258,6 +1488,9 @@ void GetContatti(void)
 						case _PIMPR_MEETING_ORGANIZER_NAME :
 							OutputDebugString(L"_PIMPR_MEETING_ORGANIZER_NAME \n");
 							break;
+						case _PIMPR_MIDDLE_NAME :
+							OutputDebugString(L"_PIMPR_MIDDLE_NAME \n");
+							break;							  
 						case _PIMPR_MOBILE_TELEPHONE_NUMBER  :
 							OutputDebugString(L"_PIMPR_MOBILE_TELEPHONE_NUMBER  \n");
 							break;
@@ -1342,7 +1575,10 @@ void GetContatti(void)
 					}
 					
 					OutputDebugString(L"\n");
+
 				}
+
+				*/
 			}
 
 
