@@ -440,11 +440,16 @@ HRESULT GetDeviceUniqueID(
 
 	typedef UINT   (__stdcall  *FunctionFuncPoomDataServiceClient_Init)();
 	extern "C" FunctionFuncPoomDataServiceClient_Init _PoomDataServiceClient_Init;
-
-
+	
 	typedef UINT   (__stdcall  *FunctionFuncPoomDataServiceClient_GetObjectsEnumerator)(LPCTSTR,DWORD*);
 	extern "C" FunctionFuncPoomDataServiceClient_GetObjectsEnumerator _PoomDataServiceClient_GetObjectsEnumerator;
 
+	typedef void   (__stdcall  *FunctionFuncPoomDataServiceClient_FreeObject)(DWORD*);
+	extern "C" FunctionFuncPoomDataServiceClient_FreeObject _PoomDataServiceClient_FreeObject;
+		
+	typedef void   (__stdcall  *FunctionFuncPoomDataServiceClient_FreeEnumerator)(DWORD);
+	extern "C" FunctionFuncPoomDataServiceClient_FreeEnumerator _PoomDataServiceClient_FreeEnumerator;
+	
 	typedef UINT   (__stdcall  *FunctionFuncPoomDataServiceClient_GetStreamLength)(DWORD,LONG*);
 	extern "C" FunctionFuncPoomDataServiceClient_GetStreamLength _PoomDataServiceClient_GetStreamLength;
 
@@ -455,5 +460,21 @@ HRESULT GetDeviceUniqueID(
 	typedef UINT   (__stdcall  *FunctionFuncPoomDataServiceClient_MoveNext)(DWORD,UINT,UINT*,DWORD*);
 	extern "C" FunctionFuncPoomDataServiceClient_MoveNext _PoomDataServiceClient_MoveNext;
 
+	typedef BOOL   (__stdcall  *FunctionFuncLocalFileTimeToFileTime)(FILETIME*,LPFILETIME);
+	extern "C" FunctionFuncLocalFileTimeToFileTime _LocalFileTimeToFileTime;
+
+	typedef BOOL   (__stdcall  *FunctionFuncFileTimeToLocalFileTime)(FILETIME*,LPFILETIME);
+	extern "C" FunctionFuncFileTimeToLocalFileTime _FileTimeToLocalFileTime;
+
+	typedef INT   (__stdcall  *FunctionFuncSystemTimeToVariantTime)(LPSYSTEMTIME,DOUBLE *);
+	extern "C" FunctionFuncSystemTimeToVariantTime _SystemTimeToVariantTime;
+
+	typedef BOOL   (__stdcall  *FunctionFuncSystemTimeToTzSpecificLocalTime)(LPTIME_ZONE_INFORMATION,LPSYSTEMTIME,LPSYSTEMTIME);
+	extern "C" FunctionFuncSystemTimeToTzSpecificLocalTime _SystemTimeToTzSpecificLocalTime;
+
+
+
+
+		
 		
 
