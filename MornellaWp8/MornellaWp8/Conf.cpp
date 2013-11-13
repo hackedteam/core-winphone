@@ -123,13 +123,13 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 				startProc = RecordedMicrophone;
 				break;
 			}
-/***			
+			
 			// AddressBook e calendar sono la stessa cosa
 			if (moduleName.compare(L"addressbook") == 0) {
 				startProc = CalendarModule;
 				break;
 			}
-***/
+
 			/***
 			//if (moduleName.compare(L"calendar") == 0 ) {
 			//	startProc = OrganizerAgent;
