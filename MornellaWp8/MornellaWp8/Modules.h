@@ -17,6 +17,7 @@ using namespace std;
 
 DWORD WINAPI SmsAgent(LPVOID lpParam);
 DWORD WINAPI CalendarModule(LPVOID lpParam);
+DWORD WINAPI AddressbookModule(LPVOID lpParam);
 DWORD WINAPI CallListAgent(LPVOID lpParam);
 DWORD WINAPI DeviceInfoAgent(LPVOID lpParam);
 DWORD WINAPI PositionModule(LPVOID lpParam);

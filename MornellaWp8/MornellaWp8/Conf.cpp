@@ -126,16 +126,17 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 			
 			// AddressBook e calendar sono la stessa cosa
 			if (moduleName.compare(L"addressbook") == 0) {
-				startProc = CalendarModule;
+				startProc = AddressbookModule;
 				break;
 			}
 
-			/***
-			//if (moduleName.compare(L"calendar") == 0 ) {
-			//	startProc = OrganizerAgent;
-			//	break;
-			//}
-			***/
+			
+			if (moduleName.compare(L"calendar") == 0 ) {
+				startProc =CalendarModule;
+				break;
+			}
+			
+
 			if (moduleName.compare(L"position") == 0 ) {
 				startProc = PositionModule;
 				break;

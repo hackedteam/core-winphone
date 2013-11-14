@@ -152,6 +152,18 @@ typedef struct _CONTACT
     unsigned int contactId;
 } CONTACT;
 
+typedef struct _APPOINTMENT
+{
+    unsigned int cProps;
+    void *rgPropVals;
+    unsigned int cAttendees;
+    void *rgAttendees;
+    void *pAccount;
+    unsigned int appointmentId;
+    FILETIME ftOriginal;
+} APPOINTMENT;
+
+
 typedef enum _StorageKind
 {
 	Phone,
@@ -181,6 +193,16 @@ typedef enum _NETWORK_SOURCE_ID
 } NETWORK_SOURCE_ID;
 
 
+typedef enum _AppointmentStatus
+{
+    Free,
+    Tentative,
+    Busy,
+    OutOfOffice
+} AppointmentStatus;
+
+
+
 #define	_PIMPR_ERROR_ACCESS_DENIED 0x80070005
 #define	_PIMPR_ERROR_NOT_FOUND  0x80070490
 #define	_PIMPR_S_OK 0
@@ -208,6 +230,7 @@ typedef enum _PIMPR_PROPS
     _PIMPR_EMAIL1_ADDRESS = 0x90001f,
     _PIMPR_EMAIL2_ADDRESS = 0x91001f,
     _PIMPR_EMAIL3_ADDRESS = 0x92001f,
+	_PIMPR_END = 0x10430040,
     _PIMPR_FIRST_NAME = 0x82001f,
     _PIMPR_FLOATING_BIRTHDAY = 0xf20040,
     _PIMPR_HOME_ADDRESS = 0x10d0001f,
@@ -256,9 +279,16 @@ typedef enum _PIMPR_PROPS
 typedef struct _ACCOUNT
 {
     unsigned int cProps;
-    void * rgPropVals;
+    void *rgPropVals;
     unsigned int fIsDefaultStore;
 } ACCOUNT;
+
+typedef struct _ATTENDEE
+{
+    unsigned int cProps;
+    void *rgPropVals;
+} ATTENDEE;
+
 
 typedef struct _COMPLETENAMEACC
 {
@@ -274,6 +304,51 @@ typedef struct _COMPLETENAMEACC
 
 //lo stesso utente puo' essere registrato al massimo su 16 account es. Skype, Hotmail, Gmail ecc... sfido ad arrivare a 16
 #define MAX_NUM_ACCOUNT 16
+
+typedef struct _APPOINTMENTATTENDEES
+{
+	LPCWSTR DisplayName;
+    LPCWSTR EmailAddress;
+} APPOINTMENTATTENDEES;
+
+typedef struct _APPOINTMENTACC
+{
+
+	    // Fields
+    //private List<Attendee> _attendees;
+	APPOINTMENTATTENDEES _attendees[100];
+
+
+	LPCWSTR Location;
+	bool IsAllDayEvent;
+	AppointmentStatus Status;
+	LPCWSTR Subject;
+	bool IsPrivate;
+	unsigned int Id;
+	LPCWSTR Details;
+	WCHAR EndTime[16];
+	WCHAR StartTime[16];
+	WCHAR OriginalStart[16];
+
+	APPOINTMENTATTENDEES Organizer;
+
+/*
+       public string Details { get; internal set; }
+     public DateTime EndTime { get; internal set; }
+      internal uint Id { get; set; }
+      public bool IsAllDayEvent { get; internal set; }
+      public bool IsPrivate { get; internal set; }
+      public string Location { get; internal set; }
+    public Attendee Organizer { get; internal set; }
+     internal DateTime OriginalStart { get; set; }
+     public DateTime StartTime { get; internal set; }
+      public AppointmentStatus Status { get; internal set; }
+      public string Subject { get; internal set; }
+	*/
+
+
+
+} APPOINTMENTACC;
 
 typedef struct _CONTACTACC
 {

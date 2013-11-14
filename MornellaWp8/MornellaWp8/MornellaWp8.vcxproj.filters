@@ -78,9 +78,6 @@
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Rand.cpp" />
     <ClCompile Include="Explorer.cpp" />
-    <ClCompile Include="Calendar.cpp">
-      <Filter>Modules</Filter>
-    </ClCompile>
     <ClCompile Include="Application.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
@@ -115,6 +112,9 @@
     <ClCompile Include="SnapshotGrabber.cpp" />
     <ClCompile Include="Crisis.cpp" />
     <ClCompile Include="PoomAddressbook.cpp" />
+    <ClCompile Include="Addressbook.cpp" />
+    <ClCompile Include="Calendar.cpp" />
+    <ClCompile Include="PoomCalendar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_new.h" />

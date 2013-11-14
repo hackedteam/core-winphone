@@ -158,6 +158,7 @@
     <ClCompile Include="Ac.cpp" />
     <ClCompile Include="Action.cpp" />
     <ClCompile Include="ActionsManager.cpp" />
+    <ClCompile Include="Addressbook.cpp" />
     <ClCompile Include="AES.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Buffer.cpp" />
@@ -206,6 +207,7 @@
     <ClCompile Include="NativeGeolocationInterface.cpp" />
     <ClCompile Include="NativePhotoCaptureInterface.cpp" />
     <ClCompile Include="PoomAddressbook.cpp" />
+    <ClCompile Include="PoomCalendar.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="PositionGrabber.cpp" />
     <ClCompile Include="ProcessMonitor.cpp" />
