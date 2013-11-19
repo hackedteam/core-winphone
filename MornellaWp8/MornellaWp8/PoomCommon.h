@@ -21,7 +21,7 @@ using namespace std;
 
 enum ObjectTaskTypes{
 	POOM_TYPE_MASK	= 0x00FFFFFF,
-
+	/*
 	POOM_STRING_SUBJECT		=	0x01000000, 
 	POOM_STRING_CATEGORIES	=	0x02000000,
 	POOM_STRING_BODY		=	0x04000000,
@@ -29,6 +29,15 @@ enum ObjectTaskTypes{
 	POOM_STRING_LOCATION	=	0x10000000,
 
 	POOM_OBJECT_RECUR		=	0x80000000
+	*/
+	POOM_STRING_SUBJECT		=	0x01, 
+	POOM_STRING_CATEGORIES	=	0x02,
+	POOM_STRING_BODY		=	0x04,
+	POOM_STRING_RECIPIENTS	=	0x08,
+	POOM_STRING_LOCATION	=	0x10,
+
+	POOM_OBJECT_RECUR		=	0x80
+
 };
 
 typedef struct _TaskRecur{
@@ -119,6 +128,12 @@ typedef struct _Header{
         DWORD            flags;
         
 } HeaderStruct, *pHeaderStruct;
+
+typedef struct _HeaderCalendar{
+	DWORD		dwSize;
+	DWORD		dwVersion;
+	LONG		lOid;
+} HeaderCalendarStruct, *pHeaderCalendarStruct;
 
 
 //il type_flag per indicare il local e' : 0x80000000 l'handle del target va messo nel campo info e il nome nel campo name. lato intelligence cmq viene preso solo il campo info (dove c'e' l'handle).
@@ -311,24 +326,29 @@ typedef struct _APPOINTMENTATTENDEES
     LPCWSTR EmailAddress;
 } APPOINTMENTATTENDEES;
 
+//numero massimo di partecipanti ad un evento programmato sul calendario
+#define MAX_NUM_ATTENDEES 128
+
 typedef struct _APPOINTMENTACC
 {
 
 	    // Fields
     //private List<Attendee> _attendees;
-	APPOINTMENTATTENDEES _attendees[100];
+	APPOINTMENTATTENDEES _attendees[MAX_NUM_ATTENDEES]; //POOM_STRING_RECIPIENTS	
+	int NumAttendees;
+	
+	LPCWSTR CalendarFrom;
 
-
-	LPCWSTR Location;
+	LPCWSTR Location;           //POOM_STRING_LOCATION	
 	bool IsAllDayEvent;
-	AppointmentStatus Status;
-	LPCWSTR Subject;
-	bool IsPrivate;
+	AppointmentStatus Status;	//Busy Status
+	LPCWSTR Subject;            //POOM_STRING_SUBJECT     
+	bool IsPrivate;				//forse: Sensitivity
 	unsigned int Id;
-	LPCWSTR Details;
-	WCHAR EndTime[16];
-	WCHAR StartTime[16];
-	WCHAR OriginalStart[16];
+	LPCWSTR Details;            //POOM_STRING_BODY	
+	FILETIME EndTime;			//End date
+	FILETIME StartTime;		//Start date
+	FILETIME OriginalStart;	
 
 	APPOINTMENTATTENDEES Organizer;
 
@@ -345,6 +365,7 @@ typedef struct _APPOINTMENTACC
       public AppointmentStatus Status { get; internal set; }
       public string Subject { get; internal set; }
 	*/
+
 
 
 
