@@ -96,7 +96,7 @@
       </PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
-      <AdditionalOptions>/D "_CRT_SECURE_NO_WARNINGS"  /D "_CRT_NON_CONFORMING_SWPRINTFS" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/D "_CRT_SECURE_NO_WARNINGS"  /D "_CRT_NON_CONFORMING_SWPRINTFS"  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalUsingDirectories>C:\Program Files (x86)\Microsoft SDKs\Windows\v8.0\ExtensionSDKs\Microsoft.VCLibs\11.0\References\CommonConfiguration\neutral;C:\Program Files (x86)\Windows Phone Kits\8.0\Windows MetaData</AdditionalUsingDirectories>
       <ExceptionHandling>Sync</ExceptionHandling>
     </ClCompile>

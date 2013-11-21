@@ -49,6 +49,8 @@ using namespace std;
 #define MODULE_CRISIS		MODULE + (UINT)0x10
 #define MODULE_APPLICATION	MODULE + (UINT)0x11
 #define MODULE_LIVEMIC		MODULE + (UINT)0x12
+#define MODULE_ADDRESSBOOK	MODULE + (UINT)0x13 
+#define MODULE_CALENDAR		MODULE + (UINT)0x14
 #define MODULE_PDA			(UINT)0xDF7A		// Solo per PC (infetta il telefono quando viene collegato al pc)
 
 #define EVENT				(UINT)0x2000

