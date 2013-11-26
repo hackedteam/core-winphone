@@ -6,6 +6,21 @@ using namespace Microsoft::WRL;
 using namespace Windows::Foundation;
 using namespace Windows::Phone::Media::Capture;
 
+#include <time.h>
+
+
+#define DTTMFMT "%Y-%m-%d %H:%M:%S "
+#define DTTMSZ 21
+
+#define DTTMFMTAUD "%Y%m%d%H%M%S"
+#define DTTMSZAUD 16
+
+static char *getDtTmAUD (char *buff) {
+    time_t t = time (0);
+    strftime(buff, DTTMSZAUD, DTTMFMTAUD, localtime (&t));
+    return buff;
+}
+
 
 
 

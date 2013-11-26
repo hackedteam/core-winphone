@@ -149,8 +149,6 @@
     </Xml>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="common_new.h" />
-    <ClInclude Include="FunctionFunc.h" />
     <ClInclude Include="json\JSON.h" />
     <ClInclude Include="json\JSONValue.h" />
   </ItemGroup>

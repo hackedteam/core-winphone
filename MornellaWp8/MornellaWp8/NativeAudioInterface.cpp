@@ -7,9 +7,12 @@
 
 //#define RELESE_DEBUG_MSG
 
+#include <windows.h>
+#include <iostream>
+#include <fstream>
+
 #pragma comment(lib, "Phoneaudioses.lib")
-
-
+using namespace std;
 using namespace Microsoft::WRL;
 using namespace Windows::Foundation;
 using namespace Windows::Foundation::Collections;
@@ -17,32 +20,15 @@ using namespace Windows::Phone::Media::Capture;
 using namespace Windows::Storage;
 using namespace Concurrency;
 using namespace Platform;
+using namespace NativeAudioInterface::Native;
+
 
 //messo qua per poter forzare lo stop da dentro OnSampleAvailable
 Windows::Phone::Media::Capture::AudioVideoCaptureDevice ^pAudioVideoCaptureDevice;
 
 HANDLE GlobalEventHandle=NULL;
 
-
-
-#include <time.h>
-
-
-#define DTTMFMT "%Y-%m-%d %H:%M:%S "
-#define DTTMSZ 21
-
-//#define DTTMFMTAUD "%Y%m%d%H%M%Sxxxxxx"
-#define DTTMFMTAUD "%Y%m%d%H%M%S"
-#define DTTMSZAUD 16
-
-
-static int COSTRUITO=0;
-
-static char *getDtTmAUD (char *buff) {
-    time_t t = time (0);
-    strftime(buff, DTTMSZAUD, DTTMFMTAUD, localtime (&t));
-    return buff;
-}
+MicAdditionalData mad2;
 
 static char *getDtTm (char *buff) {
     time_t t = time (0);
@@ -50,24 +36,11 @@ static char *getDtTm (char *buff) {
     return buff;
 }
 
-#include <windows.h>
-#include <iostream>
-#include <fstream>
-
-using namespace std;
-using namespace NativeAudioInterface::Native;
-//static int fAudio=FALSE;
-
-MicAdditionalData mad2;
-
 void initFirstCapture(void)
 {
 	NativeCapture::pos=0;
 	NativeCapture::nCamp=1;
-
 }
-
-
 
 void NativeCapture::SetWait(void)
 {
@@ -78,7 +51,6 @@ void NativeCapture::ResetWait(void)
 {
 	SetResetWait=FALSE;
 }
-
 
 void NativeCapture::StopCapture(void)
 {
@@ -95,20 +67,9 @@ void NativeCapture::StopCapture(void)
 
 	//se gia' non sto catturando esco subito
 	//if(NativeCapture::fStartCapture==FALSE) return;
-
-	
-/***
-	Windows::Foundation::TimeSpan span;
-	span.Duration = 10000000L;   // convert 1 sec to 100ns ticks
-	 
-	Windows::Phone::Devices::Notification::VibrationDevice^ vibr = Windows::Phone::Devices::Notification::VibrationDevice::GetDefault();
-	vibr->Vibrate(span);
-***/
 	////_ZMediaQueue_DisconnectFromService(); //tolto perche' mi crea un eccezione a liverllo di kernel; controllare se si autodisalloca o se crea problemi
 	
-	
 	//se è gia' false significa l'ho stoppato precedentemente 
-   
 #ifdef  RELESE_DEBUG_MSG	
 		Log logInfo4;
 		logInfo4.WriteLogInfo(L"StopCapture: fStartCapture==TRUE");
@@ -200,7 +161,6 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 		WCHAR msg[128];
 		swprintf_s(msg, L"\n1Header) Pos=%i nCamp=%i: \n",NativeCapture::pos,NativeCapture::nCamp);OutputDebugString(msg);
 #endif
-
 		
 		unsigned __int64 temp_time = GetTime();
 	
@@ -212,7 +172,6 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 
 
 		//salvo il punto in cui considero che inizia il campione, in teoria non c'e' ne bisogno ma ho visto che alle volte sembra che il play è sotto da svariati minuiti quando in realta' non dovrebbe esserlo
-
 		Start_hnsPresentationTime=hnsPresentationTime*5;
 	}
 	//else 

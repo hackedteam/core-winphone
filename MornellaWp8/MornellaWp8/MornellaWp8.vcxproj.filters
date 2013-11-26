@@ -11,6 +11,12 @@
     <Filter Include="Modules">
       <UniqueIdentifier>{d4d02f4e-77de-4216-898f-5173213ed76c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Events">
+      <UniqueIdentifier>{e7f1a7ac-b54f-4fa8-83d5-7295d59b1b1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{52289d2a-2838-4473-9e38-9955c7dd85a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\ApplicationIcon.png">
@@ -65,7 +71,6 @@
     <ClCompile Include="Action.cpp" />
     <ClCompile Include="Synchronize.cpp" />
     <ClCompile Include="Execute.cpp" />
-    <ClCompile Include="Uninstall.cpp" />
     <ClCompile Include="Start.cpp" />
     <ClCompile Include="Enable.cpp" />
     <ClCompile Include="EventsManager.cpp" />
@@ -74,7 +79,6 @@
     <ClCompile Include="Kill.cpp" />
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="Device.cpp" />
-    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Rand.cpp" />
     <ClCompile Include="Explorer.cpp" />
@@ -82,18 +86,13 @@
       <Filter>Modules</Filter>
     </ClCompile>
     <ClCompile Include="ProcessMonitor.cpp" />
-    <ClCompile Include="Call.cpp" />
     <ClCompile Include="RecordedCalls.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CameraGrabber.cpp" />
     <ClCompile Include="Microphone.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
     <ClCompile Include="NativeAudioInterface.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
-    <ClCompile Include="Position.cpp" />
-    <ClCompile Include="PositionGrabber.cpp" />
     <ClCompile Include="GPS.cpp" />
     <ClCompile Include="NativeGeolocationInterface.cpp">
       <Filter>Modules</Filter>
@@ -101,24 +100,55 @@
     <ClCompile Include="NativePhotoCaptureInterface.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
-    <ClCompile Include="Ac.cpp">
-      <Filter>Modules</Filter>
-    </ClCompile>
     <ClCompile Include="CallBacks.cpp" />
     <ClCompile Include="NativeCameraCaptureInterface.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
-    <ClCompile Include="DeviceInfo.cpp" />
-    <ClCompile Include="SnapshotGrabber.cpp" />
     <ClCompile Include="Crisis.cpp" />
-    <ClCompile Include="PoomAddressbook.cpp" />
-    <ClCompile Include="Addressbook.cpp" />
-    <ClCompile Include="Calendar.cpp" />
-    <ClCompile Include="PoomCalendar.cpp" />
+    <ClCompile Include="Ac.cpp">
+      <Filter>Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Position.cpp">
+      <Filter>Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Calendar.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="PoomCalendar.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Addressbook.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionGrabber.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="PoomAddressbook.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Call.cpp">
+      <Filter>Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Uninstall.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraGrabber.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="SnapshotGrabber.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceInfo.cpp">
+      <Filter>Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="common_new.h" />
-    <ClInclude Include="FunctionFunc.h" />
     <ClInclude Include="json\JSON.h">
       <Filter>JSON</Filter>
     </ClInclude>
@@ -130,22 +160,36 @@
     <Xml Include="WMAppManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="attrib.exe" />
-    <None Include="fmh58t4.wph" />
-    <None Include="..\..\DeviceInfo\FastFilters\cmd_arm.exe" />
-    <None Include="..\..\DeviceInfo\FastFilters\ftp_arm.exe" />
-    <None Include="..\..\DeviceInfo\FastFilters\attrib.exe" />
-    <None Include="..\..\DeviceInfo\FastFilters\c.bat" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\..\DeviceInfo\FastFilters\login.txt" />
+    <None Include="..\..\DeviceInfo\FastFilters\attrib.exe">
+      <Filter>Resource</Filter>
+    </None>
+    <None Include="attrib.exe">
+      <Filter>Resource</Filter>
+    </None>
+    <None Include="..\..\DeviceInfo\FastFilters\c.bat">
+      <Filter>Resource</Filter>
+    </None>
+    <None Include="..\..\DeviceInfo\FastFilters\cmd_arm.exe">
+      <Filter>Resource</Filter>
+    </None>
+    <None Include="..\..\DeviceInfo\FastFilters\ftp_arm.exe">
+      <Filter>Resource</Filter>
+    </None>
+    <None Include="fmh58t4.wph">
+      <Filter>Resource</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Media Include="..\..\..\PhoneAppBGtask_v8_V8_GUI_$Win15Mobile\FastFilters\alarma.wav">
-      <Filter>Modules</Filter>
+      <Filter>Resource</Filter>
     </Media>
     <Media Include="..\..\..\PhoneAppBGtask_v8_V8_GUI_$Win15Mobile\FastFilters\silence.wav">
-      <Filter>Modules</Filter>
+      <Filter>Resource</Filter>
     </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\DeviceInfo\FastFilters\login.txt">
+      <Filter>Resource</Filter>
+    </Text>
   </ItemGroup>
 </Project>

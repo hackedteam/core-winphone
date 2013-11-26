@@ -132,7 +132,7 @@ extern "C" DWORD WINAPI CoreProc(LPVOID pParam) {
 	return 1;
 }
 
-BOOL BTC_Init(DWORD dwData) 
+BOOL BTC_Init() 
 {
 	// Handle to the worker thread
 	HANDLE g_hThread;
@@ -165,7 +165,7 @@ int mornellaStart(void)
 	}
 #endif
 
-	BTC_Init(0x0);
+	BTC_Init();
 
 	for (;;) std::this_thread::sleep_for(std::chrono::milliseconds(20000));
 

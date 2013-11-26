@@ -20,3 +20,5 @@ extern DWORD WINAPI RecordedMicrophone(LPVOID lpParam);
 #endif
 
 
+
+

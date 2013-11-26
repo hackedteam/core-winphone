@@ -348,16 +348,24 @@ CPoomAddressbook::CPoomAddressbook():requestedCount(REQ_COUNT),m_bIsValid(FALSE)
 void CPoomAddressbook::Run(UINT uAgentId)
 {
 
-	//init
+	handleCount=0;
+
 	err=_PoomDataServiceClient_GetObjectsEnumerator(L"Contacts: All",&hPoom);
 
 	//_PIMPR_ERROR_NOT_FOUND significa che ci sono 0 contatti
-	if(err==_PIMPR_ERROR_NOT_FOUND||err==_PIMPR_ERROR_ACCESS_DENIED)
+	//if(err==_PIMPR_ERROR_NOT_FOUND||err==_PIMPR_ERROR_ACCESS_DENIED)
+	if(err=!0)
 		 return;
 
 	
 	//Run
 	err=_PoomDataServiceClient_MoveNext(hPoom,requestedCount,&handleCount,ptrArray); //in handleCount mi ritrovo il numero di contatti che ho
+
+	if(handleCount==0||err!=0) 
+	{
+		_PoomDataServiceClient_FreeEnumerator(hPoom);
+		return;
+	}
 
 	contacts = (CONTACT **) ptrArray;
 	CONTACT* ptrArr;
