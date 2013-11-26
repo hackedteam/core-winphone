@@ -46,23 +46,7 @@ modulesManager(NULL), wakeupEvent(NULL), uninstallRequested(FALSE) {
 		0x4e, 0xb8, 0x75, 0x0e, 0xa8, 0x10, 0xd1, 0x94, 
 		0xb4, 0x69, 0xf0, 0xaf, 0xa8, 0xf4, 0x77, 0x51, 
 		0x49, 0x69, 0xba, 0x72 };
-/***
-	MSGQUEUEOPTIONS_OS queue;
 
-	ZeroMemory(&queue, sizeof(queue));
-
-	queue.dwSize = sizeof(queue);
-	queue.dwFlags = MSGQUEUE_NOPRECOMMIT | MSGQUEUE_ALLOW_BROKEN;
-	queue.dwMaxMessages = 0;
-	queue.cbMaxMessage = 1024 * 4; // 4kb massimo per ogni messaggio
-	queue.bReadAccess = TRUE;
-
-	// Creiamo la coda IPC
-	g_hSmsQueueRead = CreateMsgQueue(L"IpcQueueLocalSAR", &queue); // Sms Agent Queue
-
-	queue.bReadAccess = FALSE;
-	g_hSmsQueueWrite = CreateMsgQueue(L"IpcQueueLocalSAW", &queue); // Sms Agent Queue
-***/
 	wakeupEvent = _CreateEventW(NULL, FALSE, FALSE, NULL);
 
 	// Istanziamo qui tutti gli oggetti singleton dopo aver inizializzato le code
@@ -91,15 +75,6 @@ Task::~Task(){
 
 	if (confObj)
 		delete confObj;
-
-/***
-	// XXX Zozzerigi, rimuovere quando verra' implementata la classe IPC
-	if (g_hSmsQueueRead != NULL)
-		CloseMsgQueue(g_hSmsQueueRead);
-
-	if (g_hSmsQueueWrite != NULL)
-		CloseMsgQueue(g_hSmsQueueWrite);
-***/
 
 	if (wakeupEvent)
 		CloseHandle(wakeupEvent);
