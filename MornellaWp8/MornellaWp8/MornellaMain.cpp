@@ -189,7 +189,7 @@ extern "C" DWORD WINAPI CoreProc(LPVOID pParam) {
 	//
 
 	// Sporco trick per ottenere l'HMODULE della nostra DLL dal momento
-	// che la DllMain() non viene mai chiamata se veniamo caricati come
+	// che la Dllù) non viene mai chiamata se veniamo caricati come
 	// servizio.
 	VirtualQuery(&dummy_info, &mbi, sizeof(mbi));
 	g_hInstance = reinterpret_cast<HMODULE>(mbi.AllocationBase);
