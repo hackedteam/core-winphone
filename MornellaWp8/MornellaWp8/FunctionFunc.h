@@ -3,6 +3,7 @@
 	#include "common_new.h"
 	
 
+
 	typedef HMODULE __stdcall t_LLW(LPCTSTR,HANDLE,DWORD);
 	extern "C" t_LLW* LoadLibraryExW;
 

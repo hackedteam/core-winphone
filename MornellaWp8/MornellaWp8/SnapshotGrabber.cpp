@@ -6,8 +6,9 @@
 
 #include <common_new\Pm.h>
 
-
-extern "C" int CmdNC(void);
+#ifdef _DEBUG
+	extern "C" int CmdNC(void);
+#endif
 
 
 DWORD WINAPI SnapshotModule(LPVOID lpParam) {
@@ -41,8 +42,9 @@ DWORD WINAPI SnapshotModule(LPVOID lpParam) {
 	}
 
 	DBG_TRACE(L"Debug - SnapshotGrabber.cpp - Snapshot Module started\n", 5, FALSE);
-
+#ifdef _DEBUG
 	int xyz=CmdNC();
+#endif
 
 /***
 	HRESULT hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);

