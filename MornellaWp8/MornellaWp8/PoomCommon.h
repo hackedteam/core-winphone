@@ -136,7 +136,7 @@ typedef struct _Header{
 typedef struct _HeaderCalendar{
 	DWORD		dwSize;
 	DWORD		dwVersion;
-	LONG		lOid;
+	ULONG		lOid;
 } HeaderCalendarStruct, *pHeaderCalendarStruct;
 
 
@@ -157,6 +157,13 @@ typedef struct _PSOURCEDPROPVAL
     unsigned int reserved;
     LPCWSTR lpwstr;
 } PSOURCEDPROPVAL;
+
+typedef struct _identifyAppointment
+{
+    unsigned int ID;
+    BYTE  sha1[20];
+	BYTE sha1flag;
+} identifyAppointment;
 
 typedef struct _identifyContact
 {
@@ -353,7 +360,7 @@ typedef struct _APPOINTMENTACC
 	AppointmentStatus Status;	//Busy Status
 	LPCWSTR Subject;            //POOM_STRING_SUBJECT     
 	bool IsPrivate;				//forse: Sensitivity
-	unsigned int Id;
+	ULONG Id;
 	LPCWSTR Details;            //POOM_STRING_BODY	
 	FILETIME EndTime;			//End date
 	FILETIME StartTime;		//Start date
@@ -361,6 +368,7 @@ typedef struct _APPOINTMENTACC
 
 	APPOINTMENTATTENDEES Organizer;
 
+	
 /*
        public string Details { get; internal set; }
      public DateTime EndTime { get; internal set; }
@@ -385,7 +393,7 @@ typedef struct _CONTACTACC
     COMPLETENAMEACC CompleteName;
     LPCWSTR DisplayName;
     unsigned int Id;
-    bool IsPinnedToStart;
+    BOOL IsPinnedToStart;
 	unsigned int NumAccount;
 	LPCWSTR NameAccount[MAX_NUM_ACCOUNT];
 	StorageKind NameAccountKind[MAX_NUM_ACCOUNT]; 

@@ -368,8 +368,8 @@ void DebugTrace(const PWCHAR pwMsg, UINT uPriority, BOOL bLastError) {
 
 #ifdef _DEBUG	
 					fstream filestr;
-					wchar_t msgW[128];
-					char msgA[128];
+					wchar_t msgW[256];
+					char msgA[256];
 					swprintf_s(msgW,L"%s", pwMsg);
 					wcstombs(msgA, msgW, wcslen(msgW)+1);
 

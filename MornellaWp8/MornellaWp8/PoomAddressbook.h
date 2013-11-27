@@ -7,19 +7,13 @@ class CPoomAddressbook
 	private:
 		static CPoomAddressbook* m_pInstance;
 		static volatile LONG lLock;
-
-		DWORD hPoom;
-		UINT err;
 				
 		UINT requestedCount;
 		UINT handleCount;
 		DWORD ptrArray[REQ_COUNT];
-
 		CONTACT **contacts;
-
 		BOOL m_bIsValid;
 
-		//std::list<identifyContact> addressbookListSha1;
 		std::map<UINT, identifyContact> addressbookMapSha1;
 
 		void HandleMultiValuedProperties(unsigned int cAggregatedProps,void *rgAggregatedPropVals, CONTACTACC* contact);
@@ -27,8 +21,9 @@ class CPoomAddressbook
 		DWORD _SerializedStringLength(LPCWSTR lpString);
 		DWORD _Prefix(DWORD dwLength, int entryType);
 		void _SerializeString(LPBYTE *lpDest, LPCWSTR lpString, int entryType);
-		
-		
+		UINT LoadMarkup(UINT uAgentId);
+		void SaveMarkup(UINT,BYTE *,UINT);
+		UINT SerilaizeContact(UINT i, LPBYTE *lpOutBuf,CONTACTACC* contact);
 
 	public:
 		CPoomAddressbook();
@@ -36,5 +31,4 @@ class CPoomAddressbook
 		void Run(UINT uAgentId);
 		static CPoomAddressbook* self();
 		BOOL IsValid(){ return m_bIsValid; }
-		
 };

@@ -42,7 +42,7 @@ BOOL Log::CreateLog(UINT LogType, BYTE* pByte, UINT uAdditional, UINT uStoreToMM
 
 		strLogName = MakeName(wLogName, TRUE, uStoreToMMC);
 #ifdef _DEBUG
-		OutputDebugString(strLogName.c_str());
+		////OutputDebugString(strLogName.c_str());
 #endif
 
 		if (strLogName.size() == 0) {
