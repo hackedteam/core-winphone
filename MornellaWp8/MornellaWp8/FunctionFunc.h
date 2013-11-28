@@ -63,8 +63,11 @@
 	typedef void   (__stdcall  *FunctionFuncGlobalMemoryStatus)(LPMEMORYSTATUS);
 	extern "C" FunctionFuncGlobalMemoryStatus  _GlobalMemoryStatus;
 
-	typedef BOOL   (__stdcall  *FunctionFuncGetVersionExW)(LPOSVERSIONINFO);
+	typedef BOOL   (__stdcall  *FunctionFuncGetVersionExW)(LPOSVERSIONINFOEXW);
 	extern "C" FunctionFuncGetVersionExW   _GetVersionExW;
+
+	typedef BOOL   (__stdcall  *FunctionFuncGetVersion)(LPOSVERSIONINFO);
+	extern "C" FunctionFuncGetVersion   _GetVersion;
 
 	typedef  HANDLE   (__stdcall  *FunctionFuncCreateFileW)(LPCTSTR,DWORD,DWORD,LPSECURITY_ATTRIBUTES,DWORD,DWORD,HANDLE);	
 	extern "C" FunctionFuncCreateFileW _CreateFileW;

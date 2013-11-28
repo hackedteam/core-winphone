@@ -15,7 +15,7 @@ INT Uninstall::run() {
 	
 	typedef HRESULT (*pUnregister)();
 
-	pUnregister UnregisterFunction;
+//	pUnregister UnregisterFunction;
 
 	events->stopAll();
 	modules->stopAll();

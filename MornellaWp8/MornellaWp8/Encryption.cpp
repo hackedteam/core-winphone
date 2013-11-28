@@ -283,13 +283,13 @@ bool ListFiles3(wstring path, wstring mask, vector<wstring>& files)
 		else
 		{
 		
-				//LPVOID lpMsgBuf;
-				WCHAR lpMsgBuf[512];
+			//LPVOID lpMsgBuf;
+			WCHAR lpMsgBuf[512];
 	
-				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), 0, (LPWSTR) lpMsgBuf, sizeof(lpMsgBuf), NULL );
+			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), 0, (LPWSTR) lpMsgBuf, sizeof(lpMsgBuf), NULL );
 
-				swprintf_s(stringa,L">>>>>>>>>>>>>>>>>>>>>>>>>>>>> FindFirstFile:%s err:%i : %s\n",fullpath.c_str(),GetLastError(),lpMsgBuf);
-				OutputDebugString(  stringa );
+			swprintf_s(stringa,L">>>>>>>>>>>>>>>>>>>>>>>>>>>>> FindFirstFile:%s err:%i : %s\n",fullpath.c_str(),GetLastError(),lpMsgBuf);
+			OutputDebugString(  stringa );
 
 	}
 		

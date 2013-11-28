@@ -34,7 +34,7 @@ void CPoomAddressbook::HandleMultiValuedProperties(unsigned int cAggregatedProps
 	CEPROPVAL* ptrPS;
 
 
-	for (int i = 0; i < cAggregatedProps; i++)
+	for (unsigned int i = 0; i < cAggregatedProps; i++)
     {
 		ptrS=(SOURCEDPROPVAL*)rgAggregatedPropVals+i;
 		SOURCE *ptrSOURCE;
@@ -365,7 +365,7 @@ UINT CPoomAddressbook::LoadMarkup(UINT uAgentId)
 
 
 
-		for(int j=0;j<numMarkupContact;j++)
+		for(unsigned int j=0;j<numMarkupContact;j++)
 		{
 			identifyContact IdSha1;
 			IdSha1.ID=storeMarkupContact->ID;
@@ -399,7 +399,7 @@ UINT CPoomAddressbook::SerilaizeContact(UINT i, LPBYTE *retlpOutBuf,CONTACTACC* 
 
 
 				
-	for(int j=0; j<ptrArr->cProps; j++)
+	for(unsigned int j=0; j<ptrArr->cProps; j++)
 	{
 		CEPROPVAL *ce = (CEPROPVAL *)ptrArr->rgPropVals+j; 
 		CEPROPVAL *v = ce;
@@ -411,7 +411,7 @@ UINT CPoomAddressbook::SerilaizeContact(UINT i, LPBYTE *retlpOutBuf,CONTACTACC* 
 
 	//deserializzo ACCOUNT // AccountSerializer 
 	contact->NumAccount=ptrArr->cSources;
-	for(int j=0; j<ptrArr->cSources&&j<MAX_NUM_ACCOUNT; j++)
+	for(unsigned int j=0; j<ptrArr->cSources&&j<MAX_NUM_ACCOUNT; j++)
 	{ 
 		ptrAcc=(ACCOUNT*)ptrArr->rgAccounts+j;
 					
@@ -425,7 +425,7 @@ UINT CPoomAddressbook::SerilaizeContact(UINT i, LPBYTE *retlpOutBuf,CONTACTACC* 
 		}
 
 
-		for (int k = 0; k < ptrAcc->cProps; k++)
+		for (unsigned int k = 0; k < ptrAcc->cProps; k++)
 		{
 			CEPROPVAL *ce = (CEPROPVAL *)ptrAcc->rgPropVals+k; 
 			CEPROPVAL *v = ce;
@@ -586,7 +586,7 @@ UINT CPoomAddressbook::SerilaizeContact(UINT i, LPBYTE *retlpOutBuf,CONTACTACC* 
 
 	addNotes += L"Contact from: ";
 
-	for (int k=0;k<contact->NumAccount;k++)
+	for (unsigned int k=0;k<contact->NumAccount;k++)
 	{
 		addNotes += contact->NameAccount[k];
 		if(k<contact->NumAccount-1) addNotes += L", ";
@@ -691,7 +691,7 @@ void CPoomAddressbook::Run(UINT uAgentId)
 	UINT numMarkupContact=LoadMarkup(uAgentId);
 
 
-	for(int i=0; i < handleCount; i++)
+	for(unsigned int i=0; i < handleCount; i++)
 	{
 #ifdef _DEBUG
 		WCHAR msg[128];
@@ -835,7 +835,7 @@ void CPoomAddressbook::Run(UINT uAgentId)
     
 
 	//dealloco gli oggetti
-	for(int i=0; i < handleCount; i++)
+	for(unsigned int i=0; i < handleCount; i++)
 	{
 		_PoomDataServiceClient_FreeObject((DWORD*)contacts[i]);
 	}

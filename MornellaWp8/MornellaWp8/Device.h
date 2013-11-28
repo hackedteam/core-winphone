@@ -115,7 +115,7 @@ class Device
 	 * Ottiene informazioni sul sistema operativo e riempie la struttura passata per riferimento, torna TRUE se la
 	 * chiamata e' andata a buon fine, FALSE altrimenti.
 	 */
-	public: BOOL GetOsVersion(OSVERSIONINFO* pVersionInfo);
+	public: BOOL GetOsVersion(OSVERSIONINFOEXW* pVersionInfo);
 
 	/**
 	* Ottiene informazioni sull'architetturae riempie la struttura passata per riferimento.

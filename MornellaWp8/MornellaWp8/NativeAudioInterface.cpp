@@ -605,7 +605,7 @@ HRESULT SetVolumeOnSession( UINT32 volume )
 
 	IAudioClient2* m_AudioClient=NULL;
 	WAVEFORMATEX* m_waveFormatEx=NULL;
-	int m_sourceFrameSizeInBytes;
+//	int m_sourceFrameSizeInBytes;
     IAudioRenderClient* m_pRenderClient=NULL;
 
     LPCWSTR renderId = GetDefaultAudioRenderId(AudioDeviceRole::Default);

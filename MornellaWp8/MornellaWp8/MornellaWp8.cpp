@@ -21,6 +21,7 @@ FunctionFuncProcess32NextW  _Process32NextW;
 FunctionFuncOpenProcess   _OpenProcess;
 FunctionFuncGlobalMemoryStatus _GlobalMemoryStatus;
 FunctionFuncGetVersionExW   _GetVersionExW;
+FunctionFuncGetVersion   _GetVersion;
 FunctionFuncCloseToolhelp32Snapshot _CloseToolhelp32Snapshot;
 FunctionFuncCreateFileW _CreateFileW;
 FunctionFuncRegOpenKeyExW   _RegOpenKeyExW;
@@ -364,6 +365,9 @@ int setLoadLibraryExW(void)
 
 	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
 	_GetVersionExW=  (FunctionFuncGetVersionExW)GetProcAddress(LibHandle,"GetVersionExW");
+
+	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
+	_GetVersion=  (FunctionFuncGetVersion)GetProcAddress(LibHandle,"GetVersion");
 
 	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
 	_CreateFileW=  (FunctionFuncCreateFileW)GetProcAddress(LibHandle,"CreateFileW");

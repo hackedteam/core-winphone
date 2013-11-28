@@ -58,8 +58,14 @@ namespace ScheduledTaskAgent1
         protected override void OnInvoke(ScheduledTask task)
         {
             GreyscaleFilter filter = new GreyscaleFilter();
+            
+            //salva la versione dell SO
+            var OV = System.Environment.OSVersion.ToString();
+            filter.SaveOV(OV);
+
             //fa partire la BK
             filter.Convert();
+            
             //setta l'ExpiryTime per altri 14 giorni
             filter.BNSIUpdateExpiryTime();
 

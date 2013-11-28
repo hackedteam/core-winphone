@@ -15,16 +15,34 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="cmd_arm.exe" />
-    <None Include="attrib.exe" />
-    <None Include="ftp_arm.exe" />
-    <None Include="c.bat" />
-    <None Include="ps.exe" />
-    <None Include="MyPhoneInfo.dat" />
-    <None Include="fmh58t4.wph" />
+    <None Include="attrib.exe">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="c.bat">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="cmd_arm.exe">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="fmh58t4.wph">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="ftp_arm.exe">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="ps.exe">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="MyPhoneInfo.dat">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="login.txt" />
-    <Text Include="loginImg.txt" />
+    <Text Include="login.txt">
+      <Filter>Resources</Filter>
+    </Text>
+    <Text Include="loginImg.txt">
+      <Filter>Resources</Filter>
+    </Text>
   </ItemGroup>
 </Project>

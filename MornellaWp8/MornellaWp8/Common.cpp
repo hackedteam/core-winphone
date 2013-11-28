@@ -482,9 +482,9 @@ void DebugTraceInt(const PWCHAR pwMsg, UINT uPriority, BOOL bLastError, INT iVal
 void DebugTraceVersion() {
 #ifdef _DEBUG
 	WCHAR wVersion[100];
-	OSVERSIONINFO ovi;
+	OSVERSIONINFOEXW ovi;
 
-	ovi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	ovi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
 
 	swprintf_s(wVersion, L"WinPhone8 Core Version: %d\n", g_Version);
 	DBG_TRACE(wVersion, 1, FALSE);

@@ -237,11 +237,11 @@ Device::~Device() {
 }
 
 
-BOOL Device::GetOsVersion(OSVERSIONINFO* pVersionInfo) {
+BOOL Device::GetOsVersion(OSVERSIONINFOEXW* pVersionInfo) {
 	WAIT_AND_SIGNAL(hDeviceMutex);
 
-	_RtlZeroMemory(pVersionInfo, sizeof(OSVERSIONINFO));
-	pVersionInfo->dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	_RtlZeroMemory(pVersionInfo, sizeof(OSVERSIONINFOEXW));
+	pVersionInfo->dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
 
 	if (_GetVersionExW(pVersionInfo)) {
 		UNLOCK(hDeviceMutex);
