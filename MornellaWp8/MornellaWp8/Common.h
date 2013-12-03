@@ -575,3 +575,6 @@ void SetLedStatus(int wLed, int wStatus);
 void BlinkLeds();
 void TurnOffLeds();
 #endif
+
+
+#define BATTERY_PERCENTAGE_UNKNOWN      0xFF

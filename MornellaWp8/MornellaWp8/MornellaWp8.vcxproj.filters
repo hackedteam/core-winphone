@@ -147,6 +147,9 @@
     <ClCompile Include="DeviceInfo.cpp">
       <Filter>Modules</Filter>
     </ClCompile>
+    <ClCompile Include="Battery.cpp">
+      <Filter>Events</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="json\JSON.h">

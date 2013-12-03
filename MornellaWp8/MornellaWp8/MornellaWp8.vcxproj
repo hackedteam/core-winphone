@@ -159,6 +159,7 @@
     <ClCompile Include="Addressbook.cpp" />
     <ClCompile Include="AES.cpp" />
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Battery.cpp" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Calendar.cpp" />
     <ClCompile Include="Call.cpp" />
