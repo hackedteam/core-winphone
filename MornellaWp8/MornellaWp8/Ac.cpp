@@ -42,13 +42,14 @@ DWORD WINAPI OnAC(LPVOID lpParam) {
 	pBattery = deviceObj->GetBatteryStatus();
 	dwAcStatus = pBattery->ACLineStatus;
 
+
 	if (deviceObj->RegisterPowerNotification(AcCallback, (DWORD)&dwAcStatus) == FALSE) {
 		me->setStatus(EVENT_STOPPED);
 		return 0;
 	}
 ***/
 	LOOP {
-		//vedere con que se spostando queste tre linee qua da sopra riesco a gestire in pollin AC
+		//a differenza di mobile la gestisco in polling
 		deviceObj->RefreshBatteryStatus();
 		pBattery = deviceObj->GetBatteryStatus();
 		dwAcStatus = pBattery->ACLineStatus;
@@ -57,12 +58,14 @@ DWORD WINAPI OnAC(LPVOID lpParam) {
 			bAC = TRUE;
 			DBG_TRACE(L"Debug - Ac.cpp - Ac event [IN action triggered]\n", 5, FALSE);
 			me->triggerStart();
+			curIterations = 0;
 		}
 
 		if (dwAcStatus == AC_LINE_OFFLINE && bAC == TRUE) {
 			bAC = FALSE;
 			DBG_TRACE(L"Debug - Ac.cpp - AC event [OUT action triggered]\n", 5, FALSE);
 			me->triggerEnd();
+			curIterations = 0;
 		}
 
 		if (bAC)
@@ -74,7 +77,7 @@ DWORD WINAPI OnAC(LPVOID lpParam) {
 
 		if (me->shouldStop()) {
 			DBG_TRACE(L"Debug - Events.cpp - Ac Event is Closing\n", 1, FALSE);
-			deviceObj->UnRegisterPowerNotification(AcCallback);
+///			deviceObj->UnRegisterPowerNotification(AcCallback);
 			me->setStatus(EVENT_STOPPED);
 			return 0;
 		}

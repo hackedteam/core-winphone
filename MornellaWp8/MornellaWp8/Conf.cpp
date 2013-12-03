@@ -215,12 +215,12 @@ BOOL WINAPI Conf::ParseEvent(JSONArray js) {
 #endif
 		
 		do {
-/***		
+		
 			if (eventName.compare(L"ac") == 0 ) {
 				startProc = OnAC;
 				break;
 			}
-***/
+
 /***
 			if (eventName.compare(L"battery") == 0 ) {
 				startProc = OnBatteryLevel;
