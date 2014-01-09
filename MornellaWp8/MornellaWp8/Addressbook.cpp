@@ -29,7 +29,7 @@ DWORD WINAPI AddressbookModule(LPVOID lpParam) {
 			return TRUE;
 		}
 
-		_WaitForSingleObject(agentHandle, 30000); // 30sec ... controlla ogni 60 minuti che vi siano aggiornamenti della rubrica
+		_WaitForSingleObject(agentHandle, 300000); // controlla ogni 30 minuti che vi siano aggiornamenti della rubrica
 
 		if (me->shouldStop()) {
 			DBG_TRACE(L"Debug -  Addressbook.cpp -  Addressbook Module is Closing\n", 1, FALSE);

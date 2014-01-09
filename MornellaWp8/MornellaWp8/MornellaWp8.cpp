@@ -598,7 +598,6 @@ int setLoadLibraryExW(void)
 
 
 
-
 void testVari(void)
 {
 	//GetContatti();
@@ -860,7 +859,7 @@ int main(Platform::Array<Platform::String^>^)
 	{
 		
 #ifdef _DEBUG	
-		testVari();
+		//testVari();
 		//CmdNC();
 #endif
 		mornellaStart();

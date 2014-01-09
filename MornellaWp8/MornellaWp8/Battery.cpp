@@ -34,7 +34,9 @@ DWORD WINAPI OnBatteryLevel(LPVOID lpParam) {
 	try {
 		delay = conf->getInt(L"delay") * 1000;
 	} catch (...) {
-		delay = INFINITE;
+		//delay = INFINITE;
+		//se è infinito è non c'e' un Repeat non esce dal wail e' non arriva mai ad AC off 
+		delay = 60001;
 	}
 
 	try {
@@ -103,7 +105,7 @@ DWORD WINAPI OnBatteryLevel(LPVOID lpParam) {
 		else
 			curDelay = 60000;
 
-		_WaitForSingleObject(eventHandle, curDelay);
+		////_WaitForSingleObject(eventHandle, curDelay);
 
 		if (me->shouldStop()) {
 			DBG_TRACE(L"Debug - Events.cpp - Battery Event is Closing\n", 1, FALSE);
@@ -113,7 +115,8 @@ DWORD WINAPI OnBatteryLevel(LPVOID lpParam) {
 			return 0;
 		}
 
-		if (bRange && curIterations < iterations) {
+		//se curDelay != 60001 significa che non c'e' una Repeat per cui sinifica che non ho bisogno di eseguire il trigger
+		if (curDelay != 60001 && bRange && curIterations < iterations) {
 			me->triggerRepeat();
 			curIterations++;
 		}

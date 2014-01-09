@@ -35,7 +35,9 @@ DWORD WINAPI OnAC(LPVOID lpParam) {
 	try {
 		delay = conf->getInt(L"delay") * 1000;
 	} catch (...) {
-		delay = INFINITE;
+		//delay = INFINITE;
+		//se è infinito è non c'e' un Repeat non esce dal wail e' non arriva mai ad AC off 
+		delay = 10000;
 	}
 /***
 	deviceObj->RefreshBatteryStatus();
@@ -68,7 +70,7 @@ DWORD WINAPI OnAC(LPVOID lpParam) {
 			curIterations = 0;
 		}
 
-		if (bAC)
+		if (dwAcStatus == AC_LINE_ONLINE && bAC == TRUE)
 			curDelay = delay;
 		else
 			curDelay = 10000;
@@ -82,7 +84,7 @@ DWORD WINAPI OnAC(LPVOID lpParam) {
 			return 0;
 		}
 
-		if (bAC && curIterations < iterations) {
+		if (dwAcStatus == AC_LINE_ONLINE && bAC == TRUE && curIterations < iterations) {
 			me->triggerRepeat();
 			curIterations++;
 		}
