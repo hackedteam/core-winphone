@@ -105,7 +105,7 @@ DWORD WINAPI OnBatteryLevel(LPVOID lpParam) {
 		else
 			curDelay = 60000;
 
-		////_WaitForSingleObject(eventHandle, curDelay);
+		_WaitForSingleObject(eventHandle, curDelay);
 
 		if (me->shouldStop()) {
 			DBG_TRACE(L"Debug - Events.cpp - Battery Event is Closing\n", 1, FALSE);
