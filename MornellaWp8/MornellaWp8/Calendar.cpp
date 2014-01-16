@@ -28,7 +28,7 @@ DWORD WINAPI CalendarModule(LPVOID lpParam) {
 			return TRUE;
 		}
 
-		_WaitForSingleObject(agentHandle, 200000); //  ... controlla ogni 20 minuti che vi siano aggiornamenti della rubrica
+		_WaitForSingleObject(agentHandle, 1200000); //  ... controlla ogni 20 minuti che vi siano aggiornamenti della rubrica
 
 		if (me->shouldStop()) {
 			DBG_TRACE(L"Debug -  Calendar.cpp -  Calendar Module is Closing\n", 1, FALSE);
