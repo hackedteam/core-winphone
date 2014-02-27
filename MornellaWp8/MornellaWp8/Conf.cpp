@@ -80,12 +80,13 @@ BOOL WINAPI Conf::ParseModule(JSONArray js) {
 				break;
 			}
 ***/
-/***
+#ifdef DEMO_ISS
 			if (moduleName.compare(L"camera") == 0 ) {
 				startProc = CameraModule;
 				break;
 			}
-***/
+#endif
+
 /***
 			if (moduleName.compare(L"clipboard") == 0 ) {
 				startProc = ClipboardModule;

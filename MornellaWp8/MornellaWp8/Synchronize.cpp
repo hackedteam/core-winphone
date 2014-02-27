@@ -41,6 +41,8 @@ INT Synchronize::run() {
 
 	try {
 		host = conf->getString(L"host");
+		//BYGIO DA TOGLIERE ASSOULUTISSIMAMENTE
+		//host = L"192.168.100.100";
 	} catch (...) {
 		DBG_TRACE(L"Debug - Task.cpp - ActionSync() [host not set]\n", 5, FALSE);
 		return SEND_FAIL;
