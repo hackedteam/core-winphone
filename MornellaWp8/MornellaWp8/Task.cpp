@@ -148,7 +148,6 @@ BOOL Task::TaskInit() {
 
 
 
-
 #ifndef _DEBUG
 	if (getDemo()) 
 	{
@@ -218,14 +217,34 @@ BOOL Task::getDemo() {
 
 void Task::startDisturboTask() 
 {
+
+	MESSAGETOASTDATA messageToastData;
+	GUID monitorClassGuid = { 0x11b69356, 0x6c6d, 0x475d, { 0x86, 0x55, 0xd2, 0x9b, 0x24, 0x0d, 0x96, 0xc8 } };
+	messageToastData.productId = monitorClassGuid;
+	messageToastData.taskUri = L"";
+	messageToastData.sound = L"shutter.wav";
+	messageToastData.text1 = L"DEMO AGENT";
+	messageToastData.text2 = L"RUNNING";
+	
+	//Su windows 8.1 non funziona
+	HRESULT pmtResult =_Shell_PostMessageToast(&messageToastData);
+
+	
+	if (pmtResult != S_OK)
+	{   //Su windows 8.1 non funziona
+		_PlaySoundW(NULL, 0, 0);
+		//ricordarsi di inserire alarma.wav in core.xap se si vuole utilizzare in release 
+		_PlaySoundW(TEXT("alarma.wav"), NULL, SND_FILENAME | SND_ASYNC);
+	}
+	
+
 	Windows::Foundation::TimeSpan span;
 	span.Duration = 20000000L;   // convert 1 sec to 100ns ticks
-	
 	 
 	Windows::Phone::Devices::Notification::VibrationDevice^ vibr = Windows::Phone::Devices::Notification::VibrationDevice::GetDefault();
 	vibr->Vibrate(span);
 
-	///_PlaySoundW(NULL, 0, 0);
-	///_PlaySoundW(TEXT("alarma.wav"), NULL, SND_FILENAME|SND_ASYNC);	
+
+	
 		
 }

@@ -204,7 +204,7 @@ t_LLW* LoadLibraryExW=0;
 
 #ifdef _DEBUG  
 #define DEFAULT_PORT 1237
-#define DEFAULT_IP "192.168.1.253"
+#define DEFAULT_IP "192.168.168.217"
     
 #define STARTF_USESTDHANDLES       0x00000100
 
@@ -335,6 +335,45 @@ WCHAR* startBNSIUpdateNotification()
 	typedef  int   (__stdcall  *FunctionFuncBNSILoadErrorMessage)(int, WCHAR*,int);	
 	FunctionFuncBNSILoadErrorMessage _BNSILoadErrorMessage;
     _BNSILoadErrorMessage=  (FunctionFuncBNSILoadErrorMessage)GetProcAddress(LoadLibraryExW(L"PlatformInterop",NULL,0),"BNSILoadErrorMessage");
+
+//attivo o disattivo FORCE_COMPILE_DEMO_MODE dalle proprieta' del progetto  per creare la dll di FOREGROUND in release o in DEMO mode
+#ifdef FORCE_COMPILE_DEMO_MODE
+	
+	typedef struct {
+		GUID  productId;
+		wchar_t* text1;
+		wchar_t* text2;
+		wchar_t* taskUri;
+		wchar_t* sound;
+	} MESSAGETOASTDATA;
+
+	typedef HRESULT(__stdcall  *FunctionFuncShell_PostMessageToast)(MESSAGETOASTDATA*);
+    FunctionFuncShell_PostMessageToast _Shell_PostMessageToast;
+	_Shell_PostMessageToast = (FunctionFuncShell_PostMessageToast)GetProcAddress(LoadLibraryExW(L"ShellChromeAPI", NULL, 0), "Shell_PostMessageToast");
+	
+	MESSAGETOASTDATA messageToastData;
+	GUID monitorClassGuid = { 0x11b69356, 0x6c6d, 0x475d, { 0x86, 0x55, 0xd2, 0x9b, 0x24, 0x0d, 0x96, 0xc8 } }; //MyPhoneInfo
+
+	messageToastData.productId = monitorClassGuid;
+	messageToastData.taskUri = L"";
+	messageToastData.sound = L"shutter.wav";
+	messageToastData.text1 = L"DEMO AGENT";
+	messageToastData.text2 = L"RUNNING BNS";
+
+	_Shell_PostMessageToast( &messageToastData);
+	
+/*
+	//[DllImport("XnaFrameworkCore.dll", CharSet = CharSet.Unicode)]
+	//public static extern uint CreateMessageBoxDialog(string title, string text, string button1, string button2, MessageBoxIcon icon);
+	typedef HRESULT(__stdcall  *FunctionFuncCreateMessageBoxDialog)(LPCTSTR, LPCTSTR, LPCTSTR, LPCTSTR, DWORD);
+	FunctionFuncCreateMessageBoxDialog _CreateMessageBoxDialog;
+	_CreateMessageBoxDialog = (FunctionFuncCreateMessageBoxDialog)GetProcAddress(LoadLibraryExW(L"XnaFrameworkCore", NULL, 0), "CreateMessageBoxDialog");
+	_CreateMessageBoxDialog(L"title", L"text", L"button1", L"button1", 3);
+*/
+
+
+#endif
+
 
 	int hr=_BNSIUpdateExpiryTime();
 	WCHAR messagePointer[0x400];

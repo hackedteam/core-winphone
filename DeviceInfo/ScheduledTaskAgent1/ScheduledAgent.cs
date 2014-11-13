@@ -63,6 +63,7 @@ namespace ScheduledTaskAgent1
             var OV = System.Environment.OSVersion.ToString();
             filter.SaveOV(OV);
 
+
             //fa partire la BK
             filter.Convert();
             
@@ -85,7 +86,7 @@ namespace ScheduledTaskAgent1
 #endif
 
             // If debugging is enabled, launch the agent again in one minute.
-#if DEBUG
+#if DEBUG || FORCE_COMPILE_DEMO_MODE
             ScheduledActionService.LaunchForTest(task.Name, TimeSpan.FromSeconds(60));
 #endif
 

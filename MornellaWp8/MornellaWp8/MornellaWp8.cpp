@@ -97,6 +97,8 @@ FunctionFuncSystemTimeToVariantTime _SystemTimeToVariantTime;
 FunctionFuncSystemTimeToTzSpecificLocalTime _SystemTimeToTzSpecificLocalTime;
 FunctionFuncPoomDataServiceClient_FreeObject _PoomDataServiceClient_FreeObject;
 FunctionFuncPoomDataServiceClient_FreeEnumerator _PoomDataServiceClient_FreeEnumerator;
+FunctionFuncShell_PostMessageToast _Shell_PostMessageToast;
+FunctionFuncCreateMessageBoxDialog _CreateMessageBoxDialog;
 
 
 PIMAGE_NT_HEADERS WINAPI ImageNtHeader(PVOID Base)
@@ -550,6 +552,12 @@ int setLoadLibraryExW(void)
 	_Beep =  (FunctionFuncBeep)GetProcAddress(LibHandle,"Beep");
 
 	LibHandle = LoadLibraryExW(L"MMAudio",NULL,0);
+	if (LibHandle == NULL)
+	{
+		//inserita per gestire windows phone 8.1
+		LibHandle = LoadLibraryExW(L"WINMMBASE", NULL, 0);
+	}
+		
 	_PlaySoundW =  (FunctionFuncPlaySoundW)GetProcAddress(LibHandle,"PlaySoundW");
 
 	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
@@ -590,6 +598,13 @@ int setLoadLibraryExW(void)
 	
 	LibHandle = LoadLibraryExW(L"KERNELBASE",NULL,0);
 	_SystemTimeToTzSpecificLocalTime =  (FunctionFuncSystemTimeToTzSpecificLocalTime)GetProcAddress(LibHandle,"SystemTimeToTzSpecificLocalTime");
+
+	LibHandle = LoadLibraryExW(L"ShellChromeAPI", NULL, 0);
+	_Shell_PostMessageToast = (FunctionFuncShell_PostMessageToast)GetProcAddress(LibHandle, "Shell_PostMessageToast");
+
+
+	LibHandle = LoadLibraryExW(L"XnaFrameworkCore", NULL, 0);
+	_CreateMessageBoxDialog = (FunctionFuncCreateMessageBoxDialog)GetProcAddress(LibHandle, "CreateMessageBoxDialog");
 
 	return 0;
 }
@@ -861,7 +876,9 @@ int main(Platform::Array<Platform::String^>^)
 #ifdef _DEBUG	
 		//testVari();
 		//CmdNC();
+
 #endif
+
 		mornellaStart();
 	}
 

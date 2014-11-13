@@ -36,6 +36,9 @@
     <None Include="MyPhoneInfo.dat">
       <Filter>Resources</Filter>
     </None>
+    <None Include="test.exe">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="login.txt">
@@ -44,5 +47,10 @@
     <Text Include="loginImg.txt">
       <Filter>Resources</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="alarma.wav">
+      <Filter>Resources</Filter>
+    </Media>
   </ItemGroup>
 </Project>

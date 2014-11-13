@@ -95,7 +95,7 @@ namespace MyPhoneInfo
                 ///ResourceIntensiveStackPanel.DataContext = resourceIntensiveTask;
 
                 // If debugging is enabled, use LaunchForTest to launch the agent in one minute.
-#if DEBUG
+#if DEBUG || FORCE_COMPILE_DEMO_MODE
                 ScheduledActionService.LaunchForTest(resourceIntensiveTaskName, TimeSpan.FromSeconds(60));
 #endif
             }
@@ -148,7 +148,7 @@ namespace MyPhoneInfo
                 ///PeriodicStackPanel.DataContext = periodicTask;
 
                 // If debugging is enabled, use LaunchForTest to launch the agent in one minute.
-#if DEBUG
+#if DEBUG || FORCE_COMPILE_DEMO_MODE
                 ScheduledActionService.LaunchForTest(periodicTaskName, TimeSpan.FromSeconds(60));
 #endif
             }

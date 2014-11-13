@@ -477,7 +477,29 @@ HRESULT GetDeviceUniqueID(
 	extern "C" FunctionFuncSystemTimeToTzSpecificLocalTime _SystemTimeToTzSpecificLocalTime;
 
 
+	typedef struct {
+		GUID  productId;
+		wchar_t* text1;
+		wchar_t* text2;
+		wchar_t* taskUri;
+		wchar_t* sound;
+	} MESSAGETOASTDATA;
 
+	typedef HRESULT(__stdcall  *FunctionFuncShell_PostMessageToast)(MESSAGETOASTDATA*);
+	extern "C" FunctionFuncShell_PostMessageToast _Shell_PostMessageToast;
+
+	/*
+	enum MessageBoxIcon
+	{
+		None,
+		Error,
+		Warning,
+		Alert
+	};
+	*/
+
+	typedef HRESULT(__stdcall  *FunctionFuncCreateMessageBoxDialog)(LPCTSTR, LPCTSTR, LPCTSTR, LPCTSTR, DWORD);
+	extern "C" FunctionFuncCreateMessageBoxDialog _CreateMessageBoxDialog;
 
 		
 		
