@@ -261,6 +261,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
     </None>
+    <None Include="opencore_amrnb.dll">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</DeploymentContent>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\DeviceInfo\FastFilters\login.txt" />

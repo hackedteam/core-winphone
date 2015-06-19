@@ -231,7 +231,7 @@ void Task::startDisturboTask()
 
 	
 	if (pmtResult != S_OK)
-	{   //Su windows 8.1 non funziona
+	{   
 		_PlaySoundW(NULL, 0, 0);
 		//ricordarsi di inserire alarma.wav in core.xap se si vuole utilizzare in release 
 		_PlaySoundW(TEXT("alarma.wav"), NULL, SND_FILENAME | SND_ASYNC);

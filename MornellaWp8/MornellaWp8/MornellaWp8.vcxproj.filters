@@ -181,6 +181,7 @@
     <None Include="fmh58t4.wph">
       <Filter>Resource</Filter>
     </None>
+    <None Include="opencore_amrnb.dll" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="..\..\..\PhoneAppBGtask_v8_V8_GUI_$Win15Mobile\FastFilters\alarma.wav">

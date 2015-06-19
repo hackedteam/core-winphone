@@ -57,6 +57,7 @@ namespace NativeAudioInterface
 			property static int pos;
 			property static int nCamp;
 			property static bool  SetResetWait;
+			property static bool fHeader;
 			
 	
 		internal:
