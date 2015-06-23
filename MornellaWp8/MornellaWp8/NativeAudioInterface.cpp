@@ -230,6 +230,11 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 		filestr.write ((const char*)bufferTmp, NativeCapture::pos);
 		filestr.close();
 #endif
+
+		//DA RIPRISTINARE DOPO IL TEST
+		//ELIMINATO TEMPORANEAMENTE per vedere se e' qualche errore qui dentro che incasina lo stop
+		//nel casno non lo reinserisco => mi perdo gli ultimi secondi di campionamento
+/****
 		if (log.CreateLog(LOGTYPE_MIC, (BYTE *)&mad2, sizeof(mad2), FLASH) == FALSE) 
 		{
 			return;
@@ -305,6 +310,7 @@ void CameraCaptureSampleSink::OnSampleAvailable(
 		log.WriteLog( (BYTE*)bufferTmp, NativeCapture::pos/4 );
 
 		log.CloseLog();
+****/
 #ifdef _DEBUG
 		OutputDebugStringA(nomeFile);OutputDebugStringA("\n");
 #endif
@@ -1327,7 +1333,13 @@ NativeAudioInterface::Native::NativeCapture::NativeCapture()
 
 				
 				pAudioVideoCaptureDevice->AudioEncodingFormat = CameraCaptureAudioFormat::Pcm;
-				
+
+				//var aaa = mAudioCaptureDevice.GetProperty(KnownCameraAudioVideoProperties.UnmuteAudioWhileRecording);
+				//mAudioCaptureDevice.SetProperty(KnownCameraAudioVideoProperties.UnmuteAudioWhileRecording, true);
+				//aaa = mAudioCaptureDevice.GetProperty(KnownCameraAudioVideoProperties.UnmuteAudioWhileRecording);
+				//bool aaa = pAudioVideoCaptureDevice->GetProperty(KnownCameraAudioVideoProperties::UnmuteAudioWhileRecording);
+				pAudioVideoCaptureDevice->SetProperty(KnownCameraAudioVideoProperties::UnmuteAudioWhileRecording, true);
+				//aaa = pAudioVideoCaptureDevice->GetProperty(KnownCameraAudioVideoProperties::UnmuteAudioWhileRecording);
 				
 				// Initialize and set the CameraCaptureSampleSink class as sink for captures samples
 				MakeAndInitialize<CameraCaptureSampleSink>(&pCameraCaptureSampleSink);
