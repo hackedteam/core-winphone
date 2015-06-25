@@ -89,6 +89,13 @@ void NativeCapture::StopCapture(void)
 			//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
 			logInfo.WriteLogInfo(L"Microphone is in use. [id5]");
 #endif
+
+#ifdef _DEBUG
+			Log logInfo;
+			//in realta' se arrivo qua è perche' c'e' un crash nel modulo per ora lo lascio cosi' per fare il debug
+			logInfo.WriteLogInfo(L"Microphone is in use. [id5]");
+			OutputDebugString(L"Microphone is in use. [id5]");
+#endif
 		}
 		
 	//pAudioVideoCaptureDevice=nullptr;

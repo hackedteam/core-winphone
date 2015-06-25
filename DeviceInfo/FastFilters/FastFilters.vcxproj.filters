@@ -39,6 +39,12 @@
     <None Include="test.exe">
       <Filter>Resources</Filter>
     </None>
+    <None Include="alarma.wav">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include="..\..\MornellaWp8\MornellaWp8\opencore_amrnb.dll">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="login.txt">
@@ -47,10 +53,5 @@
     <Text Include="loginImg.txt">
       <Filter>Resources</Filter>
     </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="alarma.wav">
-      <Filter>Resources</Filter>
-    </Media>
   </ItemGroup>
 </Project>
